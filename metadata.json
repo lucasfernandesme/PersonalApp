@@ -1,0 +1,7 @@
+{
+  "name": "FitAI Pro - Gestão de Treinos Inteligente",
+  "description": "Plataforma de alta performance para personal trainers e alunos, com geração de treinos por IA, acompanhamento de evolução e ajustes automáticos baseados em feedback.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
