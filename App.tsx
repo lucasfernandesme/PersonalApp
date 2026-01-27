@@ -43,17 +43,29 @@ const App: React.FC = () => {
   const [isManualBuilderOpen, setIsManualBuilderOpen] = useState(false);
   const [pendingStudentData, setPendingStudentData] = useState<OnboardingData | null>(null);
 
+  const reloadStudents = useCallback(async () => {
+    try {
+      const loadedStudents = await DataService.getStudents();
+      setStudents(loadedStudents);
+
+      // Atualiza o aluno selecionado com os dados novos se ele existir
+      setSelectedStudent(prev => {
+        if (!prev) return null;
+        return loadedStudents.find(s => s.id === prev.id) || null;
+      });
+    } catch (err) {
+      console.error("Erro ao recarregar alunos:", err);
+    }
+  }, []);
+
   useEffect(() => {
     const loadData = async () => {
       setIsLoading(true);
 
 
       try {
-        const [loadedStudents, loadedExercises] = await Promise.all([
-          DataService.getStudents(),
-          DataService.getLibraryExercises()
-        ]);
-        setStudents(loadedStudents);
+        await reloadStudents();
+        const loadedExercises = await DataService.getLibraryExercises();
         setCustomExercises(loadedExercises);
       } catch (err) {
         console.error("Erro ao carregar dados:", err);
@@ -139,19 +151,12 @@ const App: React.FC = () => {
           history: []
         };
         await DataService.saveStudent(newStudent, authUser?.id);
-        setStudents(prev => [newStudent, ...prev]);
-        updatedStudent = newStudent;
         setPendingStudentData(null);
       } else if (selectedStudent) {
         const updated = { ...selectedStudent, program: enrichedProgram };
         await DataService.saveStudent(updated, authUser?.id);
-        setStudents(prev => prev.map(s => s.id === selectedStudent.id ? updated : s));
-        updatedStudent = updated;
       }
-
-      if (updatedStudent) {
-        setSelectedStudent(updatedStudent);
-      }
+      await reloadStudents();
     } catch (e) {
       alert("Erro ao salvar no banco. Verifique as chaves.");
     } finally {
@@ -191,8 +196,8 @@ const App: React.FC = () => {
     };
 
     try {
-      await DataService.saveStudent(updatedStudent); // Aluno salvando o próprio treino não precisa re-vincular trainerId, mas idealmente backend cuida disso
-      setStudents(prev => prev.map(s => s.id === authUser.id ? updatedStudent : s));
+      await DataService.saveStudent(updatedStudent);
+      await reloadStudents();
     } finally {
       setIsSaving(false);
       setTimeout(() => setActiveTab('evolution'), 2500);
@@ -220,9 +225,9 @@ const App: React.FC = () => {
             setIsSaving(true);
             try {
               if (formData.id) {
-                const updated = { ...students.find(s => s.id === formData.id), ...formData };
+                const studentToUpdate = students.find(s => s.id === formData.id);
+                const updated = { ...studentToUpdate, ...formData };
                 await DataService.saveStudent(updated, authUser?.id);
-                setStudents(prev => prev.map(s => s.id === formData.id ? updated : s));
               } else {
                 const newStudent: Student = {
                   ...formData,
@@ -231,8 +236,8 @@ const App: React.FC = () => {
                   history: []
                 };
                 await DataService.saveStudent(newStudent, authUser?.id);
-                setStudents(prev => [newStudent, ...prev]);
               }
+              await reloadStudents();
             } finally {
               setIsSaving(false);
               setActiveView('dashboard');
@@ -244,7 +249,7 @@ const App: React.FC = () => {
             setIsSaving(true);
             try {
               await DataService.deleteStudent(id);
-              setStudents(prev => prev.filter(s => s.id !== id));
+              await reloadStudents();
             } finally {
               setIsSaving(false);
               setActiveView('dashboard');

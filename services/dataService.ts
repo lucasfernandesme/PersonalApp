@@ -35,7 +35,10 @@ export const DataService = {
     }
     return (data || []).map(s => ({
       ...s,
-      birthDate: s.birth_date
+      phone: s.phone || '',
+      birthDate: s.birth_date || '',
+      height: s.height || '',
+      weight: s.weight || ''
     }));
   },
 
