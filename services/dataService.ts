@@ -4,8 +4,8 @@ import { Student } from "../types";
 import { LibraryExercise, EXERCISES_DB } from "../constants/exercises";
 
 // Estas variáveis serão injetadas pelo Vercel
-const SUPABASE_URL = process.env.SUPABASE_URL || '';
-const SUPABASE_KEY = process.env.SUPABASE_KEY || '';
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || '';
+const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 
 // Inicializa o cliente apenas se as chaves existirem
 const supabase = SUPABASE_URL && SUPABASE_KEY
