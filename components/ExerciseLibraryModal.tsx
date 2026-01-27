@@ -1,6 +1,6 @@
 
 import React, { useState, useMemo } from 'react';
-import { Search, X, ChevronRight, Dumbbell, Eye } from 'lucide-react';
+import { Search, X, ChevronRight, Dumbbell, Eye, ChevronDown, Filter } from 'lucide-react';
 import { EXERCISES_DB, CATEGORIES, LibraryExercise } from '../constants/exercises';
 
 interface ExerciseLibraryModalProps {
@@ -11,6 +11,7 @@ interface ExerciseLibraryModalProps {
 const ExerciseLibraryModal: React.FC<ExerciseLibraryModalProps> = ({ onSelect, onClose }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Todos');
+  const [isComboOpen, setIsComboOpen] = useState(false);
 
   const filteredExercises = useMemo(() => {
     return EXERCISES_DB.filter(ex => {
@@ -34,32 +35,62 @@ const ExerciseLibraryModal: React.FC<ExerciseLibraryModalProps> = ({ onSelect, o
       </div>
 
       {/* Search and Filters */}
-      <div className="p-6 space-y-4 bg-white border-b border-slate-50">
-        <div className="relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-          <input 
-            type="text" 
-            placeholder="Buscar exercício..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-slate-50 border-none rounded-2xl pl-12 pr-6 py-4 font-bold placeholder:text-slate-300 focus:ring-2 focus:ring-indigo-500"
-          />
-        </div>
-
-        <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
-          {CATEGORIES.map(cat => (
+      <div className="p-6 bg-white border-b border-slate-50 relative z-20">
+        <div className="grid grid-cols-1 gap-4">
+          {/* Custom Combobox */}
+          <div className="relative">
+            <label className="text-[10px] font-black uppercase text-slate-400 ml-1 mb-2 block">Filtrar por Categoria</label>
             <button
-              key={cat}
-              onClick={() => setSelectedCategory(cat)}
-              className={`flex-shrink-0 px-4 py-2 rounded-xl text-xs font-black uppercase transition-all ${
-                selectedCategory === cat 
-                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20' 
-                  : 'bg-slate-100 text-slate-400'
-              }`}
+              onClick={() => setIsComboOpen(!isComboOpen)}
+              className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-5 py-4 flex items-center justify-between group hover:border-indigo-200 transition-all active:scale-[0.99]"
             >
-              {cat}
+              <div className="flex items-center gap-3">
+                <div className="w-2 h-2 rounded-full bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.5)]"></div>
+                <span className="font-bold text-slate-700">{selectedCategory}</span>
+              </div>
+              <ChevronDown className={`text-slate-400 transition-transform duration-300 ${isComboOpen ? 'rotate-180 text-indigo-500' : ''}`} size={20} />
             </button>
-          ))}
+
+            {isComboOpen && (
+              <>
+                <div
+                  className="fixed inset-0 z-10"
+                  onClick={() => setIsComboOpen(false)}
+                ></div>
+                <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-100 rounded-[24px] shadow-2xl py-3 z-20 animate-in fade-in zoom-in-95 duration-200">
+                  <div className="max-h-60 overflow-y-auto px-2 space-y-1">
+                    {CATEGORIES.map(cat => (
+                      <button
+                        key={cat}
+                        onClick={() => {
+                          setSelectedCategory(cat);
+                          setIsComboOpen(false);
+                        }}
+                        className={`w-full text-left px-4 py-3 rounded-xl text-xs font-black uppercase tracking-wide transition-all flex items-center justify-between ${selectedCategory === cat
+                            ? 'bg-indigo-600 text-white'
+                            : 'text-slate-500 hover:bg-slate-50'
+                          }`}
+                      >
+                        {cat}
+                        {selectedCategory === cat && <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></div>}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+
+          <div className="relative">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+            <input
+              type="text"
+              placeholder="Buscar por nome do exercício..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full bg-slate-50 border border-slate-100 rounded-[20px] pl-12 pr-6 py-4 font-bold placeholder:text-slate-300 focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all shadow-sm"
+            />
+          </div>
         </div>
       </div>
 

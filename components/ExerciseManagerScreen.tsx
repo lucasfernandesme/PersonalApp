@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { ArrowLeft, Plus, Search, Dumbbell, Trash2, X } from 'lucide-react';
+import { ArrowLeft, Plus, Search, Dumbbell, Trash2, X, ChevronDown } from 'lucide-react';
 import { LibraryExercise, CATEGORIES } from '../constants/exercises';
 
 interface ExerciseManagerScreenProps {
@@ -13,6 +13,7 @@ const ExerciseManagerScreen: React.FC<ExerciseManagerScreenProps> = ({ exercises
   const [isAdding, setIsAdding] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Todos');
+  const [isComboOpen, setIsComboOpen] = useState(false);
   const [newExercise, setNewExercise] = useState<LibraryExercise>({ name: '', category: 'Peito' });
 
   const filtered = exercises.filter(ex => {
@@ -45,32 +46,62 @@ const ExerciseManagerScreen: React.FC<ExerciseManagerScreenProps> = ({ exercises
         </button>
       </header>
 
-      <div className="p-4 bg-white border-b border-slate-100 space-y-4">
-        {/* Filtros de Categoria */}
-        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-          {CATEGORIES.map(cat => (
+      <div className="p-6 bg-white border-b border-slate-100 relative z-20">
+        <div className="grid grid-cols-1 gap-4">
+          {/* Custom Combobox */}
+          <div className="relative">
+            <label className="text-[10px] font-black uppercase text-slate-400 ml-1 mb-2 block">Filtrar por Categoria</label>
             <button
-              key={cat}
-              onClick={() => setSelectedCategory(cat)}
-              className={`px-4 py-2 rounded-full text-xs font-black uppercase tracking-wide whitespace-nowrap transition-all ${selectedCategory === cat
-                  ? 'bg-slate-900 text-white shadow-md'
-                  : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
-                }`}
+              onClick={() => setIsComboOpen(!isComboOpen)}
+              className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-5 py-4 flex items-center justify-between group hover:border-indigo-200 transition-all active:scale-[0.99]"
             >
-              {cat}
+              <div className="flex items-center gap-3">
+                <div className="w-2 h-2 rounded-full bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.5)]"></div>
+                <span className="font-bold text-slate-700">{selectedCategory}</span>
+              </div>
+              <ChevronDown className={`text-slate-400 transition-transform duration-300 ${isComboOpen ? 'rotate-180 text-indigo-500' : ''}`} size={20} />
             </button>
-          ))}
-        </div>
 
-        <div className="relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
-          <input
-            type="text"
-            placeholder="Buscar na biblioteca..."
-            className="w-full bg-slate-50 border-none rounded-2xl pl-12 pr-6 py-4 font-bold text-sm focus:ring-2 focus:ring-indigo-500"
-            value={searchTerm}
-            onChange={e => setSearchTerm(e.target.value)}
-          />
+            {isComboOpen && (
+              <>
+                <div
+                  className="fixed inset-0 z-10"
+                  onClick={() => setIsComboOpen(false)}
+                ></div>
+                <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-100 rounded-[24px] shadow-2xl py-3 z-20 animate-in fade-in zoom-in-95 duration-200">
+                  <div className="max-h-60 overflow-y-auto px-2 space-y-1">
+                    {CATEGORIES.map(cat => (
+                      <button
+                        key={cat}
+                        onClick={() => {
+                          setSelectedCategory(cat);
+                          setIsComboOpen(false);
+                        }}
+                        className={`w-full text-left px-4 py-3 rounded-xl text-xs font-black uppercase tracking-wide transition-all flex items-center justify-between ${selectedCategory === cat
+                            ? 'bg-indigo-600 text-white'
+                            : 'text-slate-500 hover:bg-slate-50'
+                          }`}
+                      >
+                        {cat}
+                        {selectedCategory === cat && <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></div>}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+
+          <div className="relative">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
+            <input
+              type="text"
+              placeholder="Buscar na biblioteca..."
+              className="w-full bg-slate-50 border border-slate-100 rounded-[20px] pl-12 pr-6 py-4 font-bold text-sm focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all shadow-sm placeholder:text-slate-300"
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+            />
+          </div>
         </div>
       </div>
 

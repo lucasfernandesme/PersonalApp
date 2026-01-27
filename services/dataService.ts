@@ -93,11 +93,28 @@ export const DataService = {
   async getLibraryExercises(): Promise<LibraryExercise[]> {
     if (!supabase) {
       const data = localStorage.getItem('fitai_pro_custom_exercises');
-      return data ? JSON.parse(data) : EXERCISES_DB;
+      const custom = data ? JSON.parse(data) : [];
+      return [...EXERCISES_DB, ...custom];
     }
 
-    const { data } = await supabase.from('exercises').select('*');
-    return data && data.length > 0 ? data : EXERCISES_DB;
+    const { data, error } = await supabase.from('exercises').select('*');
+    if (error) {
+      console.error("Erro ao buscar exercícios:", error);
+      return EXERCISES_DB;
+    }
+
+    // Mescla exercícios padrão com os do banco, removendo duplicatas pelo nome
+    const cloudExercises = data || [];
+    const combined = [...EXERCISES_DB];
+
+    cloudExercises.forEach((cloudEx: LibraryExercise) => {
+      const exists = combined.some(ex => ex.name.toLowerCase() === cloudEx.name.toLowerCase());
+      if (!exists) {
+        combined.unshift(cloudEx);
+      }
+    });
+
+    return combined;
   },
 
   async saveExercise(exercise: LibraryExercise, trainerId?: string): Promise<void> {

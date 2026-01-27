@@ -58,6 +58,15 @@ const App: React.FC = () => {
     }
   }, []);
 
+  const reloadExercises = useCallback(async () => {
+    try {
+      const loadedExercises = await DataService.getLibraryExercises();
+      setCustomExercises(loadedExercises);
+    } catch (err) {
+      console.error("Erro ao recarregar exercícios:", err);
+    }
+  }, []);
+
   useEffect(() => {
     const loadData = async () => {
       setIsLoading(true);
@@ -65,8 +74,7 @@ const App: React.FC = () => {
 
       try {
         await reloadStudents();
-        const loadedExercises = await DataService.getLibraryExercises();
-        setCustomExercises(loadedExercises);
+        await reloadExercises();
       } catch (err) {
         console.error("Erro ao carregar dados:", err);
       } finally {
@@ -267,7 +275,7 @@ const App: React.FC = () => {
         setIsSaving(true);
         try {
           await DataService.saveExercise(ex, authUser?.id);
-          setCustomExercises(prev => [ex, ...prev]);
+          await reloadExercises();
         } finally {
           setIsSaving(false);
           showToast("Exercício adicionado à biblioteca!");

@@ -6,92 +6,147 @@ export interface LibraryExercise {
 }
 
 export const EXERCISES_DB: LibraryExercise[] = [
-  // Peito
-  {
-    name: 'Supino Reto com Barra',
-    category: 'Peito',
-    videoUrl: 'https://media.giphy.com/media/l3q2K8vT2KzNf1WKs/giphy.gif'
-  },
-  {
-    name: 'Supino Inclinado com Halteres',
-    category: 'Peito',
-    videoUrl: 'https://media.giphy.com/media/3o7TKL9p7S0wI8uB9y/giphy.gif'
-  },
-  {
-    name: 'Crucifixo Reto',
-    category: 'Peito',
-    videoUrl: 'https://media.giphy.com/media/l3q2K8vT2KzNf1WKs/giphy.gif'
-  },
-  {
-    name: 'Peck Deck (Voador)',
-    category: 'Peito',
-    videoUrl: 'https://media.giphy.com/media/l3q2K8vT2KzNf1WKs/giphy.gif'
-  },
+  // PEITO
+  { name: 'Supino Reto com Barra', category: 'Peito', videoUrl: 'https://media.giphy.com/media/l3q2K8vT2KzNf1WKs/giphy.gif' },
+  { name: 'Supino Reto com Barra (Pegada Fechada)', category: 'Peito' },
+  { name: 'Supino Reto com Barra (Pegada Aberta)', category: 'Peito' },
+  { name: 'Supino Reto com Halteres', category: 'Peito' },
+  { name: 'Supino Inclinado com Halteres (45°)', category: 'Peito', videoUrl: 'https://media.giphy.com/media/3o7TKL9p7S0wI8uB9y/giphy.gif' },
+  { name: 'Supino Inclinado com Barra (45°)', category: 'Peito' },
+  { name: 'Supino Declinado com Barra', category: 'Peito' },
+  { name: 'Supino Declinado com Halteres', category: 'Peito' },
+  { name: 'Supino no Smith (plano)', category: 'Peito' },
+  { name: 'Supino Inclinado no Smith', category: 'Peito' },
+  { name: 'Supino Declinado no Smith', category: 'Peito' },
+  { name: 'Supino na Máquina (Chest Press)', category: 'Peito' },
+  { name: 'Supino Inclinado na Máquina', category: 'Peito' },
+  { name: 'Supino Declinado na Máquina', category: 'Peito' },
+  { name: 'Crucifixo no Banco Plano com Halteres', category: 'Peito' },
+  { name: 'Crucifixo Inclinado com Halteres', category: 'Peito' },
+  { name: 'Crucifixo Declinado com Halteres', category: 'Peito' },
+  { name: 'Crucifixo na Máquina (Fly Machine)', category: 'Peito' },
+  { name: 'Crossover na Polia (altura média)', category: 'Peito' },
+  { name: 'Crossover na Polia Alta', category: 'Peito' },
+  { name: 'Crossover na Polia Baixa', category: 'Peito' },
+  { name: 'Pullover com Halteres', category: 'Peito' },
+  { name: 'Pullover no Cabo', category: 'Peito' },
+  { name: 'Flexão de Braço Tradicional', category: 'Peito' },
+  { name: 'Flexão de Braço com Pegada Fechada', category: 'Peito' },
+  { name: 'Flexão de Braço com Pegada Larga', category: 'Peito' },
+  { name: 'Paralelas (Foco Peito)', category: 'Peito' },
 
-  // Costas
-  {
-    name: 'Puxada Aberta na Frente',
-    category: 'Costas',
-    videoUrl: 'https://media.giphy.com/media/3o7TKL8S72yW2yW2yW/giphy.gif'
-  },
-  {
-    name: 'Remada Curvada com Barra',
-    category: 'Costas',
-    videoUrl: 'https://media.giphy.com/media/3o7TKL9p7S0wI8uB9y/giphy.gif'
-  },
-  {
-    name: 'Remada Baixa (Triângulo)',
-    category: 'Costas',
-    videoUrl: 'https://media.giphy.com/media/3o7TKL8S72yW2yW2yW/giphy.gif'
-  },
+  // COSTAS
+  { name: 'Barra Fixa (Pegada Pronada)', category: 'Costas' },
+  { name: 'Barra Fixa (Pegada Supinada)', category: 'Costas' },
+  { name: 'Barra Fixa (Pegada Neutra)', category: 'Costas' },
+  { name: 'Puxada Frontal na Polia (Pegada Aberta)', category: 'Costas', videoUrl: 'https://media.giphy.com/media/3o7TKL8S72yW2yW2yW/giphy.gif' },
+  { name: 'Puxada Frontal na Polia (Pegada Fechada)', category: 'Costas' },
+  { name: 'Puxada na Polia com Triângulo', category: 'Costas' },
+  { name: 'Remada Curvada com Barra', category: 'Costas' },
+  { name: 'Remada com Halteres (Unilateral)', category: 'Costas' },
+  { name: 'Remada Unilateral (Serrote)', category: 'Costas' },
+  { name: 'Remada Baixa no Cabo', category: 'Costas' },
+  { name: 'Remada Alta no Cabo', category: 'Costas' },
+  { name: 'Remada na Máquina (Row Machine)', category: 'Costas' },
+  { name: 'Remada Cavalinho', category: 'Costas' },
+  { name: 'Pulldown no Aparelho', category: 'Costas' },
+  { name: 'Pulldown com Corda', category: 'Costas' },
+  { name: 'Face Pull na Polia', category: 'Costas' },
+  { name: 'Superman (Isometria)', category: 'Costas' },
+  { name: 'Bom Dia (Good Morning)', category: 'Costas' },
+  { name: 'Hiperextensão na Máquina', category: 'Costas' },
+  { name: 'Hiperextensão no Banco', category: 'Costas' },
+  { name: 'Levantamento Terra Romeno (ênfase lombar)', category: 'Costas' },
+  { name: 'Levantamento Terra', category: 'Costas' },
+  { name: 'Extensão Lombar', category: 'Costas' },
+  { name: 'Crucifixo Inverso', category: 'Costas' },
 
-  // Pernas
-  {
-    name: 'Agachamento Livre',
-    category: 'Pernas',
-    videoUrl: 'https://media.giphy.com/media/3o7TKL9p7S0wI8uB9y/giphy.gif'
-  },
-  {
-    name: 'Leg Press 45',
-    category: 'Pernas',
-    videoUrl: 'https://media.giphy.com/media/l3q2K8vT2KzNf1WKs/giphy.gif'
-  },
-  {
-    name: 'Cadeira Extensora',
-    category: 'Pernas',
-    videoUrl: 'https://media.giphy.com/media/l3q2K8vT2KzNf1WKs/giphy.gif'
-  },
+  // PERNAS (Mantidos os anteriores)
+  { name: 'Agachamento Livre', category: 'Pernas' },
+  { name: 'Leg Press 45', category: 'Pernas' },
+  { name: 'Agachamento Hack', category: 'Pernas' },
+  { name: 'Cadeira Extensora', category: 'Pernas' },
+  { name: 'Cadeira Flexora', category: 'Pernas' },
+  { name: 'Mesa Flexora', category: 'Pernas' },
+  { name: 'Levantamento Stiff', category: 'Pernas' },
+  { name: 'Afundo com Halteres', category: 'Pernas' },
+  { name: 'Passada', category: 'Pernas' },
+  { name: 'Agachamento Sumô', category: 'Pernas' },
+  { name: 'Cadeira Adutora', category: 'Pernas' },
+  { name: 'Panturrilha em Pé (Máquina)', category: 'Pernas' },
+  { name: 'Panturrilha Sentado (Cavalinho)', category: 'Pernas' },
 
-  // Ombros
-  {
-    name: 'Desenvolvimento com Halteres',
-    category: 'Ombros',
-    videoUrl: 'https://media.giphy.com/media/l3q2K8vT2KzNf1WKs/giphy.gif'
-  },
-  {
-    name: 'Elevação Lateral',
-    category: 'Ombros',
-    videoUrl: 'https://media.giphy.com/media/l3q2K8vT2KzNf1WKs/giphy.gif'
-  },
+  // GLÚTEO (Mantidos os anteriores)
+  { name: 'Elevação Pélvica', category: 'Glúteo' },
+  { name: 'Extensão de Quadril no Cabo', category: 'Glúteo' },
+  { name: 'Abdução de Quadril no Cabo', category: 'Glúteo' },
+  { name: 'Agachamento Búlgaro', category: 'Glúteo' },
+  { name: 'Glúteo Máquina', category: 'Glúteo' },
+  { name: 'Cadeira Abdutora', category: 'Glúteo' },
 
-  // Braços
-  {
-    name: 'Tríceps Corda',
-    category: 'Braços',
-    videoUrl: 'https://media.giphy.com/media/l3q2K8vT2KzNf1WKs/giphy.gif'
-  },
-  {
-    name: 'Rosca Direta com Barra',
-    category: 'Braços',
-    videoUrl: 'https://media.giphy.com/media/3o7TKL9p7S0wI8uB9y/giphy.gif'
-  },
+  // OMBROS
+  { name: 'Desenvolvimento com Barra (em Pé)', category: 'Ombros' },
+  { name: 'Desenvolvimento com Halteres (em Pé)', category: 'Ombros' },
+  { name: 'Desenvolvimento com Halteres (Sentado)', category: 'Ombros' },
+  { name: 'Desenvolvimento no Smith', category: 'Ombros' },
+  { name: 'Desenvolvimento na Máquina (Shoulder Press)', category: 'Ombros' },
+  { name: 'Elevação Lateral com Halteres', category: 'Ombros' },
+  { name: 'Elevação Lateral na Polia', category: 'Ombros' },
+  { name: 'Elevação Lateral na Máquina', category: 'Ombros' },
+  { name: 'Elevação Frontal com Halteres', category: 'Ombros' },
+  { name: 'Elevação Frontal com Barra', category: 'Ombros' },
+  { name: 'Elevação Frontal na Polia', category: 'Ombros' },
+  { name: 'Crucifixo Inverso na Máquina (Rear Delt Fly)', category: 'Ombros' },
+  { name: 'Face Pull (trabalha posterior)', category: 'Ombros' },
+  { name: 'Encolhimento de Ombros com Halteres', category: 'Ombros' },
+  { name: 'Encolhimento de Ombros com Barra', category: 'Ombros' },
+  { name: 'Desenvolvimento Arnold', category: 'Ombros' },
 
-  // Core
-  {
-    name: 'Prancha Isométrica',
-    category: 'Core',
-    videoUrl: 'https://media.giphy.com/media/3o7TKL8S72yW2yW2yW/giphy.gif'
-  },
+  // BRAÇOS (Bíceps + Tríceps)
+  { name: 'Rosca Direta com Barra', category: 'Braços' },
+  { name: 'Rosca Direta com Barra (pegada invertida)', category: 'Braços' },
+  { name: 'Rosca Direta com Halteres (simultânea)', category: 'Braços' },
+  { name: 'Rosca Alternada com Halteres', category: 'Braços' },
+  { name: 'Rosca Scott com Barra na Máquina', category: 'Braços' },
+  { name: 'Rosca Scott com Halteres', category: 'Braços' },
+  { name: 'Rosca no Banco Scott com Barra W', category: 'Braços' },
+  { name: 'Rosca no Cabo (Polia)', category: 'Braços' },
+  { name: 'Rosca Martelo com Halteres', category: 'Braços' },
+  { name: 'Rosca 21 (21s)', category: 'Braços' },
+  { name: 'Rosca Inversa com Barra', category: 'Braços' },
+  { name: 'Concentration Curl com Halteres', category: 'Braços' },
+  { name: 'Rosca Concentrada', category: 'Braços' },
+  { name: 'Tríceps Pulley (Barra Reta)', category: 'Braços' },
+  { name: 'Tríceps Corda na Polia Alta', category: 'Braços' },
+  { name: 'Tríceps Barra na Polia Alta', category: 'Braços' },
+  { name: 'Tríceps Testa com Barra', category: 'Braços' },
+  { name: 'Tríceps Testa com Halteres', category: 'Braços' },
+  { name: 'Tríceps Francês com Halteres', category: 'Braços' },
+  { name: 'Tríceps Francês no Cabo', category: 'Braços' },
+  { name: 'Coice de Tríceps com Halteres', category: 'Braços' },
+  { name: 'Mergulho nas Paralelas', category: 'Braços' },
+  { name: 'Mergulho no Banco (Bench Dips)', category: 'Braços' },
+  { name: 'Close-Grip Bench Press (Supino Fechado)', category: 'Braços' },
+  { name: 'Tríceps Pulley (Barra Reta)', category: 'Braços' },
+  { name: 'Tríceps Francês', category: 'Braços' },
+  { name: 'Mergulho (Dips)', category: 'Braços' },
+
+  // CORE
+  { name: 'Abdominal Reto Tradicional', category: 'Core' },
+  { name: 'Abdominal Infra (Elevação de Pernas)', category: 'Core' },
+  { name: 'Abdominal Supra (Crunch)', category: 'Core' },
+  { name: 'Abdominal Oblíquo', category: 'Core' },
+  { name: 'Abdominal Bicicleta', category: 'Core' },
+  { name: 'Abdominal na Máquina', category: 'Core' },
+  { name: 'Abdominal no Cabo', category: 'Core' },
+  { name: 'Prancha (Isometria)', category: 'Core', videoUrl: 'https://media.giphy.com/media/3o7TKL8S72yW2yW2yW/giphy.gif' },
+  { name: 'Prancha Lateral', category: 'Core' },
+  { name: 'Ab Wheel (Roda Abdominal)', category: 'Core' },
+  { name: 'Crunch no Banco Declinado', category: 'Core' },
+  { name: 'Elevação de Pernas na Barra', category: 'Core' },
+  { name: 'Abdominal Supra', category: 'Core' },
+  { name: 'Abdominal no Pulley', category: 'Core' },
+  { name: 'Russian Twist', category: 'Core' },
 ];
 
 export const CATEGORIES = ['Todos', 'Peito', 'Costas', 'Pernas', 'Glúteo', 'Ombros', 'Braços', 'Core'];
