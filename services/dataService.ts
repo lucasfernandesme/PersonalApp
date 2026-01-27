@@ -120,16 +120,34 @@ export const DataService = {
   async saveExercise(exercise: LibraryExercise, trainerId?: string): Promise<void> {
     if (!supabase) {
       const exercises = await this.getLibraryExercises();
-      localStorage.setItem('fitai_pro_custom_exercises', JSON.stringify([...exercises, exercise]));
+      if (exercise.id) {
+        const index = exercises.findIndex(ex => ex.id === exercise.id);
+        if (index >= 0) {
+          exercises[index] = exercise;
+          localStorage.setItem('fitai_pro_custom_exercises', JSON.stringify(exercises.filter(ex => !EXERCISES_DB.some(d => d.name === ex.name))));
+          return;
+        }
+      }
+      localStorage.setItem('fitai_pro_custom_exercises', JSON.stringify([...exercises, { ...exercise, id: Math.random().toString(36).substring(2, 11) }]));
       return;
     }
 
-    const payload: any = { ...exercise };
+    const payload: any = {
+      name: exercise.name,
+      category: exercise.category,
+      video_url: exercise.videoUrl
+    };
+
+    if (exercise.id) {
+      payload.id = exercise.id;
+    }
+
     if (trainerId) {
       payload.trainer_id = trainerId;
     }
 
-    await supabase.from('exercises').insert(payload);
+    const { error } = await supabase.from('exercises').upsert(payload);
+    if (error) throw error;
   },
 
   // --- TRAINERS / AUTH ---

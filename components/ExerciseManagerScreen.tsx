@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { ArrowLeft, Plus, Search, Dumbbell, Trash2, X, ChevronDown } from 'lucide-react';
+import { ArrowLeft, Plus, Search, Dumbbell, Trash2, X, ChevronDown, Play } from 'lucide-react';
 import { LibraryExercise, CATEGORIES } from '../constants/exercises';
 
 interface ExerciseManagerScreenProps {
@@ -14,7 +14,33 @@ const ExerciseManagerScreen: React.FC<ExerciseManagerScreenProps> = ({ exercises
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Todos');
   const [isComboOpen, setIsComboOpen] = useState(false);
-  const [newExercise, setNewExercise] = useState<LibraryExercise>({ name: '', category: 'Peito' });
+  const [newExercise, setNewExercise] = useState<LibraryExercise>({ name: '', category: 'Peito', videoUrl: '' });
+  const [isPlayingPreview, setIsPlayingPreview] = useState(false);
+
+  const getYouTubeEmbedUrl = (url: string) => {
+    if (!url) return '';
+    if (url.includes('youtube.com/embed')) return url;
+
+    let videoId = '';
+    if (url.includes('youtu.be/')) {
+      videoId = url.split('youtu.be/')[1].split('?')[0];
+    } else if (url.includes('v=')) {
+      videoId = url.split('v=')[1].split('&')[0];
+    } else if (url.includes('youtube.com/shorts/')) {
+      videoId = url.split('youtube.com/shorts/')[1].split('?')[0];
+    }
+
+    return videoId ? `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1` : url;
+  };
+
+  const getYouTubeId = (url: string) => {
+    if (!url) return '';
+    if (url.includes('youtube.com/embed/')) return url.split('youtube.com/embed/')[1].split('?')[0];
+    if (url.includes('youtu.be/')) return url.split('youtu.be/')[1].split('?')[0];
+    if (url.includes('v=')) return url.split('v=')[1].split('&')[0];
+    if (url.includes('youtube.com/shorts/')) return url.split('youtube.com/shorts/')[1].split('?')[0];
+    return '';
+  };
 
   const filtered = exercises.filter(ex => {
     const matchesSearch = ex.name.toLowerCase().includes(searchTerm.toLowerCase());
@@ -24,8 +50,14 @@ const ExerciseManagerScreen: React.FC<ExerciseManagerScreenProps> = ({ exercises
 
   const handleSave = () => {
     if (!newExercise.name) return;
-    onAdd(newExercise);
-    setNewExercise({ name: '', category: 'Peito' });
+
+    const formattedExercise = {
+      ...newExercise,
+      videoUrl: getYouTubeEmbedUrl(newExercise.videoUrl || '')
+    };
+
+    onAdd(formattedExercise);
+    setNewExercise({ name: '', category: 'Peito', videoUrl: '' });
     setIsAdding(false);
   };
 
@@ -39,7 +71,11 @@ const ExerciseManagerScreen: React.FC<ExerciseManagerScreenProps> = ({ exercises
           <h2 className="text-lg font-black text-slate-900">Biblioteca</h2>
         </div>
         <button
-          onClick={() => setIsAdding(true)}
+          onClick={() => {
+            setNewExercise({ name: '', category: 'Peito', videoUrl: '' });
+            setIsPlayingPreview(false);
+            setIsAdding(true);
+          }}
           className="bg-indigo-600 text-white p-2 rounded-xl"
         >
           <Plus size={24} />
@@ -78,8 +114,8 @@ const ExerciseManagerScreen: React.FC<ExerciseManagerScreenProps> = ({ exercises
                           setIsComboOpen(false);
                         }}
                         className={`w-full text-left px-4 py-3 rounded-xl text-xs font-black uppercase tracking-wide transition-all flex items-center justify-between ${selectedCategory === cat
-                            ? 'bg-indigo-600 text-white'
-                            : 'text-slate-500 hover:bg-slate-50'
+                          ? 'bg-indigo-600 text-white'
+                          : 'text-slate-500 hover:bg-slate-50'
                           }`}
                       >
                         {cat}
@@ -107,17 +143,39 @@ const ExerciseManagerScreen: React.FC<ExerciseManagerScreenProps> = ({ exercises
 
       <div className="flex-1 overflow-y-auto p-4 space-y-2 pb-24">
         {filtered.map((ex, idx) => (
-          <div key={idx} className="bg-white p-4 rounded-2xl border border-slate-100 flex items-center justify-between">
+          <div
+            key={idx}
+            onClick={() => {
+              setNewExercise(ex);
+              setIsPlayingPreview(false);
+              setIsAdding(true);
+            }}
+            className="bg-white p-4 rounded-2xl border border-slate-100 flex items-center justify-between cursor-pointer hover:border-indigo-200 transition-all active:scale-[0.98]"
+          >
             <div className="flex items-center gap-4">
               <div className="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center">
                 <Dumbbell size={20} />
               </div>
               <div>
                 <p className="font-bold text-slate-800 text-sm">{ex.name}</p>
-                <p className="text-[10px] font-black uppercase text-slate-400">{ex.category}</p>
+                <div className="flex items-center gap-2">
+                  <p className="text-[10px] font-black uppercase text-slate-400">{ex.category}</p>
+                  {ex.videoUrl && (
+                    <span className="w-1 h-1 rounded-full bg-red-400"></span>
+                  )}
+                  {ex.videoUrl && (
+                    <p className="text-[10px] font-black uppercase text-red-400">Vídeo</p>
+                  )}
+                </div>
               </div>
             </div>
-            <button className="p-2 text-slate-200 hover:text-red-500 transition-colors">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                // TODO: Implement delete logic
+              }}
+              className="p-2 text-slate-200 hover:text-red-500 transition-colors"
+            >
               <Trash2 size={18} />
             </button>
           </div>
@@ -128,8 +186,15 @@ const ExerciseManagerScreen: React.FC<ExerciseManagerScreenProps> = ({ exercises
         <div className="fixed inset-0 z-[110] bg-slate-900/60 backdrop-blur-sm flex items-end md:items-center justify-center p-4">
           <div className="bg-white w-full max-w-md rounded-[32px] p-6 space-y-6 animate-in slide-in-from-bottom duration-300">
             <div className="flex justify-between items-center">
-              <h3 className="text-xl font-black text-slate-900">Novo Exercício</h3>
-              <button onClick={() => setIsAdding(false)} className="text-slate-400">
+              <h3 className="text-xl font-black text-slate-900">{newExercise.id ? 'Editar Exercício' : 'Novo Exercício'}</h3>
+              <button
+                onClick={() => {
+                  setIsAdding(false);
+                  setIsPlayingPreview(false);
+                  setNewExercise({ name: '', category: 'Peito', videoUrl: '' });
+                }}
+                className="text-slate-400"
+              >
                 <X size={24} />
               </button>
             </div>
@@ -158,6 +223,55 @@ const ExerciseManagerScreen: React.FC<ExerciseManagerScreenProps> = ({ exercises
                     <option key={c} value={c}>{c}</option>
                   ))}
                 </select>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Link do Vídeo (YouTube)</label>
+
+                {newExercise.videoUrl && getYouTubeId(newExercise.videoUrl) && (
+                  <div className="relative aspect-video rounded-3xl overflow-hidden bg-slate-100 border border-slate-200 mb-4 group animate-in zoom-in-95 duration-300">
+                    {isPlayingPreview ? (
+                      <iframe
+                        src={`${getYouTubeEmbedUrl(newExercise.videoUrl)}&autoplay=1`}
+                        className="w-full h-full border-0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      />
+                    ) : (
+                      <div
+                        onClick={() => setIsPlayingPreview(true)}
+                        className="relative w-full h-full cursor-pointer"
+                      >
+                        <img
+                          src={`https://img.youtube.com/vi/${getYouTubeId(newExercise.videoUrl)}/mqdefault.jpg`}
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                          alt="Preview"
+                        />
+                        <div className="absolute inset-0 bg-slate-900/20 flex items-center justify-center group-hover:bg-slate-900/40 transition-all">
+                          <div className="w-12 h-12 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center text-red-600 shadow-xl group-hover:scale-110 active:scale-95 transition-all">
+                            <Play size={24} fill="currentColor" />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                <div className="relative">
+                  <div className="absolute left-4 top-1/2 -translate-y-1/2 w-8 h-8 bg-red-50 text-red-500 rounded-lg flex items-center justify-center">
+                    <Dumbbell size={16} />
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Cole o link do YouTube aqui..."
+                    className="w-full bg-slate-50 border-none rounded-2xl pl-14 pr-5 py-4 font-bold focus:ring-2 focus:ring-red-500"
+                    value={newExercise.videoUrl || ''}
+                    onChange={e => setNewExercise({ ...newExercise, videoUrl: e.target.value })}
+                  />
+                </div>
+                <p className="text-[9px] text-slate-400 font-medium px-1">
+                  Pode ser link curto, do navegador ou shorts. O app formata sozinho! ✨
+                </p>
               </div>
             </div>
 

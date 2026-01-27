@@ -1,10 +1,10 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { 
-  Play, 
-  CheckCircle2, 
-  Clock, 
-  ChevronRight, 
+import {
+  Play,
+  CheckCircle2,
+  Clock,
+  ChevronRight,
   Dumbbell,
   Timer,
   Award,
@@ -30,22 +30,38 @@ interface StudentAppProps {
   onFinishWorkout: (stats: { rpe_avg: number; completion: number; weights: Record<string, string>; duration: number }) => void;
 }
 
-const StudentApp: React.FC<StudentAppProps> = ({ 
-  program, 
-  students, 
-  currentStudentId, 
-  onSelectStudent, 
-  onFinishWorkout 
+const getYouTubeEmbedUrl = (url: string) => {
+  if (!url) return '';
+  if (url.includes('youtube.com/embed')) return url;
+
+  let videoId = '';
+  if (url.includes('youtu.be/')) {
+    videoId = url.split('youtu.be/')[1].split('?')[0];
+  } else if (url.includes('v=')) {
+    videoId = url.split('v=')[1].split('&')[0];
+  } else if (url.includes('youtube.com/shorts/')) {
+    videoId = url.split('youtube.com/shorts/')[1].split('?')[0];
+  }
+
+  return videoId ? `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1` : url;
+};
+
+const StudentApp: React.FC<StudentAppProps> = ({
+  program,
+  students,
+  currentStudentId,
+  onSelectStudent,
+  onFinishWorkout
 }) => {
   const [currentDayIndex, setCurrentDayIndex] = useState(0);
   const [activeExerciseIndex, setActiveExerciseIndex] = useState<number | null>(null);
   const [completedExercises, setCompletedExercises] = useState<Set<string>>(new Set());
   const [completedSets, setCompletedSets] = useState<Record<string, boolean[]>>({});
   const [exerciseDetails, setExerciseDetails] = useState<Record<string, { weight: string, rpe: string }>>({});
-  const [showExecutionGuide, setShowExecutionGuide] = useState<string | null>(null);
+  const [showExecutionGuide, setShowExecutionGuide] = useState<{ url: string, type: 'iframe' | 'image' | 'youtube' } | null>(null);
   const [isImageLoading, setIsImageLoading] = useState(true);
   const [isFinished, setIsFinished] = useState(false);
-  
+
   const [isWorkoutActive, setIsWorkoutActive] = useState(false);
   const [seconds, setSeconds] = useState(0);
   const timerRef = useRef<number | null>(null);
@@ -130,7 +146,7 @@ const StudentApp: React.FC<StudentAppProps> = ({
     const newCompleted = new Set(completedExercises);
     if (!newCompleted.has(name)) {
       newCompleted.add(name);
-      
+
       const ex = currentDay.exercises.find(e => e.name === name);
       if (ex) {
         const setsCount = typeof ex.sets === 'number' ? ex.sets : parseInt(ex.sets) || 3;
@@ -197,7 +213,7 @@ const StudentApp: React.FC<StudentAppProps> = ({
 
     const totalEx = currentDay?.exercises?.length || 1;
     const completion = Math.round((completedExercises.size / totalEx) * 100);
-    
+
     const weights: Record<string, string> = {};
     Object.entries(exerciseDetails).forEach(([name, details]: [string, any]) => {
       if (details.weight) weights[name] = details.weight;
@@ -206,8 +222,8 @@ const StudentApp: React.FC<StudentAppProps> = ({
     const rpeValues = Object.values(exerciseDetails)
       .map((d: any) => parseInt(d.rpe))
       .filter(v => !isNaN(v));
-      
-    const rpe_avg = rpeValues.length > 0 
+
+    const rpe_avg = rpeValues.length > 0
       ? Math.round(rpeValues.reduce((a, b) => a + b, 0) / rpeValues.length)
       : 7;
 
@@ -264,8 +280,8 @@ const StudentApp: React.FC<StudentAppProps> = ({
                 <p className="text-[10px] font-bold text-white/80">Recupere-se para a próxima série</p>
               </div>
             </div>
-            
-            <button 
+
+            <button
               onClick={() => setRestSeconds(0)}
               className="w-10 h-10 bg-white/10 hover:bg-white/20 text-white rounded-xl flex items-center justify-center transition-colors"
             >
@@ -287,15 +303,15 @@ const StudentApp: React.FC<StudentAppProps> = ({
           <div className="h-8 w-[1px] bg-slate-100 flex-shrink-0"></div>
           <div className="flex items-center gap-3">
             {students.map(s => (
-              <button 
+              <button
                 key={s.id}
                 onClick={() => onSelectStudent(s)}
                 className={`flex-shrink-0 flex flex-col items-center gap-1 transition-all ${currentStudentId === s.id ? 'scale-110' : 'opacity-40 grayscale'}`}
               >
-                <img 
-                  src={s.avatar} 
-                  className={`w-10 h-10 rounded-xl object-cover border-2 ${currentStudentId === s.id ? 'border-indigo-600 ring-2 ring-indigo-100' : 'border-transparent'}`} 
-                  alt={s.name} 
+                <img
+                  src={s.avatar}
+                  className={`w-10 h-10 rounded-xl object-cover border-2 ${currentStudentId === s.id ? 'border-indigo-600 ring-2 ring-indigo-100' : 'border-transparent'}`}
+                  alt={s.name}
                 />
                 <span className={`text-[8px] font-black truncate max-w-[50px] ${currentStudentId === s.id ? 'text-indigo-600' : 'text-slate-500'}`}>
                   {s.name.split(' ')[0]}
@@ -328,11 +344,10 @@ const StudentApp: React.FC<StudentAppProps> = ({
                 setActiveExerciseIndex(null);
                 setCompletedSets({});
               }}
-              className={`flex-shrink-0 min-w-[90px] px-4 py-3 rounded-2xl text-xs font-black uppercase transition-all border ${
-                currentDayIndex === i 
-                  ? 'bg-indigo-600 text-white border-indigo-600 shadow-lg shadow-indigo-600/20' 
-                  : 'bg-white text-slate-400 border-slate-200'
-              }`}
+              className={`flex-shrink-0 min-w-[90px] px-4 py-3 rounded-2xl text-xs font-black uppercase transition-all border ${currentDayIndex === i
+                ? 'bg-indigo-600 text-white border-indigo-600 shadow-lg shadow-indigo-600/20'
+                : 'bg-white text-slate-400 border-slate-200'
+                }`}
             >
               {d.day}
             </button>
@@ -343,14 +358,14 @@ const StudentApp: React.FC<StudentAppProps> = ({
       <div className={`bg-white rounded-[32px] p-6 border border-slate-200 flex flex-col gap-4 relative overflow-hidden shadow-sm transition-all ${isWorkoutActive ? 'ring-2 ring-indigo-500' : ''}`}>
         <div className="relative z-10">
           <div className="flex items-center gap-2 mb-1">
-             <Zap size={14} className="text-indigo-600" />
-             <span className="text-[10px] font-black uppercase text-indigo-600 tracking-widest">Foco do Dia</span>
+            <Zap size={14} className="text-indigo-600" />
+            <span className="text-[10px] font-black uppercase text-indigo-600 tracking-widest">Foco do Dia</span>
           </div>
           <h3 className="text-2xl font-black text-slate-900 leading-tight">{currentDay.label}</h3>
         </div>
-        
+
         {!isWorkoutActive ? (
-          <button 
+          <button
             onClick={() => setIsWorkoutActive(true)}
             className="relative z-10 w-full bg-slate-900 text-white py-5 rounded-2xl font-black uppercase text-xs tracking-[0.2em] flex items-center justify-center gap-3 active:scale-95 transition-all shadow-xl hover:bg-slate-800"
           >
@@ -386,29 +401,27 @@ const StudentApp: React.FC<StudentAppProps> = ({
           const setsCount = typeof ex.sets === 'number' ? ex.sets : parseInt(ex.sets) || 3;
           const currentSets = completedSets[ex.name] || Array(setsCount).fill(false);
           const doneSetsCount = currentSets.filter(s => s).length;
-          
+
           return (
-            <div 
+            <div
               key={idx}
-              className={`bg-white rounded-[28px] border transition-all ${
-                activeExerciseIndex === idx ? 'border-indigo-500 ring-4 ring-indigo-50 shadow-lg' : 'border-slate-200'
-              } ${isCompleted ? 'bg-slate-50 border-emerald-100' : ''}`}
+              className={`bg-white rounded-[28px] border transition-all ${activeExerciseIndex === idx ? 'border-indigo-500 ring-4 ring-indigo-50 shadow-lg' : 'border-slate-200'
+                } ${isCompleted ? 'bg-slate-50 border-emerald-100' : ''}`}
             >
-              <div 
+              <div
                 className="p-4 flex items-center justify-between cursor-pointer"
                 onClick={() => setActiveExerciseIndex(activeExerciseIndex === idx ? null : idx)}
               >
                 <div className="flex items-center gap-4">
-                  <button 
+                  <button
                     onClick={(e) => {
                       e.stopPropagation();
                       toggleExercise(ex.name, ex.rest);
                     }}
-                    className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all ${
-                      isCompleted 
-                        ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30' 
-                        : 'bg-slate-100 text-slate-300'
-                    }`}
+                    className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all ${isCompleted
+                      ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30'
+                      : 'bg-slate-100 text-slate-300'
+                      }`}
                   >
                     <CheckCircle2 size={26} />
                   </button>
@@ -417,9 +430,8 @@ const StudentApp: React.FC<StudentAppProps> = ({
                       {ex.name}
                     </h4>
                     <div className="flex items-center gap-2 mt-0.5">
-                      <span className={`text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-tighter ${
-                        isCompleted ? 'bg-emerald-100 text-emerald-700' : 'bg-indigo-50 text-indigo-600'
-                      }`}>
+                      <span className={`text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-tighter ${isCompleted ? 'bg-emerald-100 text-emerald-700' : 'bg-indigo-50 text-indigo-600'
+                        }`}>
                         {doneSetsCount}/{setsCount} Séries
                       </span>
                       {lastWeight && !isCompleted && (
@@ -444,16 +456,16 @@ const StudentApp: React.FC<StudentAppProps> = ({
 
               {activeExerciseIndex === idx && (
                 <div className="px-5 pb-6 pt-2 border-t border-slate-50 space-y-5 animate-in slide-in-from-top-2 duration-300">
-                  
+
                   {/* Set Tracker UI */}
                   <div className="space-y-3">
                     <div className="flex items-center justify-between px-1">
                       <p className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Acompanhamento de Séries</p>
                       <div className="flex items-center gap-2">
-                         <p className="text-[10px] font-black text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full">{ex.reps} Reps</p>
-                         <p className="text-[10px] font-black text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full flex items-center gap-1">
-                            <Clock size={10} /> {ex.rest} Descanso
-                         </p>
+                        <p className="text-[10px] font-black text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full">{ex.reps} Reps</p>
+                        <p className="text-[10px] font-black text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full flex items-center gap-1">
+                          <Clock size={10} /> {ex.rest} Descanso
+                        </p>
                       </div>
                     </div>
                     <div className="flex flex-wrap gap-2">
@@ -461,11 +473,10 @@ const StudentApp: React.FC<StudentAppProps> = ({
                         <button
                           key={sIdx}
                           onClick={() => toggleSet(ex.name, sIdx, setsCount, ex.rest)}
-                          className={`w-12 h-12 rounded-2xl flex flex-col items-center justify-center border-2 transition-all active:scale-90 ${
-                            isSetDone 
-                              ? 'bg-emerald-500 border-emerald-500 text-white shadow-lg shadow-emerald-500/20' 
-                              : 'bg-white border-slate-100 text-slate-400 hover:border-indigo-200'
-                          }`}
+                          className={`w-12 h-12 rounded-2xl flex flex-col items-center justify-center border-2 transition-all active:scale-90 ${isSetDone
+                            ? 'bg-emerald-500 border-emerald-500 text-white shadow-lg shadow-emerald-500/20'
+                            : 'bg-white border-slate-100 text-slate-400 hover:border-indigo-200'
+                            }`}
                         >
                           <span className="text-[9px] font-black uppercase opacity-60">Série</span>
                           <span className="text-sm font-black">{sIdx + 1}</span>
@@ -477,41 +488,55 @@ const StudentApp: React.FC<StudentAppProps> = ({
 
                   <div className="h-px bg-slate-50 w-full"></div>
 
-                  {ex.videoUrl && (
-                    <button 
+                  {/* Guia de Execução Inteligente (In-App) */}
+                  <div className="flex flex-col gap-2">
+                    <button
                       onClick={() => {
                         setIsImageLoading(true);
-                        setShowExecutionGuide(ex.videoUrl || null);
+                        if (ex.videoUrl && ex.videoUrl.startsWith('http')) {
+                          // YouTube Embed ou link manual (limpa o link automaticamente)
+                          setShowExecutionGuide({ url: getYouTubeEmbedUrl(ex.videoUrl), type: 'youtube' });
+                        } else if (ex.videoUrl) {
+                          // GIFs locais
+                          setShowExecutionGuide({ url: ex.videoUrl, type: 'image' });
+                        } else {
+                          // YouTube Search Fallback incorporado
+                          const query = encodeURIComponent(`como fazer ${ex.name} musculação`);
+                          setShowExecutionGuide({
+                            url: `https://www.youtube.com/embed?listType=search&list=${query}&modestbranding=1&rel=0`,
+                            type: 'youtube'
+                          });
+                        }
                       }}
                       className="w-full flex items-center justify-center gap-2 py-3 bg-indigo-50 text-indigo-600 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-indigo-100 transition-all border border-indigo-100"
                     >
                       <Info size={14} />
-                      Ver Guia de Execução
+                      {ex.videoUrl ? 'Ver Guia de Execução' : 'Como Fazer? (Guia Rápido)'}
                     </button>
-                  )}
+                  </div>
 
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1.5">
                       <label className="text-[9px] font-black uppercase text-slate-400 ml-2">Carga Usada (kg)</label>
                       <div className="relative">
-                        <input 
-                          type="number" 
-                          placeholder={ex.weight?.toString() || "0"} 
+                        <input
+                          type="number"
+                          placeholder={ex.weight?.toString() || "0"}
                           value={exerciseDetails[ex.name]?.weight ?? (ex.weight?.toString() || '')}
                           onChange={(e) => updateDetail(ex.name, 'weight', e.target.value)}
-                          className="w-full bg-slate-100 border-2 border-transparent focus:border-indigo-500 focus:bg-white rounded-2xl py-3.5 px-4 text-sm font-black transition-all shadow-inner" 
+                          className="w-full bg-slate-100 border-2 border-transparent focus:border-indigo-500 focus:bg-white rounded-2xl py-3.5 px-4 text-sm font-black transition-all shadow-inner"
                         />
                       </div>
                     </div>
                     <div className="space-y-1.5">
                       <label className="text-[9px] font-black uppercase text-slate-400 ml-2">Dificuldade (RPE)</label>
-                      <select 
+                      <select
                         value={exerciseDetails[ex.name]?.rpe || ''}
                         onChange={(e) => updateDetail(ex.name, 'rpe', e.target.value)}
                         className="w-full bg-slate-100 border-2 border-transparent focus:border-indigo-500 focus:bg-white rounded-2xl py-3.5 px-4 text-sm font-black text-slate-700 transition-all shadow-inner"
                       >
                         <option value="">RPE</option>
-                        {[6,7,8,9,10].map(n => <option key={n} value={n.toString()}>{n} - {n === 10 ? 'Máximo' : n >= 8 ? 'Intenso' : 'Moderado'}</option>)}
+                        {[6, 7, 8, 9, 10].map(n => <option key={n} value={n.toString()}>{n} - {n === 10 ? 'Máximo' : n >= 8 ? 'Intenso' : 'Moderado'}</option>)}
                       </select>
                     </div>
                   </div>
@@ -529,43 +554,68 @@ const StudentApp: React.FC<StudentAppProps> = ({
         })}
       </div>
 
-      {/* Execution Guide Modal */}
+      {/* Execution Guide Modal (In-App Experience) */}
       {showExecutionGuide && (
-        <div className="fixed inset-0 z-[100] bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-6 animate-in fade-in duration-300">
-          <div className="bg-white w-full max-w-sm rounded-[40px] overflow-hidden relative shadow-2xl animate-in zoom-in-95 duration-300">
-            <button 
-              onClick={() => setShowExecutionGuide(null)}
-              className="absolute top-4 right-4 p-3 bg-black/20 hover:bg-black/40 backdrop-blur-md text-white rounded-full z-20 transition-all"
-            >
-              <X size={24} />
-            </button>
-            <div className="aspect-[3/4] bg-slate-100 flex items-center justify-center overflow-hidden relative">
+        <div className="fixed inset-0 z-[100] bg-slate-900/80 backdrop-blur-xl flex items-center justify-center p-4 animate-in fade-in duration-300">
+          <div className="bg-white w-full max-w-lg rounded-[40px] overflow-hidden relative shadow-2xl flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-300">
+            <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-white relative z-10">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center">
+                  <Play size={20} fill="currentColor" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-black text-slate-900 uppercase tracking-wider">Tutorial de Execução</h3>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Mantenha a postura correta</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowExecutionGuide(null)}
+                className="p-3 bg-slate-100 text-slate-500 rounded-2xl hover:bg-slate-200 transition-all"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="w-full bg-slate-950 relative aspect-video">
               {isImageLoading && (
-                <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-100 z-10">
-                  <Loader2 size={32} className="text-indigo-600 animate-spin mb-2" />
-                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Carregando Guia...</span>
+                <div className="absolute inset-0 flex flex-col items-center justify-center z-10">
+                  <Loader2 size={32} className="text-indigo-400 animate-spin mb-2" />
+                  <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Carregando Guia...</span>
                 </div>
               )}
-              <img 
-                src={showExecutionGuide} 
-                className={`w-full h-full object-cover transition-opacity duration-300 ${isImageLoading ? 'opacity-0' : 'opacity-100'}`} 
-                alt="Execution Guide" 
-                onLoad={() => setIsImageLoading(false)}
-              />
+
+              {showExecutionGuide.type === 'image' ? (
+                <img
+                  src={showExecutionGuide.url}
+                  className={`w-full h-full object-contain transition-opacity duration-300 ${isImageLoading ? 'opacity-0' : 'opacity-100'}`}
+                  alt="Execution Guide"
+                  onLoad={() => setIsImageLoading(false)}
+                />
+              ) : (
+                <iframe
+                  src={showExecutionGuide.url}
+                  className={`w-full h-full border-0 transition-opacity duration-300 ${isImageLoading ? 'opacity-0' : 'opacity-100'}`}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  onLoad={() => setIsImageLoading(false)}
+                />
+              )}
             </div>
-            <div className="p-6 bg-white">
-              <div className="flex items-center gap-2 mb-2">
-                <div className="w-1.5 h-1.5 bg-indigo-600 rounded-full"></div>
-                <h3 className="text-sm font-black text-slate-900 uppercase tracking-wider">Técnica Correta</h3>
+
+            <div className="p-6 bg-slate-50">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="flex-1 p-4 bg-white rounded-2xl border border-slate-200">
+                  <p className="text-[9px] font-black text-slate-400 uppercase mb-1">Dica de Ouro</p>
+                  <p className="text-xs text-slate-700 font-medium leading-relaxed italic">
+                    Controle o peso na descida e sinta a musculatura trabalhando. 🧠💪
+                  </p>
+                </div>
               </div>
-              <p className="text-xs text-slate-500 font-medium leading-relaxed">
-                Mantenha a cadência controlada e foque na amplitude máxima do movimento sem perder a postura.
-              </p>
-              <button 
+              <button
                 onClick={() => setShowExecutionGuide(null)}
-                className="w-full mt-6 py-4 bg-slate-900 text-white rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-xl active:scale-95 transition-all"
+                className="w-full py-4 bg-slate-900 text-white rounded-2xl font-black uppercase text-[11px] tracking-widest shadow-xl active:scale-[0.98] transition-all"
               >
-                Tudo certo!
+                Voltar para o Treino
               </button>
             </div>
           </div>
@@ -576,7 +626,7 @@ const StudentApp: React.FC<StudentAppProps> = ({
       {isWorkoutActive && (
         <div className="fixed bottom-24 left-4 right-4 z-[40] animate-in slide-in-from-bottom-8 duration-500">
           <div className="bg-indigo-600 p-1 rounded-[32px] shadow-2xl shadow-indigo-600/40">
-            <button 
+            <button
               onClick={handleFinish}
               className="w-full bg-white text-indigo-600 font-black uppercase text-[11px] tracking-[0.2em] py-4 rounded-[28px] flex items-center justify-center gap-3 active:scale-[0.98] transition-all hover:bg-slate-50"
             >

@@ -1,5 +1,6 @@
 
 export interface LibraryExercise {
+  id?: string;
   name: string;
   category: string;
   videoUrl?: string;
@@ -7,12 +8,12 @@ export interface LibraryExercise {
 
 export const EXERCISES_DB: LibraryExercise[] = [
   // PEITO
-  { name: 'Supino Reto com Barra', category: 'Peito', videoUrl: 'https://media.giphy.com/media/l3q2K8vT2KzNf1WKs/giphy.gif' },
-  { name: 'Supino Reto com Barra (Pegada Fechada)', category: 'Peito' },
-  { name: 'Supino Reto com Barra (Pegada Aberta)', category: 'Peito' },
-  { name: 'Supino Reto com Halteres', category: 'Peito' },
-  { name: 'Supino Inclinado com Halteres (45°)', category: 'Peito', videoUrl: 'https://media.giphy.com/media/3o7TKL9p7S0wI8uB9y/giphy.gif' },
-  { name: 'Supino Inclinado com Barra (45°)', category: 'Peito' },
+  { name: 'Supino Reto com Barra', category: 'Peito', videoUrl: 'https://www.youtube.com/embed/tuwHzzPdaGc?rel=0&modestbranding=1' },
+  { name: 'Supino Reto com Barra (Pegada Fechada)', category: 'Peito', videoUrl: 'https://www.youtube.com/embed/tuwHzzPdaGc?rel=0&modestbranding=1' },
+  { name: 'Supino Reto com Barra (Pegada Aberta)', category: 'Peito', videoUrl: 'https://www.youtube.com/embed/tuwHzzPdaGc?rel=0&modestbranding=1' },
+  { name: 'Supino Reto com Halteres', category: 'Peito', videoUrl: 'https://www.youtube.com/embed/6m6S28654s0?rel=0&modestbranding=1' },
+  { name: 'Supino Inclinado com Halteres (45°)', category: 'Peito', videoUrl: 'https://www.youtube.com/embed/0G2V40shWpE?rel=0&modestbranding=1' },
+  { name: 'Supino Inclinado com Barra (45°)', category: 'Peito', videoUrl: 'https://www.youtube.com/embed/Xp0C7V-p63U?rel=0&modestbranding=1' },
   { name: 'Supino Declinado com Barra', category: 'Peito' },
   { name: 'Supino Declinado com Halteres', category: 'Peito' },
   { name: 'Supino no Smith (plano)', category: 'Peito' },
@@ -21,16 +22,16 @@ export const EXERCISES_DB: LibraryExercise[] = [
   { name: 'Supino na Máquina (Chest Press)', category: 'Peito' },
   { name: 'Supino Inclinado na Máquina', category: 'Peito' },
   { name: 'Supino Declinado na Máquina', category: 'Peito' },
-  { name: 'Crucifixo no Banco Plano com Halteres', category: 'Peito' },
-  { name: 'Crucifixo Inclinado com Halteres', category: 'Peito' },
-  { name: 'Crucifixo Declinado com Halteres', category: 'Peito' },
-  { name: 'Crucifixo na Máquina (Fly Machine)', category: 'Peito' },
-  { name: 'Crossover na Polia (altura média)', category: 'Peito' },
-  { name: 'Crossover na Polia Alta', category: 'Peito' },
-  { name: 'Crossover na Polia Baixa', category: 'Peito' },
-  { name: 'Pullover com Halteres', category: 'Peito' },
-  { name: 'Pullover no Cabo', category: 'Peito' },
-  { name: 'Flexão de Braço Tradicional', category: 'Peito' },
+  { name: 'Crucifixo no Banco Plano com Halteres', category: 'Peito', videoUrl: 'https://www.youtube.com/embed/eozdVDA78K0?rel=0&modestbranding=1' },
+  { name: 'Crucifixo Inclinado com Halteres', category: 'Peito', videoUrl: 'https://www.youtube.com/embed/SOfpDOR1RAs?rel=0&modestbranding=1' },
+  { name: 'Crucifixo Declinado com Halteres', category: 'Peito', videoUrl: 'https://www.youtube.com/embed/SOfpDOR1RAs?rel=0&modestbranding=1' },
+  { name: 'Crucifixo na Máquina (Fly Machine)', category: 'Peito', videoUrl: 'https://www.youtube.com/embed/Z57CtWmX_64?rel=0&modestbranding=1' },
+  { name: 'Crossover na Polia (altura média)', category: 'Peito', videoUrl: 'https://www.youtube.com/embed/6no7S8p3p38?rel=0&modestbranding=1' },
+  { name: 'Crossover na Polia Alta', category: 'Peito', videoUrl: 'https://www.youtube.com/embed/6no7S8p3p38?rel=0&modestbranding=1' },
+  { name: 'Crossover na Polia Baixa', category: 'Peito', videoUrl: 'https://www.youtube.com/embed/6no7S8p3p38?rel=0&modestbranding=1' },
+  { name: 'Pullover com Halteres', category: 'Peito', videoUrl: 'https://www.youtube.com/embed/5Yps9ifYp7Y?rel=0&modestbranding=1' },
+  { name: 'Pullover no Cabo', category: 'Peito', videoUrl: 'https://www.youtube.com/embed/5Yps9ifYp7Y?rel=0&modestbranding=1' },
+  { name: 'Flexão de Braço Tradicional', category: 'Peito', videoUrl: 'https://www.youtube.com/embed/IODxDxX7oi4?rel=0&modestbranding=1' },
   { name: 'Flexão de Braço com Pegada Fechada', category: 'Peito' },
   { name: 'Flexão de Braço com Pegada Larga', category: 'Peito' },
   { name: 'Paralelas (Foco Peito)', category: 'Peito' },
