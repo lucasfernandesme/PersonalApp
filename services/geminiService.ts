@@ -36,7 +36,7 @@ const workoutSchema = {
 
 export const generateWorkout = async (data: OnboardingData) => {
   // Initialize AI client right before use to ensure updated environment variables
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || process.env.API_KEY });
   const libraryNames = EXERCISES_DB.map(ex => ex.name).join(", ");
 
   const prompt = `
@@ -60,13 +60,11 @@ export const generateWorkout = async (data: OnboardingData) => {
   try {
     const response = await ai.models.generateContent({
       // Upgraded to pro model for high-complexity workout planning tasks
-      model: 'gemini-3-pro-preview',
+      model: 'gemini-2.0-flash',
       contents: prompt,
       config: {
         responseMimeType: "application/json",
         responseSchema: workoutSchema,
-        // Added thinking budget for deep reasoning about biomechanics and injury adjustments
-        thinkingConfig: { thinkingBudget: 4000 }
       },
     });
 
@@ -81,8 +79,13 @@ export const generateWorkout = async (data: OnboardingData) => {
 };
 
 export const generateSingleExerciseTip = async (exerciseName: string, studentData: { goal: string, injuries: string }) => {
+  const apiKey = process.env.GEMINI_API_KEY || process.env.API_KEY;
+  if (!apiKey) {
+    throw new Error("Chave de API não configurada (GEMINI_API_KEY).");
+  }
+
   // Initialize AI client right before use
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  const ai = new GoogleGenAI({ apiKey });
 
   const prompt = `
     Aja como um Personal Trainer especialista. 
@@ -94,28 +97,26 @@ export const generateSingleExerciseTip = async (exerciseName: string, studentDat
 
   try {
     const response = await ai.models.generateContent({
-      model: 'gemini-3-flash-preview',
+      model: 'gemini-2.0-flash',
       contents: prompt,
     });
-    return response.text?.trim() || "";
+    return response.text?.trim() || "Mantenha a postura correta.";
   } catch (error) {
-    return "Foco na execução controlada e amplitude máxima.";
+    console.error("Erro ao gerar dica:", error);
+    throw error; // Re-throw para o componente tratar
   }
 };
 
 export const analyzeProgress = async (studentHistory: any, currentProgram: any) => {
   // Initialize AI client right before use
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || process.env.API_KEY });
   const prompt = `Analise o progresso: Histórico ${JSON.stringify(studentHistory)} | Programa ${JSON.stringify(currentProgram)}. Dê sugestões técnicas em PT-BR.`;
 
   try {
     const response = await ai.models.generateContent({
       // Analysis of history and programs requires higher reasoning capability
-      model: 'gemini-3-pro-preview',
+      model: 'gemini-2.0-flash',
       contents: prompt,
-      config: {
-        thinkingConfig: { thinkingBudget: 2000 }
-      }
     });
     return response.text;
   } catch (error) {

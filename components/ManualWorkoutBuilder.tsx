@@ -1,11 +1,11 @@
 
 import React, { useState } from 'react';
-import { 
-  Plus, 
-  Trash2, 
-  ChevronDown, 
-  ChevronUp, 
-  Save, 
+import {
+  Plus,
+  Trash2,
+  ChevronDown,
+  ChevronUp,
+  Save,
   Dumbbell,
   ArrowLeft,
   Search,
@@ -31,13 +31,13 @@ interface ManualWorkoutBuilderProps {
   initialProgram?: TrainingProgram;
 }
 
-const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({ 
-  studentName, 
-  studentGoal = 'Hipertrofia', 
-  studentInjuries = '', 
-  onSave, 
-  onCancel, 
-  initialProgram 
+const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
+  studentName,
+  studentGoal = 'Hipertrofia',
+  studentInjuries = '',
+  onSave,
+  onCancel,
+  initialProgram
 }) => {
   const [programName, setProgramName] = useState(initialProgram?.name || `Treino de ${studentName}`);
   const [startDate, setStartDate] = useState(initialProgram?.startDate || new Date().toISOString().split('T')[0]);
@@ -46,7 +46,7 @@ const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
   ]);
   const [error, setError] = useState<string | null>(null);
   const [generatingTips, setGeneratingTips] = useState<Record<string, boolean>>({});
-  
+
   const [isLibraryOpen, setIsLibraryOpen] = useState(false);
   const [activeDayIdx, setActiveDayIdx] = useState<number | null>(null);
   const [activeExIdx, setActiveExIdx] = useState<number | null>(null);
@@ -103,15 +103,20 @@ const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
 
   const handleGenerateAITip = async (dIdx: number, eIdx: number, exerciseName: string) => {
     if (!exerciseName) return;
-    
+
+    console.log("Gerando dica para:", exerciseName);
     const tipKey = `${dIdx}-${eIdx}`;
     setGeneratingTips(prev => ({ ...prev, [tipKey]: true }));
-    
+
     try {
       const tip = await generateSingleExerciseTip(exerciseName, { goal: studentGoal, injuries: studentInjuries });
-      updateExercise(dIdx, eIdx, 'notes', tip);
-    } catch (err) {
-      console.error(err);
+      if (tip) {
+        updateExercise(dIdx, eIdx, 'notes', tip);
+      }
+    } catch (err: any) {
+      console.error("Erro no front:", err);
+      alert(`Erro ao gerar dica: ${err.message || 'Verifique sua conexão e a chave de API.'}`);
+      updateExercise(dIdx, eIdx, 'notes', "Erro ao gerar dica. Tente manualmente.");
     } finally {
       setGeneratingTips(prev => ({ ...prev, [tipKey]: false }));
     }
@@ -167,7 +172,7 @@ const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
           <h2 className="text-sm font-black text-slate-900 uppercase tracking-widest">Montar Treino</h2>
           <p className="text-[10px] font-bold text-slate-400">{studentName}</p>
         </div>
-        <button 
+        <button
           onClick={handleSave}
           className="bg-indigo-600 text-white px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest shadow-lg shadow-indigo-600/20 active:scale-95 transition-all"
         >
@@ -186,8 +191,8 @@ const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Nome do Programa</label>
-            <input 
-              type="text" 
+            <input
+              type="text"
               value={programName}
               onChange={(e) => setProgramName(e.target.value)}
               className="w-full bg-white border border-slate-200 rounded-2xl px-5 py-3.5 font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500 shadow-sm"
@@ -195,8 +200,8 @@ const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
           </div>
           <div className="space-y-2">
             <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Data de Início</label>
-            <input 
-              type="date" 
+            <input
+              type="date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
               className="w-full bg-white border border-slate-200 rounded-2xl px-5 py-3.5 font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500 shadow-sm"
@@ -212,8 +217,8 @@ const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
                   <span className="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-black text-xs">
                     {day.day.split(' ')[1]}
                   </span>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     value={day.label}
                     onChange={(e) => {
                       const newDays = [...days];
@@ -234,22 +239,22 @@ const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
               <div className="p-4 space-y-4">
                 {day.exercises.map((ex, eIdx) => (
                   <div key={ex.id} className="p-4 bg-slate-50 rounded-2xl border border-slate-100 space-y-4 relative">
-                    <button 
+                    <button
                       onClick={() => removeExercise(dIdx, eIdx)}
                       className="absolute top-2 right-2 p-1 text-slate-300 hover:text-red-500"
                     >
                       <XIcon size={14} />
                     </button>
-                    
+
                     <div className="relative">
-                      <input 
-                        type="text" 
+                      <input
+                        type="text"
                         placeholder="Nome do exercício"
                         value={ex.name}
                         onChange={(e) => updateExercise(dIdx, eIdx, 'name', e.target.value)}
                         className="w-full bg-white border border-slate-200 rounded-xl pl-4 pr-10 py-2.5 text-sm font-bold focus:ring-2 focus:ring-indigo-500 shadow-sm"
                       />
-                      <button 
+                      <button
                         onClick={() => openLibraryForEdit(dIdx, eIdx)}
                         className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-indigo-600"
                       >
@@ -278,7 +283,8 @@ const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
                           <MessageSquareQuote size={10} />
                           Dica do Personal
                         </label>
-                        <button 
+                        <button
+                          type="button"
                           onClick={() => handleGenerateAITip(dIdx, eIdx, ex.name)}
                           disabled={generatingTips[`${dIdx}-${eIdx}`] || !ex.name}
                           className="flex items-center gap-1 text-[8px] font-black uppercase text-indigo-600 bg-indigo-50 px-2 py-1 rounded-lg hover:bg-indigo-100 disabled:opacity-50 transition-all"
@@ -291,7 +297,7 @@ const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
                           Gerar com IA
                         </button>
                       </div>
-                      <textarea 
+                      <textarea
                         placeholder="Dica de biomecânica ou segurança..."
                         value={ex.notes || ''}
                         onChange={(e) => updateExercise(dIdx, eIdx, 'notes', e.target.value)}
@@ -301,7 +307,7 @@ const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
                   </div>
                 ))}
 
-                <button 
+                <button
                   onClick={() => openLibraryForAdd(dIdx)}
                   className="w-full py-4 border-2 border-dashed border-slate-200 rounded-2xl text-slate-400 text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:border-indigo-300 transition-all"
                 >
@@ -312,7 +318,7 @@ const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
             </div>
           ))}
 
-          <button 
+          <button
             onClick={addDay}
             className="w-full py-5 bg-white border border-slate-200 rounded-3xl text-indigo-600 font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2 shadow-sm"
           >

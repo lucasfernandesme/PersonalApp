@@ -12,11 +12,14 @@ interface ExerciseManagerScreenProps {
 const ExerciseManagerScreen: React.FC<ExerciseManagerScreenProps> = ({ exercises, onAdd, onBack }) => {
   const [isAdding, setIsAdding] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('Todos');
   const [newExercise, setNewExercise] = useState<LibraryExercise>({ name: '', category: 'Peito' });
 
-  const filtered = exercises.filter(ex => 
-    ex.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filtered = exercises.filter(ex => {
+    const matchesSearch = ex.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = selectedCategory === 'Todos' || ex.category === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
 
   const handleSave = () => {
     if (!newExercise.name) return;
@@ -34,7 +37,7 @@ const ExerciseManagerScreen: React.FC<ExerciseManagerScreenProps> = ({ exercises
           </button>
           <h2 className="text-lg font-black text-slate-900">Biblioteca</h2>
         </div>
-        <button 
+        <button
           onClick={() => setIsAdding(true)}
           className="bg-indigo-600 text-white p-2 rounded-xl"
         >
@@ -42,11 +45,27 @@ const ExerciseManagerScreen: React.FC<ExerciseManagerScreenProps> = ({ exercises
         </button>
       </header>
 
-      <div className="p-4 bg-white border-b border-slate-100">
+      <div className="p-4 bg-white border-b border-slate-100 space-y-4">
+        {/* Filtros de Categoria */}
+        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+          {CATEGORIES.map(cat => (
+            <button
+              key={cat}
+              onClick={() => setSelectedCategory(cat)}
+              className={`px-4 py-2 rounded-full text-xs font-black uppercase tracking-wide whitespace-nowrap transition-all ${selectedCategory === cat
+                  ? 'bg-slate-900 text-white shadow-md'
+                  : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+                }`}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+
         <div className="relative">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
-          <input 
-            type="text" 
+          <input
+            type="text"
             placeholder="Buscar na biblioteca..."
             className="w-full bg-slate-50 border-none rounded-2xl pl-12 pr-6 py-4 font-bold text-sm focus:ring-2 focus:ring-indigo-500"
             value={searchTerm}
@@ -87,22 +106,22 @@ const ExerciseManagerScreen: React.FC<ExerciseManagerScreenProps> = ({ exercises
             <div className="space-y-4">
               <div className="space-y-2">
                 <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Nome</label>
-                <input 
+                <input
                   autoFocus
-                  type="text" 
+                  type="text"
                   placeholder="Ex: Supino Inclinado Articulado"
                   className="w-full bg-slate-50 border-none rounded-2xl px-5 py-4 font-bold focus:ring-2 focus:ring-indigo-500"
                   value={newExercise.name}
-                  onChange={e => setNewExercise({...newExercise, name: e.target.value})}
+                  onChange={e => setNewExercise({ ...newExercise, name: e.target.value })}
                 />
               </div>
 
               <div className="space-y-2">
                 <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Categoria</label>
-                <select 
+                <select
                   className="w-full bg-slate-50 border-none rounded-2xl px-5 py-4 font-bold text-slate-700"
                   value={newExercise.category}
-                  onChange={e => setNewExercise({...newExercise, category: e.target.value})}
+                  onChange={e => setNewExercise({ ...newExercise, category: e.target.value })}
                 >
                   {CATEGORIES.filter(c => c !== 'Todos').map(c => (
                     <option key={c} value={c}>{c}</option>
@@ -111,7 +130,7 @@ const ExerciseManagerScreen: React.FC<ExerciseManagerScreenProps> = ({ exercises
               </div>
             </div>
 
-            <button 
+            <button
               onClick={handleSave}
               className="w-full bg-indigo-600 text-white font-black uppercase text-xs tracking-widest py-5 rounded-2xl shadow-xl shadow-indigo-600/30"
             >

@@ -15,15 +15,14 @@ import ChatScreen from './components/ChatScreen';
 import InstallPrompt from './components/InstallPrompt';
 import { DataService } from './services/dataService';
 import { LibraryExercise } from './constants/exercises';
-import { ArrowLeft, Settings, Loader2, CloudOff, Cloud, AlertTriangle, RefreshCw, CheckCircle2, X, ExternalLink, Zap, MoreVertical, LayoutGrid } from 'lucide-react';
+import { ArrowLeft, Settings, Loader2, RefreshCw, CheckCircle2, X } from 'lucide-react';
 
 const STORAGE_KEY_AUTH = 'fitai_pro_auth_session';
 
 const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [isCloudActive, setIsCloudActive] = useState(false);
-  const [showStatusInfo, setShowStatusInfo] = useState(false);
+
   const [authUser, setAuthUser] = useState<AuthUser | null>(() => {
     const saved = localStorage.getItem(STORAGE_KEY_AUTH);
     return saved ? JSON.parse(saved) : null;
@@ -41,9 +40,8 @@ const App: React.FC = () => {
   useEffect(() => {
     const loadData = async () => {
       setIsLoading(true);
-      const cloudReady = DataService.isCloudActive();
-      setIsCloudActive(cloudReady);
-      
+
+
       try {
         const [loadedStudents, loadedExercises] = await Promise.all([
           DataService.getStudents(),
@@ -111,7 +109,7 @@ const App: React.FC = () => {
     setIsManualBuilderOpen(false);
     setIsOnboardingOpen(false);
     if (tab !== 'students' || !selectedStudent) {
-        setSelectedStudent(null);
+      setSelectedStudent(null);
     }
   };
 
@@ -134,13 +132,13 @@ const App: React.FC = () => {
           program: enrichedProgram,
           history: []
         };
-        await DataService.saveStudent(newStudent);
+        await DataService.saveStudent(newStudent, authUser?.id);
         setStudents(prev => [newStudent, ...prev]);
         updatedStudent = newStudent;
         setPendingStudentData(null);
       } else if (selectedStudent) {
         const updated = { ...selectedStudent, program: enrichedProgram };
-        await DataService.saveStudent(updated);
+        await DataService.saveStudent(updated, authUser?.id);
         setStudents(prev => prev.map(s => s.id === selectedStudent.id ? updated : s));
         updatedStudent = updated;
       }
@@ -155,11 +153,11 @@ const App: React.FC = () => {
       setIsManualBuilderOpen(false);
       setActiveView('dashboard');
     }
-  }, [pendingStudentData, selectedStudent, enrichWithLibraryData]);
+  }, [pendingStudentData, selectedStudent, enrichWithLibraryData, authUser]);
 
   const handleFinishWorkout = async (stats: { rpe_avg: number; completion: number; weights: Record<string, string>; duration: number }) => {
     if (!authUser || authUser.role !== UserRole.STUDENT) return;
-    
+
     setIsSaving(true);
     const date = new Date().toISOString().split('T')[0];
     const currentStudent = students.find(s => s.id === authUser.id);
@@ -179,14 +177,14 @@ const App: React.FC = () => {
       };
     }
 
-    const updatedStudent = { 
-      ...currentStudent, 
-      program: updatedProgram, 
-      history: [...currentStudent.history, { date, ...stats }] 
+    const updatedStudent = {
+      ...currentStudent,
+      program: updatedProgram,
+      history: [...currentStudent.history, { date, ...stats }]
     };
 
     try {
-      await DataService.saveStudent(updatedStudent);
+      await DataService.saveStudent(updatedStudent); // Aluno salvando o próprio treino não precisa re-vincular trainerId, mas idealmente backend cuida disso
       setStudents(prev => prev.map(s => s.id === authUser.id ? updatedStudent : s));
     } finally {
       setIsSaving(false);
@@ -209,268 +207,184 @@ const App: React.FC = () => {
 
   const renderTrainerContent = () => {
     if (activeView === 'register' || activeView === 'edit-student') {
-        return (
-            <StudentRegistrationScreen 
-                onSave={async (formData) => {
-                    setIsSaving(true);
-                    try {
-                      if (formData.id) {
-                        const updated = { ...students.find(s => s.id === formData.id), ...formData };
-                        await DataService.saveStudent(updated);
-                        setStudents(prev => prev.map(s => s.id === formData.id ? updated : s));
-                      } else {
-                          const newStudent: Student = {
-                              ...formData,
-                              id: Math.random().toString(36).substring(2, 11),
-                              avatar: `https://picsum.photos/seed/${formData.name}/100`,
-                              history: []
-                          };
-                          await DataService.saveStudent(newStudent);
-                          setStudents(prev => [newStudent, ...prev]);
-                      }
-                    } finally {
-                      setIsSaving(false);
-                      setActiveView('dashboard');
-                    }
-                }} 
-                onBack={() => setActiveView('dashboard')} 
-                initialData={activeView === 'edit-student' ? selectedStudent : undefined} 
-            />
-        );
+      return (
+        <StudentRegistrationScreen
+          onSave={async (formData) => {
+            setIsSaving(true);
+            try {
+              if (formData.id) {
+                const updated = { ...students.find(s => s.id === formData.id), ...formData };
+                await DataService.saveStudent(updated, authUser?.id);
+                setStudents(prev => prev.map(s => s.id === formData.id ? updated : s));
+              } else {
+                const newStudent: Student = {
+                  ...formData,
+                  id: Math.random().toString(36).substring(2, 11),
+                  avatar: `https://picsum.photos/seed/${formData.name}/100`,
+                  history: []
+                };
+                await DataService.saveStudent(newStudent, authUser?.id);
+                setStudents(prev => [newStudent, ...prev]);
+              }
+            } finally {
+              setIsSaving(false);
+              setActiveView('dashboard');
+            }
+          }}
+          onDelete={async (id) => {
+            if (!id) return;
+            setIsSaving(true);
+            try {
+              await DataService.deleteStudent(id);
+              setStudents(prev => prev.filter(s => s.id !== id));
+            } finally {
+              setIsSaving(false);
+              setActiveView('dashboard');
+            }
+          }}
+          onBack={() => setActiveView('dashboard')}
+          initialData={activeView === 'edit-student' ? selectedStudent : undefined}
+        />
+      );
     }
 
     if (activeView === 'exercises') {
-        return <ExerciseManagerScreen exercises={customExercises} onAdd={async (ex) => {
-          setIsSaving(true);
-          try {
-            await DataService.saveExercise(ex);
-            setCustomExercises(prev => [ex, ...prev]);
-          } finally {
-            setIsSaving(false);
-          }
-        }} onBack={() => setActiveView('dashboard')} />;
+      return <ExerciseManagerScreen exercises={customExercises} onAdd={async (ex) => {
+        setIsSaving(true);
+        try {
+          await DataService.saveExercise(ex, authUser?.id);
+          setCustomExercises(prev => [ex, ...prev]);
+        } finally {
+          setIsSaving(false);
+        }
+      }} onBack={() => setActiveView('dashboard')} />;
     }
 
     switch (activeTab) {
-        case 'chat': return <ChatScreen role={UserRole.TRAINER} />;
-        case 'evolution': return <EvolutionScreen students={students} onSelectStudent={(s) => { setSelectedStudent(s); setActiveTab('students'); }} />;
-        case 'home':
-        case 'students':
-            if (selectedStudent) {
-                return (
-                    <div className="space-y-6 animate-in fade-in duration-300 pb-20">
-                        <div className="flex items-center justify-between">
-                            <button onClick={() => setSelectedStudent(null)} className="flex items-center gap-2 text-slate-500 hover:text-slate-800 transition-colors font-bold text-sm">
-                                <ArrowLeft size={18} /> Voltar
-                            </button>
-                            <button onClick={() => setActiveView('edit-student')} className="p-3 bg-slate-100 text-slate-500 rounded-2xl hover:bg-slate-200 transition-colors">
-                                <Settings size={20} />
-                            </button>
-                        </div>
-                        
-                        <div className="flex flex-col md:flex-row items-start justify-between gap-6 bg-white p-6 rounded-[32px] border border-slate-100 shadow-sm">
-                            <div className="flex items-center gap-6">
-                                <img src={selectedStudent.avatar} className="w-20 h-20 md:w-24 md:h-24 rounded-3xl object-cover shadow-xl border-4 border-white" />
-                                <div>
-                                    <h2 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight">{selectedStudent.name}</h2>
-                                    <div className="flex flex-wrap gap-2 mt-2">
-                                        <span className="px-3 py-1 bg-indigo-50 text-indigo-700 text-[10px] font-black uppercase rounded-full border border-indigo-100">{selectedStudent.goal}</span>
-                                        <span className="px-3 py-1 bg-slate-50 text-slate-500 text-[10px] font-black uppercase rounded-full border border-slate-100">{selectedStudent.experience}</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="flex flex-wrap gap-2 w-full md:w-auto">
-                                <button onClick={() => setIsManualBuilderOpen(true)} className="flex-1 md:flex-none px-5 py-3 bg-indigo-600 text-white font-bold rounded-2xl shadow-lg shadow-indigo-600/20 text-sm active:scale-95 transition-all">
-                                    {selectedStudent.program ? 'Editar Treino' : 'Montar Treino'}
-                                </button>
-                            </div>
-                        </div>
+      case 'chat': return <ChatScreen role={UserRole.TRAINER} />;
+      case 'evolution': return <EvolutionScreen students={students} onSelectStudent={(s) => { setSelectedStudent(s); setActiveTab('students'); }} />;
+      case 'home':
+      case 'students':
+        if (selectedStudent) {
+          return (
+            <div className="space-y-6 animate-in fade-in duration-300 pb-20">
+              <div className="flex items-center justify-between">
+                <button onClick={() => setSelectedStudent(null)} className="flex items-center gap-2 text-slate-500 hover:text-slate-800 transition-colors font-bold text-sm">
+                  <ArrowLeft size={18} /> Voltar
+                </button>
+                <button onClick={() => setActiveView('edit-student')} className="p-3 bg-slate-100 text-slate-500 rounded-2xl hover:bg-slate-200 transition-colors">
+                  <Settings size={20} />
+                </button>
+              </div>
 
-                        <div className="space-y-4">
-                            <h3 className="font-black text-slate-400 uppercase text-[10px] tracking-widest px-2">Ficha de Treino</h3>
-                            {selectedStudent.program ? (
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    {selectedStudent.program.split.map((day, idx) => (
-                                        <div key={idx} className="bg-white p-5 rounded-[28px] border border-slate-100 shadow-sm">
-                                            <h5 className="font-black text-slate-800 text-sm mb-4 uppercase">{day.day}: {day.label}</h5>
-                                            <div className="space-y-2">
-                                                {day.exercises.map((ex, exIdx) => (
-                                                    <div key={exIdx} className="flex items-center justify-between text-xs py-1 border-b border-slate-50 last:border-0">
-                                                        <span className="font-bold text-slate-600 truncate max-w-[150px]">{ex.name}</span>
-                                                        <span className="text-slate-400 font-medium">{ex.sets}x{ex.reps}</span>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            ) : (
-                                <div className="p-12 text-center bg-white rounded-[40px] border border-dashed border-slate-200">
-                                    <p className="text-slate-400 font-bold">Sem treino ativo.</p>
-                                </div>
-                            )}
-                        </div>
+              <div className="flex flex-col md:flex-row items-start justify-between gap-6 bg-white p-6 rounded-[32px] border border-slate-100 shadow-sm">
+                <div className="flex items-center gap-6">
+                  <img src={selectedStudent.avatar} className="w-20 h-20 md:w-24 md:h-24 rounded-3xl object-cover shadow-xl border-4 border-white" />
+                  <div>
+                    <h2 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight">{selectedStudent.name}</h2>
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      <span className="px-3 py-1 bg-indigo-50 text-indigo-700 text-[10px] font-black uppercase rounded-full border border-indigo-100">{selectedStudent.goal}</span>
+                      <span className="px-3 py-1 bg-slate-50 text-slate-500 text-[10px] font-black uppercase rounded-full border border-slate-100">{selectedStudent.experience}</span>
                     </div>
-                );
-            }
-            return (
-                <TrainerDashboard 
-                    students={students} 
-                    onSelectStudent={(s) => { setSelectedStudent(s); setActiveTab('students'); }} 
-                    onOpenOnboarding={() => setIsOnboardingOpen(true)} 
-                    onOpenExerciseManager={() => setActiveView('exercises')} 
-                    onOpenStudentRegistration={() => setActiveView('register')} 
-                    onlyList={activeTab === 'students'} 
-                />
-            );
-        default: return null;
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-2 w-full md:w-auto">
+                  <button onClick={() => setIsManualBuilderOpen(true)} className="flex-1 md:flex-none px-5 py-3 bg-indigo-600 text-white font-bold rounded-2xl shadow-lg shadow-indigo-600/20 text-sm active:scale-95 transition-all">
+                    {selectedStudent.program ? 'Editar Treino' : 'Montar Treino'}
+                  </button>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <h3 className="font-black text-slate-400 uppercase text-[10px] tracking-widest px-2">Ficha de Treino</h3>
+                {selectedStudent.program ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {selectedStudent.program.split.map((day, idx) => (
+                      <div key={idx} className="bg-white p-5 rounded-[28px] border border-slate-100 shadow-sm">
+                        <h5 className="font-black text-slate-800 text-sm mb-4 uppercase">{day.day}: {day.label}</h5>
+                        <div className="space-y-2">
+                          {day.exercises.map((ex, exIdx) => (
+                            <div key={exIdx} className="flex items-center justify-between text-xs py-1 border-b border-slate-50 last:border-0">
+                              <span className="font-bold text-slate-600 truncate max-w-[150px]">{ex.name}</span>
+                              <span className="text-slate-400 font-medium">{ex.sets}x{ex.reps}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="p-12 text-center bg-white rounded-[40px] border border-dashed border-slate-200">
+                    <p className="text-slate-400 font-bold">Sem treino ativo.</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        }
+        return (
+          <TrainerDashboard
+            students={students}
+            onSelectStudent={(s) => { setSelectedStudent(s); setActiveTab('students'); }}
+            onOpenOnboarding={() => setIsOnboardingOpen(true)}
+            onOpenExerciseManager={() => setActiveView('exercises')}
+            onOpenStudentRegistration={() => setActiveView('register')}
+            onlyList={activeTab === 'students'}
+          />
+        );
+      default: return null;
     }
   };
 
   const renderStudentContent = () => {
     const loggedInStudent = students.find(s => s.id === authUser?.id);
     switch (activeTab) {
-        case 'home':
-            return (
-                <StudentApp 
-                    program={loggedInStudent?.program} 
-                    students={students} 
-                    currentStudentId={authUser!.id} 
-                    onSelectStudent={() => {}} 
-                    onFinishWorkout={handleFinishWorkout} 
-                />
-            );
-        case 'evolution': return loggedInStudent ? <StudentProgressScreen student={loggedInStudent} /> : null;
-        case 'chat': return <ChatScreen role={UserRole.STUDENT} student={loggedInStudent || undefined} />;
-        default: return null;
+      case 'home':
+        return (
+          <StudentApp
+            program={loggedInStudent?.program}
+            students={students}
+            currentStudentId={authUser!.id}
+            onSelectStudent={() => { }}
+            onFinishWorkout={handleFinishWorkout}
+          />
+        );
+      case 'evolution': return loggedInStudent ? <StudentProgressScreen student={loggedInStudent} /> : null;
+      case 'chat': return <ChatScreen role={UserRole.STUDENT} student={loggedInStudent || undefined} />;
+      default: return null;
     }
   };
 
   return (
-    <Layout 
-      role={authUser.role} 
-      onSwitchRole={handleLogout} 
-      onNavigate={handleNavigate} 
+    <Layout
+      role={authUser.role}
+      onSwitchRole={handleLogout}
+      onNavigate={handleNavigate}
       activeTab={activeTab}
       userName={authUser.name}
       userAvatar={authUser.avatar}
     >
       {/* Botão Flutuante de Status do Supabase */}
-      <div className="fixed top-4 right-4 z-[60] flex items-center gap-2">
-        {isSaving && (
-          <div className="bg-indigo-600 text-white px-3 py-1.5 rounded-full flex items-center gap-2 shadow-lg animate-pulse">
-            <RefreshCw size={12} className="animate-spin" />
-            <span className="text-[9px] font-black uppercase tracking-widest">Sincronizando</span>
-          </div>
-        )}
-        
-        <button 
-          onClick={() => setShowStatusInfo(true)}
-          className={`flex items-center gap-2 px-3 py-1.5 rounded-full backdrop-blur-md shadow-md border transition-all active:scale-95 ${
-            isCloudActive ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600' : 'bg-amber-500/10 border-amber-500/20 text-amber-600'
-          }`}
-        >
-          {isCloudActive ? <Cloud size={14} /> : <CloudOff size={14} />}
-          <span className="text-[9px] font-black uppercase tracking-widest hidden xs:inline">
-            {isCloudActive ? 'Cloud Online' : 'Banco Offline'}
-          </span>
-        </button>
-      </div>
 
-      {/* Modal de Diagnóstico - TRATAMENTO PARA "NENHUM RESULTADO" */}
-      {showStatusInfo && (
-        <div className="fixed inset-0 z-[200] bg-slate-900/80 backdrop-blur-md flex items-center justify-center p-6 animate-in fade-in duration-300">
-           <div className="bg-white w-full max-w-sm rounded-[40px] p-8 shadow-2xl space-y-6 relative overflow-hidden">
-              <button onClick={() => setShowStatusInfo(false)} className="absolute top-4 right-4 p-2 text-slate-300">
-                <X size={24} />
-              </button>
-              
-              <div className="flex flex-col items-center text-center space-y-4">
-                 <div className={`p-6 rounded-[32px] ${isCloudActive ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}`}>
-                    {isCloudActive ? <CheckCircle2 size={48} /> : <AlertTriangle size={48} />}
-                 </div>
-                 <div>
-                    <h3 className="text-2xl font-black text-slate-900 tracking-tight">Status da Nuvem</h3>
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mt-2">
-                       {isCloudActive ? 'Tudo conectado!' : 'Atualização Necessária'}
-                    </p>
-                 </div>
-              </div>
-
-              {!isCloudActive && (
-                <div className="space-y-4">
-                   <div className="p-4 bg-amber-50 rounded-2xl border border-amber-100 mb-4">
-                      <p className="text-[11px] text-amber-900/70 font-bold leading-tight">
-                        Se a aba "Implantações" estiver vazia, tente o seguinte:
-                      </p>
-                   </div>
-                   
-                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Alternativas no Vercel:</p>
-                   
-                   <div className="space-y-3">
-                      <div className="flex gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                         <div className="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-black text-xs flex-shrink-0">1</div>
-                         <div className="space-y-1">
-                            <p className="text-xs font-black text-slate-800 uppercase">Visão Geral (Overview)</p>
-                            <p className="text-[10px] text-slate-500 font-medium leading-tight flex items-center gap-1">Clique em <b>Visão Geral</b> <LayoutGrid size={10} /> no menu superior.</p>
-                         </div>
-                      </div>
-
-                      <div className="flex gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                         <div className="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-black text-xs flex-shrink-0">2</div>
-                         <div className="space-y-1">
-                            <p className="text-xs font-black text-slate-800 uppercase">Production Deployment</p>
-                            <p className="text-[10px] text-slate-500 font-medium leading-tight">Lá você verá um card grande do seu site. Clique nos <b>3 pontinhos (...)</b> dentro desse card.</p>
-                         </div>
-                      </div>
-
-                      <div className="flex gap-4 p-4 bg-indigo-600 rounded-2xl border border-indigo-700 shadow-lg shadow-indigo-600/20">
-                         <div className="w-8 h-8 rounded-lg bg-white text-indigo-600 flex items-center justify-center font-black text-xs flex-shrink-0">3</div>
-                         <div className="space-y-1">
-                            <p className="text-xs font-black text-white uppercase">Redeploy / Implantar</p>
-                            <p className="text-[10px] text-indigo-100 font-medium leading-tight">Clique em <b>Redeploy</b>. Se as variáveis foram salvas corretamente em Settings, agora vai funcionar!</p>
-                         </div>
-                      </div>
-                   </div>
-                </div>
-              )}
-
-              {isCloudActive && (
-                <div className="p-5 bg-emerald-50 rounded-[28px] border border-emerald-100">
-                   <p className="text-xs text-emerald-900/70 font-medium leading-relaxed">
-                      Seu App está online e sincronizado! Qualquer mudança de aluno ou treino agora é salva no Supabase.
-                   </p>
-                </div>
-              )}
-
-              <button 
-                onClick={() => setShowStatusInfo(false)}
-                className="w-full bg-slate-900 text-white py-4 rounded-2xl font-black uppercase text-xs tracking-widest shadow-lg active:scale-95 transition-all"
-              >
-                Entendi
-              </button>
-           </div>
-        </div>
-      )}
 
       {authUser.role === UserRole.TRAINER ? renderTrainerContent() : renderStudentContent()}
-      
+
       <InstallPrompt />
 
       {isOnboardingOpen && (
-        <OnboardingModal 
-          students={students} 
-          onClose={() => setIsOnboardingOpen(false)} 
-          onProceedToManual={(data) => { setPendingStudentData(data); setIsOnboardingOpen(false); setIsManualBuilderOpen(true); }} 
-          onAISuccess={(prog, data) => { 
+        <OnboardingModal
+          students={students}
+          onClose={() => setIsOnboardingOpen(false)}
+          onProceedToManual={(data) => { setPendingStudentData(data); setIsOnboardingOpen(false); setIsManualBuilderOpen(true); }}
+          onAISuccess={(prog, data) => {
             setPendingStudentData(data);
             handleSaveWorkout(prog);
-          }} 
+          }}
         />
       )}
 
       {isManualBuilderOpen && (
-        <ManualWorkoutBuilder 
+        <ManualWorkoutBuilder
           studentName={pendingStudentData?.name || selectedStudent?.name || "Aluno"}
           studentGoal={pendingStudentData?.goal || selectedStudent?.goal || 'Hipertrofia'}
           studentInjuries={pendingStudentData?.injuries || selectedStudent?.injuries?.join(', ') || ''}

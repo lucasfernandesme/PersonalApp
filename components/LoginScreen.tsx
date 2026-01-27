@@ -187,7 +187,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin }) => {
                   onClick={() => setIsRegistering(true)}
                   className="text-[10px] font-black uppercase tracking-widest text-indigo-600 hover:underline"
                 >
-                  Criar conta de Personal no Supabase
+                  Criar Conta Personal
                 </button>
               ) : (
                 <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest px-8 leading-relaxed">
@@ -248,14 +248,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin }) => {
           </div>
         )}
 
-        <div className="text-center space-y-4">
-          <div className="flex items-center justify-center gap-2 py-4 px-6 bg-indigo-50/50 rounded-2xl border border-indigo-100/50">
-            <Sparkles size={16} className="text-indigo-600" />
-            <p className="text-[10px] font-bold text-indigo-900/60 uppercase tracking-widest">
-              {isCloud ? 'Supabase Sync On' : 'Modo Offline Ativado'}
-            </p>
-          </div>
-        </div>
+
       </div>
     </div>
   );
