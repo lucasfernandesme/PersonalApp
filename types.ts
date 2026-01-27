@@ -44,7 +44,11 @@ export interface Student {
   id: string;
   name: string;
   email: string;
-  password?: string; // Para fins de demonstração
+  password?: string;
+  phone?: string;
+  birthDate?: string;
+  height?: string;
+  weight?: string;
   avatar: string;
   goal: string;
   experience: 'beginner' | 'intermediate' | 'advanced';

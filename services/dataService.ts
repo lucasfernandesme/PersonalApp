@@ -33,7 +33,10 @@ export const DataService = {
       console.error("Erro Supabase:", error);
       return [];
     }
-    return data || [];
+    return (data || []).map(s => ({
+      ...s,
+      birthDate: s.birth_date
+    }));
   },
 
   async saveStudent(student: Student, trainerId?: string): Promise<void> {
@@ -50,6 +53,10 @@ export const DataService = {
       id: student.id,
       name: student.name,
       email: student.email,
+      phone: student.phone,
+      birth_date: student.birthDate,
+      height: student.height,
+      weight: student.weight,
       avatar: student.avatar,
       goal: student.goal,
       experience: student.experience,

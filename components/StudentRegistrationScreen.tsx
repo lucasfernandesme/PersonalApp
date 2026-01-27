@@ -18,7 +18,7 @@ const StudentRegistrationScreen: React.FC<StudentRegistrationScreenProps> = ({ o
     height: '',
     weight: '',
     goal: 'Hipertrofia',
-    level: 'beginner'
+    experience: 'beginner'
   });
 
   const levels = [
@@ -39,7 +39,7 @@ const StudentRegistrationScreen: React.FC<StudentRegistrationScreenProps> = ({ o
         height: initialData.height || '',
         weight: initialData.weight || '',
         goal: initialData.goal || 'Hipertrofia',
-        level: initialData.experience || 'beginner'
+        experience: initialData.experience || 'beginner'
       });
     }
   }, [initialData]);
@@ -176,8 +176,8 @@ const StudentRegistrationScreen: React.FC<StudentRegistrationScreenProps> = ({ o
                 <button
                   type="button"
                   key={l.id}
-                  onClick={() => setFormData({ ...formData, level: l.id })}
-                  className={`p-3 rounded-2xl border-2 font-bold text-[10px] uppercase tracking-tighter transition-all ${formData.level === l.id ? 'bg-slate-900 text-white border-slate-900 shadow-lg shadow-slate-900/20' : 'bg-white border-slate-200 text-slate-400 hover:border-slate-300'
+                  onClick={() => setFormData({ ...formData, experience: l.id })}
+                  className={`p-3 rounded-2xl border-2 font-bold text-[10px] uppercase tracking-tighter transition-all ${formData.experience === l.id ? 'bg-slate-900 text-white border-slate-900 shadow-lg shadow-slate-900/20' : 'bg-white border-slate-200 text-slate-400 hover:border-slate-300'
                     }`}
                 >
                   {l.label}

@@ -22,6 +22,12 @@ const STORAGE_KEY_AUTH = 'fitai_pro_auth_session';
 const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+
+  const showToast = useCallback((message: string, type: 'success' | 'error' = 'success') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  }, []);
 
   const [authUser, setAuthUser] = useState<AuthUser | null>(() => {
     const saved = localStorage.getItem(STORAGE_KEY_AUTH);
@@ -152,6 +158,7 @@ const App: React.FC = () => {
       setIsSaving(false);
       setIsManualBuilderOpen(false);
       setActiveView('dashboard');
+      showToast("Treino salvo com sucesso!");
     }
   }, [pendingStudentData, selectedStudent, enrichWithLibraryData, authUser]);
 
@@ -229,6 +236,7 @@ const App: React.FC = () => {
             } finally {
               setIsSaving(false);
               setActiveView('dashboard');
+              showToast(formData.id ? "Alterações salvas com sucesso!" : "Aluno cadastrado com sucesso!");
             }
           }}
           onDelete={async (id) => {
@@ -240,6 +248,7 @@ const App: React.FC = () => {
             } finally {
               setIsSaving(false);
               setActiveView('dashboard');
+              showToast("Aluno excluído com sucesso!", "error");
             }
           }}
           onBack={() => setActiveView('dashboard')}
@@ -256,6 +265,7 @@ const App: React.FC = () => {
           setCustomExercises(prev => [ex, ...prev]);
         } finally {
           setIsSaving(false);
+          showToast("Exercício adicionado à biblioteca!");
         }
       }} onBack={() => setActiveView('dashboard')} />;
     }
@@ -370,6 +380,16 @@ const App: React.FC = () => {
       {authUser.role === UserRole.TRAINER ? renderTrainerContent() : renderStudentContent()}
 
       <InstallPrompt />
+
+      {toast && (
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[1000] animate-in slide-in-from-top duration-300">
+          <div className={`px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 border ${toast.type === 'success' ? 'bg-emerald-500 border-emerald-400 text-white' : 'bg-red-500 border-red-400 text-white'
+            }`}>
+            {toast.type === 'success' ? <CheckCircle2 size={20} /> : <X size={20} />}
+            <p className="font-bold text-sm">{toast.message}</p>
+          </div>
+        </div>
+      )}
 
       {isOnboardingOpen && (
         <OnboardingModal
