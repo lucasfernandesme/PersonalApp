@@ -32,17 +32,18 @@ interface ManualWorkoutBuilderProps {
 }
 
 const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
-  studentName,
+  studentName = '',
   studentGoal = 'Hipertrofia',
   studentInjuries = '',
   onSave,
   onCancel,
   initialProgram
 }) => {
-  const [programName, setProgramName] = useState(initialProgram?.name || `Treino de ${studentName}`);
+  const isTemplateMode = !studentName;
+  const [programName, setProgramName] = useState(initialProgram?.name || (isTemplateMode ? 'Novo Template' : `Treino de ${studentName}`));
   const [startDate, setStartDate] = useState(initialProgram?.startDate || new Date().toISOString().split('T')[0]);
   const [days, setDays] = useState<WorkoutDay[]>(initialProgram?.split || [
-    { day: 'Dia A', label: 'Superior', exercises: [] }
+    { day: 'Dia A', label: 'Treino A', exercises: [] }
   ]);
   const [error, setError] = useState<string | null>(null);
   const [generatingTips, setGeneratingTips] = useState<Record<string, boolean>>({});
@@ -142,10 +143,13 @@ const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
       setError("Dê um nome ao programa de treino.");
       return;
     }
-    if (!startDate) {
+
+    // Data de início só é obrigatória se NÃO for template
+    if (!isTemplateMode && !startDate) {
       setError("Selecione uma data de início.");
       return;
     }
+
     const filledDays = days.filter(d => d.exercises.length > 0);
     if (filledDays.length === 0) {
       setError("Adicione ao menos um exercício.");
@@ -155,7 +159,7 @@ const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
     onSave({
       id: initialProgram?.id || Math.random().toString(36).substring(2, 11),
       name: programName,
-      startDate: startDate,
+      startDate: isTemplateMode ? undefined : startDate,
       split: filledDays,
       frequency: filledDays.length,
       goal: initialProgram?.goal || studentGoal
@@ -169,14 +173,16 @@ const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
           <ArrowLeft size={24} />
         </button>
         <div className="text-center">
-          <h2 className="text-sm font-black text-slate-900 uppercase tracking-widest">Montar Treino</h2>
-          <p className="text-[10px] font-bold text-slate-400">{studentName}</p>
+          <h2 className="text-sm font-black text-slate-900 uppercase tracking-widest">
+            {isTemplateMode ? 'Criar Template' : 'Montar Treino'}
+          </h2>
+          <p className="text-[10px] font-bold text-slate-400">{isTemplateMode ? 'Biblioteca de Treinos' : studentName}</p>
         </div>
         <button
           onClick={handleSave}
           className="bg-indigo-600 text-white px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest shadow-lg shadow-indigo-600/20 active:scale-95 transition-all"
         >
-          Salvar
+          {isTemplateMode ? 'Salvar Template' : 'Salvar Treino'}
         </button>
       </header>
 
@@ -190,23 +196,26 @@ const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Nome do Programa</label>
+            <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Nome do {isTemplateMode ? 'Template' : 'Programa'}</label>
             <input
               type="text"
               value={programName}
               onChange={(e) => setProgramName(e.target.value)}
               className="w-full bg-white border border-slate-200 rounded-2xl px-5 py-3.5 font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500 shadow-sm"
+              placeholder={isTemplateMode ? "Ex: Hipertrofia Masculina A/B" : ""}
             />
           </div>
-          <div className="space-y-2">
-            <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Data de Início</label>
-            <input
-              type="date"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-              className="w-full bg-white border border-slate-200 rounded-2xl px-5 py-3.5 font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500 shadow-sm"
-            />
-          </div>
+          {!isTemplateMode && (
+            <div className="space-y-2">
+              <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Data de Início</label>
+              <input
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="w-full bg-white border border-slate-200 rounded-2xl px-5 py-3.5 font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500 shadow-sm"
+              />
+            </div>
+          )}
         </div>
 
         <div className="space-y-4">

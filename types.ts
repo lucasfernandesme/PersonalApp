@@ -40,6 +40,11 @@ export interface TrainingProgram {
   aiSuggestedChanges?: string;
 }
 
+export interface WorkoutTemplate extends Omit<TrainingProgram, 'startDate'> {
+  // Templates de treinos para a biblioteca
+  category?: string;
+}
+
 export interface Student {
   id: string;
   name: string;

@@ -178,5 +178,40 @@ export const DataService = {
       .single();
 
     return data;
+  },
+
+  // --- TEMPLATES DE TREINO ---
+  async getWorkoutTemplates(): Promise<any[]> {
+    if (!supabase) {
+      const data = localStorage.getItem('fitai_pro_workout_templates');
+      return data ? JSON.parse(data) : [];
+    }
+    // TODO: Implementar no Supabase se as tabelas existirem
+    const { data, error } = await supabase.from('workout_templates').select('*');
+    if (error) return [];
+    return data || [];
+  },
+
+  async saveWorkoutTemplate(template: any, trainerId?: string): Promise<void> {
+    if (!supabase) {
+      const templates = await this.getWorkoutTemplates();
+      const index = templates.findIndex(t => t.id === template.id);
+      let updated = index >= 0 ? [...templates] : [template, ...templates];
+      if (index >= 0) updated[index] = template;
+      localStorage.setItem('fitai_pro_workout_templates', JSON.stringify(updated));
+      return;
+    }
+    const payload = { ...template, trainer_id: trainerId };
+    const { error } = await supabase.from('workout_templates').upsert(payload);
+    if (error) throw error;
+  },
+
+  async deleteWorkoutTemplate(id: string): Promise<void> {
+    if (!supabase) {
+      const templates = await this.getWorkoutTemplates();
+      localStorage.setItem('fitai_pro_workout_templates', JSON.stringify(templates.filter(t => t.id !== id)));
+      return;
+    }
+    await supabase.from('workout_templates').delete().eq('id', id);
   }
 };

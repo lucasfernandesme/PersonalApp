@@ -12,6 +12,7 @@ import ExerciseManagerScreen from './components/ExerciseManagerScreen';
 import EvolutionScreen from './components/EvolutionScreen';
 import StudentProgressScreen from './components/StudentProgressScreen';
 import ChatScreen from './components/ChatScreen';
+import WorkoutLibraryScreen from './components/WorkoutLibraryScreen';
 import InstallPrompt from './components/InstallPrompt';
 import { DataService } from './services/dataService';
 import { LibraryExercise } from './constants/exercises';
@@ -34,9 +35,10 @@ const App: React.FC = () => {
     return saved ? JSON.parse(saved) : null;
   });
 
-  const [activeView, setActiveView] = useState<'dashboard' | 'register' | 'exercises' | 'edit-student' | 'student-stats'>('dashboard');
+  const [activeView, setActiveView] = useState<'dashboard' | 'register' | 'exercises' | 'edit-student' | 'student-stats' | 'library'>('dashboard');
   const [activeTab, setActiveTab] = useState<'home' | 'students' | 'evolution' | 'chat'>('home');
   const [students, setStudents] = useState<Student[]>([]);
+  const [workoutTemplates, setWorkoutTemplates] = useState<TrainingProgram[]>([]);
   const [customExercises, setCustomExercises] = useState<LibraryExercise[]>([]);
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [isOnboardingOpen, setIsOnboardingOpen] = useState(false);
@@ -67,14 +69,23 @@ const App: React.FC = () => {
     }
   }, []);
 
+  const reloadTemplates = useCallback(async () => {
+    try {
+      const loaded = await DataService.getWorkoutTemplates();
+      setWorkoutTemplates(loaded);
+    } catch (err) {
+      console.error("Erro ao recarregar templates:", err);
+    }
+  }, []);
+
   useEffect(() => {
     const loadData = async () => {
       setIsLoading(true);
 
-
       try {
         await reloadStudents();
         await reloadExercises();
+        await reloadTemplates();
       } catch (err) {
         console.error("Erro ao carregar dados:", err);
       } finally {
@@ -142,7 +153,6 @@ const App: React.FC = () => {
   const handleSaveWorkout = useCallback(async (program: TrainingProgram) => {
     setIsSaving(true);
     const enrichedProgram = enrichWithLibraryData(program);
-    let updatedStudent: Student | null = null;
 
     try {
       if (pendingStudentData) {
@@ -174,6 +184,34 @@ const App: React.FC = () => {
       showToast("Treino salvo com sucesso!");
     }
   }, [pendingStudentData, selectedStudent, enrichWithLibraryData, authUser]);
+
+  const handleSaveTemplate = async (template: TrainingProgram) => {
+    setIsSaving(true);
+    try {
+      const enriched = enrichWithLibraryData(template);
+      await DataService.saveWorkoutTemplate(enriched, authUser?.id);
+      await reloadTemplates();
+      showToast("Template salvo na biblioteca!");
+    } catch (e) {
+      showToast("Erro ao salvar template", "error");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleDeleteTemplate = async (id: string) => {
+    if (!confirm("Excluir este template para sempre?")) return;
+    setIsSaving(true);
+    try {
+      await DataService.deleteWorkoutTemplate(id);
+      await reloadTemplates();
+      showToast("Template removido", "error");
+    } catch (e) {
+      showToast("Erro ao remover template", "error");
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   const handleFinishWorkout = async (stats: { rpe_avg: number; completion: number; weights: Record<string, string>; duration: number }) => {
     if (!authUser || authUser.role !== UserRole.STUDENT) return;
@@ -283,6 +321,31 @@ const App: React.FC = () => {
       }} onBack={() => setActiveView('dashboard')} />;
     }
 
+    if (activeView === 'library') {
+      return (
+        <WorkoutLibraryScreen
+          templates={workoutTemplates}
+          onSaveTemplate={handleSaveTemplate}
+          onDeleteTemplate={handleDeleteTemplate}
+          onBack={() => setActiveView('dashboard')}
+          onUseInStudent={(template) => {
+            if (activeTab === 'students' && selectedStudent) {
+              // Já estamos no perfil de um aluno, apenas carregar os dados
+              setIsManualBuilderOpen(true);
+              // Como estamos editando o ManualBuilder, ele precisa do initialProgram
+              // Vou mudar o ManualBuilder.tsx para aceitar um template base ou carregar aqui
+            } else {
+              // Ir para aba de alunos e pedir para escolher um aluno?
+              // Ou abrir modal de escolha de aluno? Por simplicidade, vamos apenas avisar.
+              showToast("Selecione um aluno primeiro para aplicar este treino.");
+              setActiveTab('students');
+              setActiveView('dashboard');
+            }
+          }}
+        />
+      );
+    }
+
     switch (activeTab) {
       case 'chat': return <ChatScreen role={UserRole.TRAINER} />;
       case 'evolution': return <EvolutionScreen students={students} onSelectStudent={(s) => { setSelectedStudent(s); setActiveTab('students'); }} />;
@@ -352,6 +415,7 @@ const App: React.FC = () => {
             onOpenOnboarding={() => setIsOnboardingOpen(true)}
             onOpenExerciseManager={() => setActiveView('exercises')}
             onOpenStudentRegistration={() => setActiveView('register')}
+            onOpenWorkoutLibrary={() => setActiveView('library')}
             onlyList={activeTab === 'students'}
           />
         );
