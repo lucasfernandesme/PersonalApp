@@ -8,40 +8,61 @@ import {
     Trash2,
     Edit3,
     Copy,
+    ChevronLeft,
     ChevronRight,
-    BookOpen
+    BookOpen,
+    FolderPlus,
+    Folder,
+    MoreVertical,
+    ExternalLink
 } from 'lucide-react';
-import { WorkoutTemplate } from '../types';
+import { WorkoutTemplate, WorkoutFolder } from '../types';
 import ManualWorkoutBuilder from './ManualWorkoutBuilder';
 
 interface WorkoutLibraryScreenProps {
     templates: WorkoutTemplate[];
+    folders: WorkoutFolder[];
     onSaveTemplate: (template: WorkoutTemplate) => Promise<void>;
     onDeleteTemplate: (id: string) => Promise<void>;
+    onSaveFolder: (folder: WorkoutFolder) => Promise<void>;
+    onDeleteFolder: (id: string) => Promise<void>;
     onBack: () => void;
     onUseInStudent?: (template: WorkoutTemplate) => void;
 }
 
 const WorkoutLibraryScreen: React.FC<WorkoutLibraryScreenProps> = ({
     templates,
+    folders,
     onSaveTemplate,
     onDeleteTemplate,
+    onSaveFolder,
+    onDeleteFolder,
     onBack,
     onUseInStudent
 }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [isAdding, setIsAdding] = useState(false);
+    const [isAddingFolder, setIsAddingFolder] = useState(false);
+    const [newFolderName, setNewFolderName] = useState('');
+    const [currentFolderId, setCurrentFolderId] = useState<string | null>(null);
+    const [showAddMenu, setShowAddMenu] = useState(false);
     const [editingTemplate, setEditingTemplate] = useState<WorkoutTemplate | null>(null);
 
-    const filteredTemplates = templates.filter(t =>
-        t.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const currentFolder = currentFolderId ? folders.find(f => f.id === currentFolderId) : null;
+
+    const filteredTemplates = templates.filter(t => {
+        const matchesSearch = t.name.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesFolder = t.folderId === currentFolderId;
+        return matchesSearch && matchesFolder;
+    });
+
+    const currentFolders = folders.filter(f => !currentFolderId); // Simplificação: pastas apenas na raiz por enquanto
 
     if (isAdding || editingTemplate) {
         return (
             <ManualWorkoutBuilder
                 onSave={async (program) => {
-                    await onSaveTemplate(program as WorkoutTemplate);
+                    await onSaveTemplate({ ...program, folderId: currentFolderId } as WorkoutTemplate);
                     setIsAdding(false);
                     setEditingTemplate(null);
                 }}
@@ -60,37 +81,149 @@ const WorkoutLibraryScreen: React.FC<WorkoutLibraryScreenProps> = ({
             <div className="flex items-center justify-between">
                 <div className="flex flex-col gap-2">
                     <button
-                        onClick={onBack}
+                        onClick={currentFolderId ? () => setCurrentFolderId(null) : onBack}
                         className="flex items-center gap-2 text-slate-500 hover:text-slate-800 transition-colors font-bold text-sm mb-2"
                     >
-                        <ArrowLeft size={18} /> Voltar
+                        <ArrowLeft size={18} /> {currentFolderId ? 'Voltar para Raiz' : 'Voltar'}
                     </button>
-                    <h2 className="text-3xl font-black text-slate-900 tracking-tight">Biblioteca de Treinos</h2>
-                    <p className="text-slate-400 font-medium">Seus modelos salvos para facilitar a prescrição.</p>
+                    <h2 className="text-3xl font-black text-slate-900 tracking-tight">
+                        {currentFolder ? currentFolder.name : 'Biblioteca de Treinos'}
+                    </h2>
+                    <p className="text-slate-400 font-medium">
+                        {currentFolder ? 'Treinos organizados nesta pasta.' : 'Seus modelos salvos para facilitar a prescrição.'}
+                    </p>
                 </div>
-                <button
-                    onClick={() => setIsAdding(true)}
-                    className="bg-indigo-600 text-white p-4 rounded-2xl shadow-lg shadow-indigo-600/20 active:scale-95 transition-all flex items-center gap-2"
-                >
-                    <Plus size={20} />
-                    <span className="hidden md:inline font-black uppercase text-xs tracking-widest">Novo Template</span>
-                </button>
+
+                <div className="relative">
+                    <button
+                        onClick={() => setShowAddMenu(!showAddMenu)}
+                        className="bg-indigo-600 text-white p-4 rounded-2xl shadow-lg shadow-indigo-600/20 active:scale-95 transition-all flex items-center gap-2"
+                    >
+                        <Plus size={20} />
+                        <span className="font-black uppercase text-xs tracking-widest">Adicionar</span>
+                    </button>
+
+                    {showAddMenu && (
+                        <div className="absolute right-0 mt-2 w-48 bg-white rounded-2xl shadow-xl border border-slate-100 z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                            <button
+                                onClick={() => {
+                                    setIsAdding(true);
+                                    setShowAddMenu(false);
+                                }}
+                                className="w-full px-4 py-3 text-left text-sm font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-3"
+                            >
+                                <Dumbbell size={18} className="text-indigo-600" />
+                                Novo Treino
+                            </button>
+                            {!currentFolderId && (
+                                <button
+                                    onClick={() => {
+                                        setIsAddingFolder(true);
+                                        setShowAddMenu(false);
+                                    }}
+                                    className="w-full px-4 py-3 text-left text-sm font-bold text-slate-700 hover:bg-slate-50 border-t border-slate-50 flex items-center gap-3"
+                                >
+                                    <Folder size={18} className="text-amber-500" />
+                                    Nova Pasta
+                                </button>
+                            )}
+                        </div>
+                    )}
+                </div>
             </div>
+
+            {isAddingFolder && (
+                <div className="bg-white p-6 rounded-[32px] border-2 border-amber-100 shadow-xl shadow-amber-500/5 animate-in slide-in-from-top duration-300">
+                    <h3 className="font-black text-slate-900 mb-4 flex items-center gap-2">
+                        <Folder size={20} className="text-amber-500" />
+                        Nome da Nova Pasta
+                    </h3>
+                    <div className="flex gap-3">
+                        <input
+                            autoFocus
+                            type="text"
+                            placeholder="Ex: Treinos de Iniciantes"
+                            className="flex-1 bg-slate-50 border-none rounded-2xl px-6 py-4 font-bold focus:ring-2 focus:ring-amber-500"
+                            value={newFolderName}
+                            onChange={e => setNewFolderName(e.target.value)}
+                            onKeyDown={e => {
+                                if (e.key === 'Enter' && newFolderName.trim()) {
+                                    onSaveFolder({ id: Math.random().toString(36).substring(2), name: newFolderName });
+                                    setNewFolderName('');
+                                    setIsAddingFolder(false);
+                                }
+                            }}
+                        />
+                        <button
+                            onClick={() => {
+                                if (newFolderName.trim()) {
+                                    onSaveFolder({ id: Math.random().toString(36).substring(2), name: newFolderName });
+                                    setNewFolderName('');
+                                    setIsAddingFolder(false);
+                                }
+                            }}
+                            className="bg-amber-500 text-white px-6 rounded-2xl font-black uppercase text-[10px] tracking-widest active:scale-95 transition-all"
+                        >
+                            Criar
+                        </button>
+                        <button
+                            onClick={() => setIsAddingFolder(false)}
+                            className="px-4 text-slate-400 font-bold"
+                        >
+                            Cancelar
+                        </button>
+                    </div>
+                </div>
+            )}
 
             {/* Search Bar */}
             <div className="relative">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={20} />
                 <input
                     type="text"
-                    placeholder="Buscar template por nome..."
+                    placeholder="Buscar"
                     className="w-full pl-12 pr-6 py-5 bg-white border border-slate-200 rounded-[24px] text-sm font-bold shadow-sm focus:ring-2 focus:ring-indigo-500 transition-all"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />
             </div>
 
-            {/* Template List */}
+            {/* Content List (Folders + Templates) */}
             <div className="space-y-4">
+                {/* Folders first */}
+                {!searchTerm && currentFolders.length > 0 && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        {currentFolders.map(folder => (
+                            <div
+                                key={folder.id}
+                                className="bg-white p-5 rounded-[28px] border border-slate-200 flex items-center justify-between hover:border-amber-200 transition-all group cursor-pointer shadow-sm"
+                                onClick={() => setCurrentFolderId(folder.id)}
+                            >
+                                <div className="flex items-center gap-4">
+                                    <div className="w-12 h-12 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center group-hover:bg-amber-500 group-hover:text-white transition-all">
+                                        <Folder size={24} />
+                                    </div>
+                                    <span className="font-black text-slate-800">{folder.name}</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            if (confirm('Excluir esta pasta? Os treinos dentro dela ficarão sem pasta.')) {
+                                                onDeleteFolder(folder.id);
+                                            }
+                                        }}
+                                        className="p-2 text-slate-300 hover:text-red-500 transition-colors"
+                                    >
+                                        <Trash2 size={16} />
+                                    </button>
+                                    <ChevronRight size={18} className="text-slate-300" />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
+
                 {filteredTemplates.length > 0 ? (
                     filteredTemplates.map(template => (
                         <div
@@ -117,6 +250,15 @@ const WorkoutLibraryScreen: React.FC<WorkoutLibraryScreenProps> = ({
                                 </div>
 
                                 <div className="flex items-center gap-2">
+                                    {currentFolderId && (
+                                        <button
+                                            onClick={() => onSaveTemplate({ ...template, folderId: null })}
+                                            className="p-3 bg-slate-50 text-slate-400 rounded-xl hover:bg-slate-200 hover:text-slate-600 transition-all"
+                                            title="Mover para fora da pasta"
+                                        >
+                                            <ExternalLink size={18} className="rotate-180" />
+                                        </button>
+                                    )}
                                     <button
                                         onClick={() => setEditingTemplate(template)}
                                         className="p-3 bg-slate-50 text-slate-400 rounded-xl hover:bg-indigo-50 hover:text-indigo-600 transition-all"
@@ -150,13 +292,9 @@ const WorkoutLibraryScreen: React.FC<WorkoutLibraryScreenProps> = ({
                         <div className="w-16 h-16 bg-slate-50 text-slate-200 rounded-full flex items-center justify-center mx-auto mb-4">
                             <Dumbbell size={32} />
                         </div>
-                        <p className="text-slate-400 font-bold">Nenhum template encontrado.</p>
-                        <button
-                            onClick={() => setIsAdding(true)}
-                            className="mt-4 text-indigo-600 font-black text-xs uppercase tracking-widest hover:underline"
-                        >
-                            Criar meu primeiro template
-                        </button>
+                        <p className="text-slate-400 font-bold">
+                            {searchTerm ? 'Nenhum resultado para sua busca.' : 'Esta pasta está vazia.'}
+                        </p>
                     </div>
                 )}
             </div>

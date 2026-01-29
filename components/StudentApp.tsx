@@ -80,6 +80,7 @@ const StudentApp: React.FC<StudentAppProps> = ({
     setCurrentDayIndex(0);
     setActiveExerciseIndex(null);
     setCompletedExercises(new Set());
+    setCompletedExercises(new Set());
     setCompletedSets({});
     setExerciseDetails({});
     setIsFinished(false);

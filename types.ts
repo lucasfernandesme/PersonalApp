@@ -36,13 +36,24 @@ export interface TrainingProgram {
   split: WorkoutDay[];
   frequency: number;
   goal: string;
+  difficulty?: 'beginner' | 'intermediate' | 'advanced';
   startDate?: string;
+  endDate?: string;
   aiSuggestedChanges?: string;
+}
+
+export interface WorkoutFolder {
+  id: string;
+  name: string;
+  trainerId?: string;
+  createdAt?: string;
 }
 
 export interface WorkoutTemplate extends Omit<TrainingProgram, 'startDate'> {
   // Templates de treinos para a biblioteca
   category?: string;
+  folderId?: string | null;
+  trainerId?: string;
 }
 
 export interface Student {
@@ -56,10 +67,12 @@ export interface Student {
   weight?: string;
   avatar: string;
   goal: string;
+  gender: 'male' | 'female' | 'other';
   experience: 'beginner' | 'intermediate' | 'advanced';
   injuries: string[];
   equipment: string[];
   program?: TrainingProgram;
+  programs?: TrainingProgram[];
   isActive?: boolean;
   history: {
     date: string;

@@ -10,13 +10,27 @@ interface StudentRegistrationScreenProps {
 }
 
 const StudentRegistrationScreen: React.FC<StudentRegistrationScreenProps> = ({ onSave, onBack, initialData, onDelete }) => {
+  const formatPhone = (value: string) => {
+    const numbers = value.replace(/\D/g, '');
+    if (numbers.length <= 11) {
+      let formatted = numbers;
+      if (numbers.length > 2) {
+        formatted = `(${numbers.slice(0, 2)}) ${numbers.slice(2)}`;
+      }
+      if (numbers.length > 7) {
+        formatted = `(${numbers.slice(0, 2)}) ${numbers.slice(2, 7)}-${numbers.slice(7, 11)}`;
+      }
+      return formatted;
+    }
+    return value.slice(0, 15); // Limita o tamanho visual
+  };
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     phone: '',
     birthDate: '',
-    height: '',
-    weight: '',
+    gender: '' as 'male' | 'female' | 'other',
     goal: 'Hipertrofia',
     experience: 'beginner',
     isActive: true
@@ -37,8 +51,7 @@ const StudentRegistrationScreen: React.FC<StudentRegistrationScreenProps> = ({ o
         email: initialData.email || '',
         phone: initialData.phone || '',
         birthDate: initialData.birthDate || '',
-        height: initialData.height || '',
-        weight: initialData.weight || '',
+        gender: initialData.gender || '',
         goal: initialData.goal || 'Hipertrofia',
         experience: initialData.experience || 'beginner',
         isActive: initialData.isActive !== false
@@ -48,6 +61,19 @@ const StudentRegistrationScreen: React.FC<StudentRegistrationScreenProps> = ({ o
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validação de campos obrigatórios
+    const phoneDigits = formData.phone.replace(/\D/g, '');
+    if (!formData.name.trim() || !formData.email.trim() || !formData.birthDate || !formData.gender || !phoneDigits) {
+      alert('Por favor, preencha todos os campos obrigatórios (Nome, E-mail, WhatsApp, Data de Nascimento e Gênero)');
+      return;
+    }
+
+    if (phoneDigits.length < 11) {
+      alert('Por favor, insira um número de WhatsApp válido com DDD (Ex: 11 99999-9999)');
+      return;
+    }
+
     onSave(initialData ? { ...formData, id: initialData.id } : formData);
   };
 
@@ -62,7 +88,7 @@ const StudentRegistrationScreen: React.FC<StudentRegistrationScreenProps> = ({ o
 
       <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-8 pb-32">
         <div className="space-y-4">
-          <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Informações Pessoais</label>
+          <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Informações Pessoais <span className="text-red-500">*</span></label>
 
           <div className="space-y-1">
             <div className="relative">
@@ -94,7 +120,7 @@ const StudentRegistrationScreen: React.FC<StudentRegistrationScreenProps> = ({ o
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
-              <label className="text-[9px] font-black uppercase text-slate-400 ml-1">WhatsApp</label>
+              <label className="text-[9px] font-black uppercase text-slate-400 ml-1">WhatsApp <span className="text-red-500">*</span></label>
               <div className="relative">
                 <Phone className="absolute left-4 top-4 text-slate-300" size={20} />
                 <input
@@ -102,16 +128,17 @@ const StudentRegistrationScreen: React.FC<StudentRegistrationScreenProps> = ({ o
                   placeholder="(00) 00000-0000"
                   className="w-full bg-white border border-slate-200 rounded-2xl pl-12 pr-6 py-4 font-bold focus:ring-2 focus:ring-indigo-500 text-sm"
                   value={formData.phone}
-                  onChange={e => setFormData({ ...formData, phone: e.target.value })}
+                  onChange={e => setFormData({ ...formData, phone: formatPhone(e.target.value) })}
                 />
               </div>
             </div>
             <div className="space-y-1">
-              <label className="text-[9px] font-black uppercase text-slate-400 ml-1">Nascimento</label>
+              <label className="text-[9px] font-black uppercase text-slate-400 ml-1">Nascimento <span className="text-red-500">*</span></label>
               <div className="relative">
                 <Calendar className="absolute left-4 top-4 text-slate-300" size={20} />
                 <input
                   type="date"
+                  required
                   className="w-full bg-white border border-slate-200 rounded-2xl pl-12 pr-4 py-4 font-bold focus:ring-2 focus:ring-indigo-500 text-sm"
                   value={formData.birthDate}
                   onChange={e => setFormData({ ...formData, birthDate: e.target.value })}
@@ -119,36 +146,25 @@ const StudentRegistrationScreen: React.FC<StudentRegistrationScreenProps> = ({ o
               </div>
             </div>
           </div>
-        </div>
 
-        <div className="space-y-4">
-          <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Dados Antropométricos</label>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-1">
-              <label className="text-[9px] font-black uppercase text-slate-400 ml-1">Altura (cm)</label>
-              <div className="relative">
-                <Ruler className="absolute left-4 top-4 text-slate-300" size={20} />
-                <input
-                  type="number"
-                  placeholder="Ex: 175"
-                  className="w-full bg-white border border-slate-200 rounded-2xl pl-12 pr-6 py-4 font-bold focus:ring-2 focus:ring-indigo-500"
-                  value={formData.height}
-                  onChange={e => setFormData({ ...formData, height: e.target.value })}
-                />
-              </div>
-            </div>
-            <div className="space-y-1">
-              <label className="text-[9px] font-black uppercase text-slate-400 ml-1">Peso (kg)</label>
-              <div className="relative">
-                <Weight className="absolute left-4 top-4 text-slate-300" size={20} />
-                <input
-                  type="number"
-                  placeholder="Ex: 80"
-                  className="w-full bg-white border border-slate-200 rounded-2xl pl-12 pr-6 py-4 font-bold focus:ring-2 focus:ring-indigo-500"
-                  value={formData.weight}
-                  onChange={e => setFormData({ ...formData, weight: e.target.value })}
-                />
-              </div>
+          <div className="space-y-3">
+            <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Gênero <span className="text-red-500">*</span></label>
+            <div className="grid grid-cols-3 gap-2">
+              {[
+                { id: 'male', label: 'Masculino' },
+                { id: 'female', label: 'Feminino' },
+                { id: 'other', label: 'Outro' }
+              ].map(g => (
+                <button
+                  type="button"
+                  key={g.id}
+                  onClick={() => setFormData({ ...formData, gender: g.id as any })}
+                  className={`p-3 rounded-2xl border-2 font-bold text-[10px] uppercase tracking-tighter transition-all ${formData.gender === g.id ? 'bg-indigo-600 text-white border-indigo-600 shadow-lg shadow-indigo-600/20' : 'bg-white border-slate-200 text-slate-400 hover:border-slate-300'
+                    }`}
+                >
+                  {g.label}
+                </button>
+              ))}
             </div>
           </div>
         </div>
@@ -195,8 +211,8 @@ const StudentRegistrationScreen: React.FC<StudentRegistrationScreenProps> = ({ o
               type="button"
               onClick={() => setFormData({ ...formData, isActive: !formData.isActive })}
               className={`w-full p-5 rounded-3xl border-2 flex items-center justify-between transition-all ${formData.isActive
-                  ? 'bg-emerald-50 border-emerald-200 text-emerald-700'
-                  : 'bg-slate-100 border-slate-200 text-slate-500'
+                ? 'bg-emerald-50 border-emerald-200 text-emerald-700'
+                : 'bg-slate-100 border-slate-200 text-slate-500'
                 }`}
             >
               <div className="flex flex-col items-start gap-1">

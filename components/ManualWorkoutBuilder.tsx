@@ -41,7 +41,10 @@ const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
 }) => {
   const isTemplateMode = !studentName;
   const [programName, setProgramName] = useState(initialProgram?.name || (isTemplateMode ? 'Novo Template' : `Treino de ${studentName}`));
+  const [goal, setGoal] = useState(initialProgram?.goal || studentGoal || 'Hipertrofia');
+  const [difficulty, setDifficulty] = useState<'beginner' | 'intermediate' | 'advanced'>(initialProgram?.difficulty || 'beginner');
   const [startDate, setStartDate] = useState(initialProgram?.startDate || new Date().toISOString().split('T')[0]);
+  const [endDate, setEndDate] = useState(initialProgram?.endDate || '');
   const [days, setDays] = useState<WorkoutDay[]>(initialProgram?.split || [
     { day: 'Dia A', label: 'Treino A', exercises: [] }
   ]);
@@ -160,9 +163,11 @@ const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
       id: initialProgram?.id || Math.random().toString(36).substring(2, 11),
       name: programName,
       startDate: isTemplateMode ? undefined : startDate,
+      endDate: isTemplateMode ? undefined : endDate,
       split: filledDays,
       frequency: filledDays.length,
-      goal: initialProgram?.goal || studentGoal
+      goal: goal,
+      difficulty: difficulty
     });
   };
 
@@ -194,28 +199,82 @@ const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
           </div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Nome do {isTemplateMode ? 'Template' : 'Programa'}</label>
-            <input
-              type="text"
-              value={programName}
-              onChange={(e) => setProgramName(e.target.value)}
-              className="w-full bg-white border border-slate-200 rounded-2xl px-5 py-3.5 font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500 shadow-sm"
-              placeholder={isTemplateMode ? "Ex: Hipertrofia Masculina A/B" : ""}
-            />
-          </div>
-          {!isTemplateMode && (
-            <div className="space-y-2">
-              <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Data de Início</label>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white p-6 rounded-[32px] border border-slate-200 shadow-sm">
+          <div className="space-y-4">
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-black uppercase text-slate-400 ml-1 tracking-widest">Nome da Rotina</label>
               <input
-                type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                className="w-full bg-white border border-slate-200 rounded-2xl px-5 py-3.5 font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500 shadow-sm"
+                type="text"
+                value={programName}
+                onChange={(e) => setProgramName(e.target.value)}
+                className="w-full bg-slate-50 border-none rounded-2xl px-5 py-4 font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500 transition-all"
+                placeholder={isTemplateMode ? "Ex: Hipertrofia Masculina A/B" : ""}
               />
             </div>
-          )}
+
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-black uppercase text-slate-400 ml-1 tracking-widest">Objetivo do Treino</label>
+              <select
+                value={goal}
+                onChange={(e) => setGoal(e.target.value)}
+                className="w-full bg-slate-50 border-none rounded-2xl px-5 py-4 font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500 transition-all appearance-none"
+              >
+                <option value="Hipertrofia">Hipertrofia</option>
+                <option value="Emagrecimento">Emagrecimento / Redução de Gordura</option>
+                <option value="Condicionamento">Condicionamento Físico</option>
+                <option value="Força">Força Máxima</option>
+                <option value="Qualidade de Vida">Qualidade de Vida</option>
+                <option value="Reabilitação">Reabilitação / Fortalecimento</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-black uppercase text-slate-400 ml-1 tracking-widest">Dificuldade / Nível</label>
+              <div className="grid grid-cols-3 gap-2">
+                {[
+                  { id: 'beginner', label: 'Iniciante' },
+                  { id: 'intermediate', label: 'Intermed.' },
+                  { id: 'advanced', label: 'Avançado' }
+                ].map((level) => (
+                  <button
+                    key={level.id}
+                    onClick={() => setDifficulty(level.id as any)}
+                    className={`py-3 rounded-xl text-[10px] font-black uppercase tracking-tighter transition-all ${difficulty === level.id
+                      ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20'
+                      : 'bg-slate-50 text-slate-400 hover:bg-slate-100'
+                      }`}
+                  >
+                    {level.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {!isTemplateMode && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black uppercase text-slate-400 ml-1 tracking-widest">Data de Início</label>
+                  <input
+                    type="date"
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                    className="w-full bg-slate-50 border-none rounded-2xl px-5 py-4 font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500 transition-all font-sans"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black uppercase text-slate-400 ml-1 tracking-widest">Data Final (Opcional)</label>
+                  <input
+                    type="date"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    className="w-full bg-slate-50 border-none rounded-2xl px-5 py-4 font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500 transition-all font-sans"
+                  />
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="space-y-4">

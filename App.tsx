@@ -1,22 +1,23 @@
 
 import React, { useState, useCallback, useEffect } from 'react';
-import { UserRole, Student, TrainingProgram, OnboardingData, AuthUser } from './types';
+import { UserRole, TrainingProgram, OnboardingData, AuthUser } from './types';
 import Layout from './components/Layout';
 import TrainerDashboard from './components/TrainerDashboard';
 import StudentApp from './components/StudentApp';
 import LoginScreen from './components/LoginScreen';
 import OnboardingModal from './components/OnboardingModal';
 import ManualWorkoutBuilder from './components/ManualWorkoutBuilder';
+import WorkoutLibraryScreen from './components/WorkoutLibraryScreen';
+import InstallPrompt from './components/InstallPrompt';
+import { DataService } from './services/dataService';
+import { LibraryExercise } from './constants/exercises';
 import StudentRegistrationScreen from './components/StudentRegistrationScreen';
 import ExerciseManagerScreen from './components/ExerciseManagerScreen';
 import EvolutionScreen from './components/EvolutionScreen';
 import StudentProgressScreen from './components/StudentProgressScreen';
 import ChatScreen from './components/ChatScreen';
-import WorkoutLibraryScreen from './components/WorkoutLibraryScreen';
-import InstallPrompt from './components/InstallPrompt';
-import { DataService } from './services/dataService';
-import { LibraryExercise } from './constants/exercises';
-import { ArrowLeft, Settings, Loader2, RefreshCw, CheckCircle2, X } from 'lucide-react';
+import { WorkoutFolder, WorkoutTemplate, Student } from './types';
+import { ArrowLeft, Settings, Loader2, RefreshCw, CheckCircle2, X, Dumbbell, ArrowRight, Zap, Award, ChevronRight, Plus, Edit2 } from 'lucide-react';
 
 const STORAGE_KEY_AUTH = 'fitai_pro_auth_session';
 
@@ -38,9 +39,12 @@ const App: React.FC = () => {
   const [activeView, setActiveView] = useState<'dashboard' | 'register' | 'exercises' | 'edit-student' | 'student-stats' | 'library'>('dashboard');
   const [activeTab, setActiveTab] = useState<'home' | 'students' | 'evolution' | 'chat'>('home');
   const [students, setStudents] = useState<Student[]>([]);
-  const [workoutTemplates, setWorkoutTemplates] = useState<TrainingProgram[]>([]);
+  const [workoutTemplates, setWorkoutTemplates] = useState<WorkoutTemplate[]>([]);
+  const [workoutFolders, setWorkoutFolders] = useState<WorkoutFolder[]>([]);
   const [customExercises, setCustomExercises] = useState<LibraryExercise[]>([]);
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
+  const [selectedStudentView, setSelectedStudentView] = useState<'dashboard' | 'workouts' | 'workout-detail'>('dashboard');
+  const [workoutToEdit, setWorkoutToEdit] = useState<TrainingProgram | null>(null);
   const [isOnboardingOpen, setIsOnboardingOpen] = useState(false);
   const [isManualBuilderOpen, setIsManualBuilderOpen] = useState(false);
   const [pendingStudentData, setPendingStudentData] = useState<OnboardingData | null>(null);
@@ -78,6 +82,15 @@ const App: React.FC = () => {
     }
   }, []);
 
+  const reloadFolders = useCallback(async () => {
+    try {
+      const loaded = await DataService.getWorkoutFolders();
+      setWorkoutFolders(loaded);
+    } catch (err) {
+      console.error("Erro ao recarregar pastas:", err);
+    }
+  }, []);
+
   useEffect(() => {
     const loadData = async () => {
       setIsLoading(true);
@@ -86,6 +99,7 @@ const App: React.FC = () => {
         await reloadStudents();
         await reloadExercises();
         await reloadTemplates();
+        await reloadFolders();
       } catch (err) {
         console.error("Erro ao carregar dados:", err);
       } finally {
@@ -162,6 +176,7 @@ const App: React.FC = () => {
           email: `${pendingStudentData.name.toLowerCase().replace(/\s/g, '.')}@email.com`,
           avatar: `https://picsum.photos/seed/${pendingStudentData.name}/100`,
           goal: pendingStudentData.goal,
+          gender: 'other', // Default for onboarding since it's not captured there yet
           experience: pendingStudentData.experience as any || 'beginner',
           injuries: pendingStudentData.injuries ? [pendingStudentData.injuries] : [],
           equipment: [pendingStudentData.equipment],
@@ -171,7 +186,20 @@ const App: React.FC = () => {
         await DataService.saveStudent(newStudent, authUser?.id);
         setPendingStudentData(null);
       } else if (selectedStudent) {
-        const updated = { ...selectedStudent, program: enrichedProgram };
+        // Se o treino já existir na lista, apenas atualiza. Senão, adiciona.
+        const existingPrograms = selectedStudent.programs || [];
+        const isExisting = existingPrograms.some(p => p.id === enrichedProgram.id);
+
+        const updatedPrograms = isExisting
+          ? existingPrograms.map(p => p.id === enrichedProgram.id ? enrichedProgram : p)
+          : [enrichedProgram, ...existingPrograms];
+
+        // Se estivermos salvando como "ativo", ou se for novo, define como program principal
+        const updated = {
+          ...selectedStudent,
+          program: enrichedProgram,
+          programs: updatedPrograms
+        };
         await DataService.saveStudent(updated, authUser?.id);
       }
       await reloadStudents();
@@ -185,10 +213,10 @@ const App: React.FC = () => {
     }
   }, [pendingStudentData, selectedStudent, enrichWithLibraryData, authUser]);
 
-  const handleSaveTemplate = async (template: TrainingProgram) => {
+  const handleSaveTemplate = async (template: WorkoutTemplate) => {
     setIsSaving(true);
     try {
-      const enriched = enrichWithLibraryData(template);
+      const enriched = enrichWithLibraryData(template as any) as WorkoutTemplate;
       await DataService.saveWorkoutTemplate(enriched, authUser?.id);
       await reloadTemplates();
       showToast("Template salvo na biblioteca!");
@@ -208,6 +236,33 @@ const App: React.FC = () => {
       showToast("Template removido", "error");
     } catch (e) {
       showToast("Erro ao remover template", "error");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleSaveFolder = async (folder: WorkoutFolder) => {
+    setIsSaving(true);
+    try {
+      await DataService.saveWorkoutFolder(folder, authUser?.id);
+      await reloadFolders();
+      showToast("Pasta criada com sucesso!");
+    } catch (e) {
+      showToast("Erro ao criar pasta", "error");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleDeleteFolder = async (id: string) => {
+    setIsSaving(true);
+    try {
+      await DataService.deleteWorkoutFolder(id);
+      await reloadFolders();
+      await reloadTemplates(); // templates podem ter o folderId limpo
+      showToast("Pasta removida", "error");
+    } catch (e) {
+      showToast("Erro ao remover pasta", "error");
     } finally {
       setIsSaving(false);
     }
@@ -325,8 +380,11 @@ const App: React.FC = () => {
       return (
         <WorkoutLibraryScreen
           templates={workoutTemplates}
+          folders={workoutFolders}
           onSaveTemplate={handleSaveTemplate}
           onDeleteTemplate={handleDeleteTemplate}
+          onSaveFolder={handleSaveFolder}
+          onDeleteFolder={handleDeleteFolder}
           onBack={() => setActiveView('dashboard')}
           onUseInStudent={(template) => {
             if (activeTab === 'students' && selectedStudent) {
@@ -348,16 +406,13 @@ const App: React.FC = () => {
 
     switch (activeTab) {
       case 'chat': return <ChatScreen role={UserRole.TRAINER} />;
-      case 'evolution': return <EvolutionScreen students={students} onSelectStudent={(s) => { setSelectedStudent(s); setActiveTab('students'); }} />;
+      case 'evolution': return <EvolutionScreen students={students} onSelectStudent={(s) => { setSelectedStudent(s); setSelectedStudentView('dashboard'); setActiveTab('students'); }} />;
       case 'home':
       case 'students':
         if (selectedStudent) {
           return (
             <div className="space-y-6 animate-in fade-in duration-300 pb-20">
-              <div className="flex items-center justify-between">
-                <button onClick={() => setSelectedStudent(null)} className="flex items-center gap-2 text-slate-500 hover:text-slate-800 transition-colors font-bold text-sm">
-                  <ArrowLeft size={18} /> Voltar
-                </button>
+              <div className="flex items-center justify-end">
                 <button onClick={() => setActiveView('edit-student')} className="p-3 bg-slate-100 text-slate-500 rounded-2xl hover:bg-slate-200 transition-colors">
                   <Settings size={20} />
                 </button>
@@ -374,44 +429,205 @@ const App: React.FC = () => {
                     </div>
                   </div>
                 </div>
-                <div className="flex flex-wrap gap-2 w-full md:w-auto">
-                  <button onClick={() => setIsManualBuilderOpen(true)} className="flex-1 md:flex-none px-5 py-3 bg-indigo-600 text-white font-bold rounded-2xl shadow-lg shadow-indigo-600/20 text-sm active:scale-95 transition-all">
-                    {selectedStudent.program ? 'Editar Treino' : 'Montar Treino'}
-                  </button>
-                </div>
               </div>
 
-              <div className="space-y-4">
-                <h3 className="font-black text-slate-400 uppercase text-[10px] tracking-widest px-2">Ficha de Treino</h3>
-                {selectedStudent.program ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {selectedStudent.program.split.map((day, idx) => (
-                      <div key={idx} className="bg-white p-5 rounded-[28px] border border-slate-100 shadow-sm">
-                        <h5 className="font-black text-slate-800 text-sm mb-4 uppercase">{day.day}: {day.label}</h5>
-                        <div className="space-y-2">
-                          {day.exercises.map((ex, exIdx) => (
-                            <div key={exIdx} className="flex items-center justify-between text-xs py-1 border-b border-slate-50 last:border-0">
-                              <span className="font-bold text-slate-600 truncate max-w-[150px]">{ex.name}</span>
-                              <span className="text-slate-400 font-medium">{ex.sets}x{ex.reps}</span>
-                            </div>
-                          ))}
-                        </div>
+              {selectedStudentView === 'dashboard' ? (
+                <div className="space-y-4">
+                  <button
+                    onClick={() => setSelectedStudentView('workouts')}
+                    className="group relative bg-gradient-to-r from-indigo-600 to-indigo-700 p-5 rounded-[24px] overflow-hidden transition-all active:scale-[0.98] shadow-xl shadow-indigo-600/20 text-left border border-white/10 flex items-center justify-between w-full"
+                  >
+                    <div className="relative z-10 flex items-center gap-4">
+                      <div className="w-10 h-10 bg-white/10 backdrop-blur-md rounded-xl flex items-center justify-center border border-white/20 group-hover:scale-110 transition-transform">
+                        <Dumbbell size={20} className="text-white" />
                       </div>
-                    ))}
+                      <div>
+                        <h3 className="text-lg font-black text-white leading-tight">Biblioteca de Treinos</h3>
+                        <p className="text-indigo-100 text-[10px] font-bold uppercase tracking-wider opacity-80">Gerenciar todas as rotinas</p>
+                      </div>
+                    </div>
+                    <ArrowRight className="text-white/40 group-hover:text-white transition-colors" size={24} />
+                    <div className="absolute right-0 top-0 w-32 h-32 bg-white/5 blur-2xl rounded-full -mr-16 -mt-16"></div>
+                  </button>
+
+                  {selectedStudent.program && (
+                    <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                      <div className="flex items-center justify-between px-2">
+                        <h3 className="font-black text-slate-900 text-sm uppercase tracking-tight">Treino em Uso: {selectedStudent.program.name}</h3>
+                        <button
+                          onClick={() => {
+                            setWorkoutToEdit(selectedStudent.program || null);
+                            setIsManualBuilderOpen(true);
+                          }}
+                          className="text-[10px] font-black uppercase text-indigo-600"
+                        >
+                          Editar
+                        </button>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {selectedStudent.program.split.map((day, idx) => (
+                          <div key={idx} className="bg-white p-5 rounded-[28px] border border-slate-100 shadow-sm">
+                            <h5 className="font-black text-slate-800 text-sm mb-4 uppercase">{day.day}: {day.label}</h5>
+                            <div className="space-y-2">
+                              {day.exercises.map((ex, exIdx) => (
+                                <div key={exIdx} className="flex items-center justify-between text-xs py-1.5 border-b border-slate-50 last:border-0">
+                                  <span className="font-bold text-slate-600 truncate max-w-[150px]">{ex.name}</span>
+                                  <span className="text-slate-400 font-bold tracking-tight">{ex.sets}x{ex.reps}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="bg-white p-6 rounded-[32px] border border-slate-100 shadow-sm">
+                      <p className="text-[10px] font-black uppercase text-slate-400 mb-1">Status</p>
+                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-black uppercase ${selectedStudent.isActive !== false ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'}`}>
+                        {selectedStudent.isActive !== false ? 'Ativo' : 'Inativo'}
+                      </span>
+                    </div>
                   </div>
-                ) : (
-                  <div className="p-12 text-center bg-white rounded-[40px] border border-dashed border-slate-200">
-                    <p className="text-slate-400 font-bold">Sem treino ativo.</p>
+                </div>
+              ) : selectedStudentView === 'workouts' ? (
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between px-2">
+                    <h3 className="font-black text-slate-400 uppercase text-[10px] tracking-widest">Gestão de Treinos</h3>
+                    <button
+                      onClick={() => setSelectedStudentView('dashboard')}
+                      className="text-[10px] font-black uppercase text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-xl border border-indigo-100"
+                    >
+                      Voltar Dashboard
+                    </button>
                   </div>
-                )}
-              </div>
-            </div>
+
+                  <button
+                    onClick={() => {
+                      // Para criar um NOVO, abrimos o manual builder sem o initialProgram
+                      // Mas o componente atual recebe initialProgram={selectedStudent?.program} lá embaixo.
+                      // Precisamos de um estado local para controlar o que abrir.
+                      setWorkoutToEdit(null);
+                      setIsManualBuilderOpen(true);
+                    }}
+                    className="w-full py-6 border-2 border-dashed border-slate-200 rounded-[32px] text-slate-400 font-black uppercase text-xs tracking-widest flex items-center justify-center gap-3 hover:border-indigo-300 hover:text-indigo-600 transition-all font-sans"
+                  >
+                    <Plus size={20} />
+                    Criar Novo Treino
+                  </button>
+
+                  <div className="space-y-4">
+                    <h4 className="text-[10px] font-black uppercase text-slate-400 tracking-widest px-2">Histórico e biblioteca do Aluno</h4>
+                    {(selectedStudent.programs || (selectedStudent.program ? [selectedStudent.program] : [])).length > 0 ? (
+                      (selectedStudent.programs || [selectedStudent.program]).map((prog, pIdx) => (
+                        <div
+                          key={prog.id || pIdx}
+                          className="bg-white p-6 rounded-[32px] border border-slate-100 shadow-sm relative overflow-hidden group hover:border-indigo-200 transition-all"
+                        >
+                          <div className="flex items-center justify-between">
+                            <div
+                              onClick={() => setSelectedStudentView('workout-detail')}
+                              className="cursor-pointer"
+                            >
+                              <div className="flex items-center gap-2 mb-2">
+                                {selectedStudent.program?.id === prog.id && (
+                                  <span className="px-2 py-0.5 bg-emerald-50 text-emerald-600 text-[9px] font-black uppercase rounded-md border border-emerald-100">Ativo</span>
+                                )}
+                              </div>
+                              <h4 className="text-xl font-black text-slate-900 mb-1">{prog.name}</h4>
+                              <div className="flex items-center gap-3 text-[10px] font-bold text-slate-400 uppercase">
+                                <span>{prog.goal}</span>
+                                {prog.endDate && (
+                                  <>
+                                    <span className="w-1 h-1 bg-slate-200 rounded-full"></span>
+                                    <span className="text-red-400">Expira em: {prog.endDate}</span>
+                                  </>
+                                )}
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <button
+                                onClick={() => {
+                                  setWorkoutToEdit(prog);
+                                  setIsManualBuilderOpen(true);
+                                }}
+                                className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all"
+                              >
+                                <Edit2 size={18} />
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="p-12 text-center bg-white rounded-[40px] border border-slate-100">
+                        <p className="text-slate-400 font-bold mb-1">Nenhum treino encontrado</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between px-2">
+                    <div className="flex items-center gap-3">
+                      <button
+                        onClick={() => setSelectedStudentView('workouts')}
+                        className="p-2 bg-slate-100 text-slate-500 rounded-xl hover:bg-slate-200 transition-colors"
+                      >
+                        <ArrowLeft size={16} />
+                      </button>
+                      <div>
+                        <h3 className="font-black text-slate-900 text-sm uppercase tracking-tight">{selectedStudent.program?.name}</h3>
+                        <p className="text-[9px] font-bold text-slate-400 uppercase">Ficha Detalhada</p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => setIsManualBuilderOpen(true)}
+                      className="text-[10px] font-black uppercase text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-xl border border-indigo-100"
+                    >
+                      Editar Ficha
+                    </button>
+                  </div>
+
+                  {selectedStudent.program && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                      {selectedStudent.program.split.map((day, idx) => (
+                        <div key={idx} className="bg-white p-6 rounded-[32px] border border-slate-100 shadow-sm">
+                          <div className="flex items-center gap-3 mb-4">
+                            <span className="w-8 h-8 rounded-xl bg-slate-100 text-slate-900 flex items-center justify-center font-black text-xs">
+                              {day.day.split(' ')[1]}
+                            </span>
+                            <h5 className="font-black text-slate-800 text-sm uppercase">{day.label}</h5>
+                          </div>
+                          <div className="space-y-2">
+                            {day.exercises.map((ex, exIdx) => (
+                              <div key={exIdx} className="flex items-center justify-between py-2 border-b border-slate-50 last:border-0 group">
+                                <div>
+                                  <p className="font-bold text-slate-800 text-xs">{ex.name}</p>
+                                  <p className="text-[10px] text-slate-400 font-bold uppercase">{ex.sets}x{ex.reps} • {ex.rest} rec.</p>
+                                </div>
+                                <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-all">
+                                  <ChevronRight size={14} />
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )
+              }
+            </div >
           );
         }
         return (
           <TrainerDashboard
             students={students}
-            onSelectStudent={(s) => { setSelectedStudent(s); setActiveTab('students'); }}
+            onSelectStudent={(s) => { setSelectedStudent(s); setSelectedStudentView('dashboard'); setActiveTab('students'); }}
             onOpenOnboarding={() => setIsOnboardingOpen(true)}
             onOpenExerciseManager={() => setActiveView('exercises')}
             onOpenStudentRegistration={() => setActiveView('register')}
@@ -485,7 +701,7 @@ const App: React.FC = () => {
           studentName={pendingStudentData?.name || selectedStudent?.name || "Aluno"}
           studentGoal={pendingStudentData?.goal || selectedStudent?.goal || 'Hipertrofia'}
           studentInjuries={pendingStudentData?.injuries || selectedStudent?.injuries?.join(', ') || ''}
-          initialProgram={selectedStudent?.program}
+          initialProgram={workoutToEdit || undefined}
           onSave={handleSaveWorkout}
           onCancel={() => setIsManualBuilderOpen(false)}
         />
