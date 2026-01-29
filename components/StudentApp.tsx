@@ -63,7 +63,7 @@ const StudentApp: React.FC<StudentAppProps> = ({
   const [completedExercises, setCompletedExercises] = useState<Set<string>>(new Set());
   const [completedSets, setCompletedSets] = useState<Record<string, boolean[]>>({});
   const [exerciseDetails, setExerciseDetails] = useState<Record<string, { weight: string, rpe: string }>>({});
-  const [showExecutionGuide, setShowExecutionGuide] = useState<{ url: string, type: 'iframe' | 'image' | 'youtube' } | null>(null);
+  const [showExecutionGuide, setShowExecutionGuide] = useState<{ url: string, type: 'iframe' | 'image' | 'youtube', notes?: string } | null>(null);
   const [isImageLoading, setIsImageLoading] = useState(true);
   const [isFinished, setIsFinished] = useState(false);
 
@@ -500,16 +500,17 @@ const StudentApp: React.FC<StudentAppProps> = ({
                         setIsImageLoading(true);
                         if (ex.videoUrl && ex.videoUrl.startsWith('http')) {
                           // YouTube Embed ou link manual (limpa o link automaticamente)
-                          setShowExecutionGuide({ url: getYouTubeEmbedUrl(ex.videoUrl), type: 'youtube' });
+                          setShowExecutionGuide({ url: getYouTubeEmbedUrl(ex.videoUrl), type: 'youtube', notes: ex.notes });
                         } else if (ex.videoUrl) {
                           // GIFs locais
-                          setShowExecutionGuide({ url: ex.videoUrl, type: 'image' });
+                          setShowExecutionGuide({ url: ex.videoUrl, type: 'image', notes: ex.notes });
                         } else {
                           // YouTube Search Fallback incorporado
                           const query = encodeURIComponent(`como fazer ${ex.name} musculação`);
                           setShowExecutionGuide({
                             url: `https://www.youtube.com/embed?listType=search&list=${query}&modestbranding=1&rel=0`,
-                            type: 'youtube'
+                            type: 'youtube',
+                            notes: ex.notes
                           });
                         }
                       }}
@@ -612,7 +613,7 @@ const StudentApp: React.FC<StudentAppProps> = ({
                 <div className="flex-1 p-4 bg-white rounded-2xl border border-slate-200">
                   <p className="text-[9px] font-black text-slate-400 uppercase mb-1">Dica de Ouro</p>
                   <p className="text-xs text-slate-700 font-medium leading-relaxed italic">
-                    Controle o peso na descida e sinta a musculatura trabalhando. 🧠💪
+                    {showExecutionGuide.notes || "Controle o peso na descida e sinta a musculatura trabalhando. 🧠💪"}
                   </p>
                 </div>
               </div>
