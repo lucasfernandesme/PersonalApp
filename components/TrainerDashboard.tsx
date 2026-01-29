@@ -1,10 +1,10 @@
 
 import React, { useState } from 'react';
-import { 
-  Users, 
-  UserPlus, 
-  Search, 
-  Activity, 
+import {
+  Users,
+  UserPlus,
+  Search,
+  Activity,
   BookOpen,
   ChevronRight,
   PlusCircle,
@@ -21,19 +21,31 @@ interface TrainerDashboardProps {
   onlyList?: boolean;
 }
 
-const TrainerDashboard: React.FC<TrainerDashboardProps> = ({ 
+const TrainerDashboard: React.FC<TrainerDashboardProps> = ({
   students,
-  onSelectStudent, 
-  onOpenOnboarding, 
+  onSelectStudent,
+  onOpenOnboarding,
   onOpenExerciseManager,
   onOpenStudentRegistration,
   onlyList = false
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [activeTab, setActiveTab] = useState<'active' | 'inactive'>('active');
 
-  const filteredStudents = students.filter(s => 
-    s.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredStudents = students.filter(s => {
+    const matchesSearch = s.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const isStudentActive = s.isActive !== false;
+
+    // Se estivermos apenas no Dashboard (não na lista completa), mostrar apenas ativos
+    if (!onlyList) return matchesSearch && isStudentActive;
+
+    // Na lista completa, filtrar pela aba selecionada
+    const matchesTab = activeTab === 'active' ? isStudentActive : !isStudentActive;
+    return matchesSearch && matchesTab;
+  });
+
+  const activeCount = students.filter(s => s.isActive !== false).length;
+  const inactiveCount = students.filter(s => s.isActive === false).length;
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom duration-500 pb-20">
@@ -41,7 +53,7 @@ const TrainerDashboard: React.FC<TrainerDashboardProps> = ({
       {!onlyList && (
         <div className="flex flex-col gap-2">
           <h2 className="text-3xl font-black text-slate-900 tracking-tight">Olá, Lucas 👋</h2>
-          <p className="text-slate-400 font-medium">Você tem {students.length} alunos cadastrados.</p>
+          <p className="text-slate-400 font-medium">Você tem {activeCount} alunos ativos.</p>
         </div>
       )}
 
@@ -56,7 +68,7 @@ const TrainerDashboard: React.FC<TrainerDashboardProps> = ({
       {/* Quick Actions Grid */}
       {!onlyList && (
         <div className="grid grid-cols-2 gap-4">
-          <button 
+          <button
             onClick={onOpenStudentRegistration}
             className="bg-white p-6 rounded-[32px] border border-slate-200 shadow-sm flex flex-col items-start gap-4 hover:border-indigo-200 transition-all active:scale-95 group"
           >
@@ -69,7 +81,7 @@ const TrainerDashboard: React.FC<TrainerDashboardProps> = ({
             </div>
           </button>
 
-          <button 
+          <button
             onClick={onOpenExerciseManager}
             className="bg-white p-6 rounded-[32px] border border-slate-200 shadow-sm flex flex-col items-start gap-4 hover:border-emerald-200 transition-all active:scale-95 group"
           >
@@ -84,12 +96,42 @@ const TrainerDashboard: React.FC<TrainerDashboardProps> = ({
         </div>
       )}
 
+      {/* Tabs - Só aparece na tela de Meus Alunos */}
+      {onlyList && (
+        <div className="flex bg-slate-100/50 p-1.5 rounded-[24px] gap-1">
+          <button
+            onClick={() => setActiveTab('active')}
+            className={`flex-1 py-3 px-4 rounded-[18px] text-xs font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 ${activeTab === 'active'
+              ? 'bg-white text-indigo-600 shadow-sm'
+              : 'text-slate-400 hover:text-slate-600'
+              }`}
+          >
+            Ativos
+            <span className={`px-2 py-0.5 rounded-full text-[10px] ${activeTab === 'active' ? 'bg-indigo-50' : 'bg-slate-200'}`}>
+              {activeCount}
+            </span>
+          </button>
+          <button
+            onClick={() => setActiveTab('inactive')}
+            className={`flex-1 py-3 px-4 rounded-[18px] text-xs font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 ${activeTab === 'inactive'
+              ? 'bg-white text-slate-600 shadow-sm'
+              : 'text-slate-400 hover:text-slate-600'
+              }`}
+          >
+            Inativos
+            <span className={`px-2 py-0.5 rounded-full text-[10px] ${activeTab === 'inactive' ? 'bg-slate-200' : 'bg-slate-200'}`}>
+              {inactiveCount}
+            </span>
+          </button>
+        </div>
+      )}
+
       {/* Search Bar */}
       <div className="relative">
         <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={20} />
-        <input 
-          type="text" 
-          placeholder="Buscar por nome do aluno..." 
+        <input
+          type="text"
+          placeholder="Buscar por nome do aluno..."
           className="w-full pl-12 pr-6 py-5 bg-white border border-slate-200 rounded-[24px] text-sm font-bold shadow-sm focus:ring-2 focus:ring-indigo-500 transition-all"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
@@ -103,18 +145,18 @@ const TrainerDashboard: React.FC<TrainerDashboardProps> = ({
             {searchTerm ? `Resultados (${filteredStudents.length})` : 'Toque para gerenciar'}
           </h3>
         </div>
-        
+
         {filteredStudents.length > 0 ? (
           filteredStudents.map(student => (
-            <div 
-              key={student.id} 
+            <div
+              key={student.id}
               onClick={() => onSelectStudent(student)}
               className="group bg-white p-5 rounded-[32px] border border-slate-200 flex items-center justify-between active:scale-[0.98] transition-all shadow-sm hover:shadow-md hover:border-indigo-100 cursor-pointer"
             >
               <div className="flex items-center gap-4">
                 <div className="relative">
-                  <img src={student.avatar} className="w-16 h-16 rounded-[22px] object-cover shadow-sm group-hover:ring-4 group-hover:ring-indigo-50 transition-all" alt="" />
-                  <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-500 border-4 border-white rounded-full"></div>
+                  <img src={student.avatar} className={`w-16 h-16 rounded-[22px] object-cover shadow-sm group-hover:ring-4 group-hover:ring-indigo-50 transition-all ${student.isActive === false ? 'grayscale opacity-60' : ''}`} alt="" />
+                  <div className={`absolute -bottom-1 -right-1 w-5 h-5 border-4 border-white rounded-full ${student.isActive === false ? 'bg-slate-300' : 'bg-emerald-500'}`}></div>
                 </div>
                 <div>
                   <h4 className="font-black text-slate-800 text-lg group-hover:text-indigo-600 transition-colors">{student.name}</h4>
@@ -135,13 +177,17 @@ const TrainerDashboard: React.FC<TrainerDashboardProps> = ({
           ))
         ) : (
           <div className="py-12 text-center bg-white rounded-[32px] border border-dashed border-slate-200">
-            <p className="text-slate-400 font-bold">Nenhum aluno encontrado.</p>
-            <button 
-              onClick={onOpenStudentRegistration}
-              className="mt-4 text-indigo-600 font-black text-xs uppercase tracking-widest hover:underline"
-            >
-              Cadastrar agora
-            </button>
+            <p className="text-slate-400 font-bold">
+              {activeTab === 'inactive' ? 'Nenhum aluno inativo.' : 'Nenhum aluno encontrado.'}
+            </p>
+            {activeTab === 'active' && (
+              <button
+                onClick={onOpenStudentRegistration}
+                className="mt-4 text-indigo-600 font-black text-xs uppercase tracking-widest hover:underline"
+              >
+                Cadastrar agora
+              </button>
+            )}
           </div>
         )}
       </div>
@@ -151,7 +197,7 @@ const TrainerDashboard: React.FC<TrainerDashboardProps> = ({
           <div className="relative z-10 max-w-[200px]">
             <h4 className="font-black text-xl mb-2 leading-tight">Gere treinos em segundos</h4>
             <p className="text-sm text-slate-400 font-medium mb-6">Use nossa inteligência para otimizar suas fichas.</p>
-            <button 
+            <button
               onClick={onOpenOnboarding}
               className="bg-white text-slate-900 px-6 py-3 rounded-2xl text-xs font-black uppercase tracking-widest shadow-lg active:scale-95 transition-all flex items-center gap-2"
             >
@@ -161,9 +207,9 @@ const TrainerDashboard: React.FC<TrainerDashboardProps> = ({
           </div>
           <Activity className="absolute -right-8 -bottom-8 w-48 h-48 text-white/5 rotate-12" />
           <div className="absolute top-0 right-0 p-8">
-             <div className="p-3 bg-white/10 rounded-2xl backdrop-blur-md">
-               <BookOpen className="text-indigo-400" size={24} />
-             </div>
+            <div className="p-3 bg-white/10 rounded-2xl backdrop-blur-md">
+              <BookOpen className="text-indigo-400" size={24} />
+            </div>
           </div>
         </div>
       )}

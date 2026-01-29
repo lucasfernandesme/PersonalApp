@@ -18,7 +18,8 @@ const StudentRegistrationScreen: React.FC<StudentRegistrationScreenProps> = ({ o
     height: '',
     weight: '',
     goal: 'Hipertrofia',
-    experience: 'beginner'
+    experience: 'beginner',
+    isActive: true
   });
 
   const levels = [
@@ -39,7 +40,8 @@ const StudentRegistrationScreen: React.FC<StudentRegistrationScreenProps> = ({ o
         height: initialData.height || '',
         weight: initialData.weight || '',
         goal: initialData.goal || 'Hipertrofia',
-        experience: initialData.experience || 'beginner'
+        experience: initialData.experience || 'beginner',
+        isActive: initialData.isActive !== false
       });
     }
   }, [initialData]);
@@ -168,7 +170,6 @@ const StudentRegistrationScreen: React.FC<StudentRegistrationScreenProps> = ({ o
               ))}
             </div>
           </div>
-
           <div className="space-y-3">
             <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Nível de Experiência</label>
             <div className="grid grid-cols-3 gap-2">
@@ -186,6 +187,32 @@ const StudentRegistrationScreen: React.FC<StudentRegistrationScreenProps> = ({ o
             </div>
           </div>
         </div>
+
+        {initialData && (
+          <div className="space-y-4">
+            <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Status do Aluno</label>
+            <button
+              type="button"
+              onClick={() => setFormData({ ...formData, isActive: !formData.isActive })}
+              className={`w-full p-5 rounded-3xl border-2 flex items-center justify-between transition-all ${formData.isActive
+                  ? 'bg-emerald-50 border-emerald-200 text-emerald-700'
+                  : 'bg-slate-100 border-slate-200 text-slate-500'
+                }`}
+            >
+              <div className="flex flex-col items-start gap-1">
+                <span className="font-black text-sm uppercase tracking-wider">
+                  {formData.isActive ? 'Aluno Ativo' : 'Aluno Inativo'}
+                </span>
+                <span className="text-[10px] font-bold opacity-70 text-left">
+                  {formData.isActive ? 'Recebe notificações e acessa treinos' : 'Acesso suspenso temporariamente'}
+                </span>
+              </div>
+              <div className={`w-12 h-6 rounded-full relative transition-colors ${formData.isActive ? 'bg-emerald-500' : 'bg-slate-300'}`}>
+                <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${formData.isActive ? 'right-1' : 'left-1'}`}></div>
+              </div>
+            </button>
+          </div>
+        )}
       </form>
 
       <div className="fixed bottom-0 left-0 right-0 p-6 bg-white border-t border-slate-100 flex gap-4">
@@ -210,7 +237,7 @@ const StudentRegistrationScreen: React.FC<StudentRegistrationScreenProps> = ({ o
           <CheckCircle2 size={18} />
         </button>
       </div>
-    </div>
+    </div >
   );
 };
 

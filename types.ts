@@ -55,6 +55,7 @@ export interface Student {
   injuries: string[];
   equipment: string[];
   program?: TrainingProgram;
+  isActive?: boolean;
   history: {
     date: string;
     rpe_avg: number;

@@ -150,14 +150,24 @@ const ExerciseManagerScreen: React.FC<ExerciseManagerScreenProps> = ({ exercises
               setIsPlayingPreview(false);
               setIsAdding(true);
             }}
-            className="bg-white p-4 rounded-2xl border border-slate-100 flex items-center justify-between cursor-pointer hover:border-indigo-200 transition-all active:scale-[0.98]"
+            className={`p-4 rounded-2xl border flex items-center justify-between transition-all ${ex.isStandard
+                ? 'bg-slate-50 border-slate-100 cursor-pointer'
+                : 'bg-white border-slate-100 cursor-pointer hover:border-indigo-200 active:scale-[0.98]'
+              }`}
           >
             <div className="flex items-center gap-4">
               <div className="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center">
                 <Dumbbell size={20} />
               </div>
               <div>
-                <p className="font-bold text-slate-800 text-sm">{ex.name}</p>
+                <div className="flex items-center gap-2">
+                  <p className="font-bold text-slate-800 text-sm">{ex.name}</p>
+                  {ex.isStandard && (
+                    <div className="bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded-md flex items-center gap-1">
+                      <span className="text-[8px] font-black uppercase tracking-tighter">Oficial</span>
+                    </div>
+                  )}
+                </div>
                 <div className="flex items-center gap-2">
                   <p className="text-[10px] font-black uppercase text-slate-400">{ex.category}</p>
                   {ex.videoUrl && (
@@ -169,15 +179,17 @@ const ExerciseManagerScreen: React.FC<ExerciseManagerScreenProps> = ({ exercises
                 </div>
               </div>
             </div>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                // TODO: Implement delete logic
-              }}
-              className="p-2 text-slate-200 hover:text-red-500 transition-colors"
-            >
-              <Trash2 size={18} />
-            </button>
+            {!ex.isStandard && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  // TODO: Implement delete logic
+                }}
+                className="p-2 text-slate-200 hover:text-red-500 transition-colors"
+              >
+                <Trash2 size={18} />
+              </button>
+            )}
           </div>
         ))}
       </div>
@@ -186,7 +198,9 @@ const ExerciseManagerScreen: React.FC<ExerciseManagerScreenProps> = ({ exercises
         <div className="fixed inset-0 z-[110] bg-slate-900/60 backdrop-blur-sm flex items-end md:items-center justify-center p-4">
           <div className="bg-white w-full max-w-md rounded-[32px] p-6 space-y-6 animate-in slide-in-from-bottom duration-300">
             <div className="flex justify-between items-center">
-              <h3 className="text-xl font-black text-slate-900">{newExercise.id ? 'Editar Exercício' : 'Novo Exercício'}</h3>
+              <h3 className="text-xl font-black text-slate-900">
+                {newExercise.isStandard ? 'Detalhes do Exercício' : (newExercise.id ? 'Editar Exercício' : 'Novo Exercício')}
+              </h3>
               <button
                 onClick={() => {
                   setIsAdding(false);
@@ -206,18 +220,20 @@ const ExerciseManagerScreen: React.FC<ExerciseManagerScreenProps> = ({ exercises
                   autoFocus
                   type="text"
                   placeholder="Ex: Supino Inclinado Articulado"
-                  className="w-full bg-slate-50 border-none rounded-2xl px-5 py-4 font-bold focus:ring-2 focus:ring-indigo-500"
+                  className={`w-full bg-slate-50 border-none rounded-2xl px-5 py-4 font-bold focus:ring-2 focus:ring-indigo-500 ${newExercise.isStandard ? 'opacity-70 cursor-not-allowed' : ''}`}
                   value={newExercise.name}
-                  onChange={e => setNewExercise({ ...newExercise, name: e.target.value })}
+                  onChange={e => !newExercise.isStandard && setNewExercise({ ...newExercise, name: e.target.value })}
+                  disabled={newExercise.isStandard}
                 />
               </div>
 
               <div className="space-y-2">
                 <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Categoria</label>
                 <select
-                  className="w-full bg-slate-50 border-none rounded-2xl px-5 py-4 font-bold text-slate-700"
+                  className={`w-full bg-slate-50 border-none rounded-2xl px-5 py-4 font-bold text-slate-700 ${newExercise.isStandard ? 'opacity-70 cursor-not-allowed' : ''}`}
                   value={newExercise.category}
-                  onChange={e => setNewExercise({ ...newExercise, category: e.target.value })}
+                  onChange={e => !newExercise.isStandard && setNewExercise({ ...newExercise, category: e.target.value })}
+                  disabled={newExercise.isStandard}
                 >
                   {CATEGORIES.filter(c => c !== 'Todos').map(c => (
                     <option key={c} value={c}>{c}</option>
@@ -264,9 +280,10 @@ const ExerciseManagerScreen: React.FC<ExerciseManagerScreenProps> = ({ exercises
                   <input
                     type="text"
                     placeholder="Cole o link do YouTube aqui..."
-                    className="w-full bg-slate-50 border-none rounded-2xl pl-14 pr-5 py-4 font-bold focus:ring-2 focus:ring-red-500"
+                    className={`w-full bg-slate-50 border-none rounded-2xl pl-14 pr-5 py-4 font-bold focus:ring-2 focus:ring-red-500 ${newExercise.isStandard ? 'opacity-70 cursor-not-allowed' : ''}`}
                     value={newExercise.videoUrl || ''}
-                    onChange={e => setNewExercise({ ...newExercise, videoUrl: e.target.value })}
+                    onChange={e => !newExercise.isStandard && setNewExercise({ ...newExercise, videoUrl: e.target.value })}
+                    disabled={newExercise.isStandard}
                   />
                 </div>
                 <p className="text-[9px] text-slate-400 font-medium px-1">
@@ -275,12 +292,19 @@ const ExerciseManagerScreen: React.FC<ExerciseManagerScreenProps> = ({ exercises
               </div>
             </div>
 
-            <button
-              onClick={handleSave}
-              className="w-full bg-indigo-600 text-white font-black uppercase text-xs tracking-widest py-5 rounded-2xl shadow-xl shadow-indigo-600/30"
-            >
-              Adicionar à Biblioteca
-            </button>
+            {!newExercise.isStandard && (
+              <button
+                onClick={handleSave}
+                className="w-full bg-indigo-600 text-white font-black uppercase text-xs tracking-widest py-5 rounded-2xl shadow-xl shadow-indigo-600/30"
+              >
+                {newExercise.id ? 'Salvar Alterações' : 'Adicionar à Biblioteca'}
+              </button>
+            )}
+            {newExercise.isStandard && (
+              <div className="bg-slate-100 text-slate-500 font-bold text-center py-4 rounded-2xl text-xs uppercase tracking-widest">
+                Exercício Oficial - Somente Leitura
+              </div>
+            )}
           </div>
         </div>
       )}

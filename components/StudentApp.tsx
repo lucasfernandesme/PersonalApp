@@ -32,7 +32,12 @@ interface StudentAppProps {
 
 const getYouTubeEmbedUrl = (url: string) => {
   if (!url) return '';
-  if (url.includes('youtube.com/embed')) return url;
+
+  // Se já for um link de embed, apenas garantir que tenha os parâmetros de estilo
+  if (url.includes('youtube.com/embed/')) {
+    const baseUrl = url.split('?')[0];
+    return `${baseUrl}?rel=0&modestbranding=1&autoplay=1`;
+  }
 
   let videoId = '';
   if (url.includes('youtu.be/')) {
@@ -43,7 +48,7 @@ const getYouTubeEmbedUrl = (url: string) => {
     videoId = url.split('youtube.com/shorts/')[1].split('?')[0];
   }
 
-  return videoId ? `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1` : url;
+  return videoId ? `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&autoplay=1` : url;
 };
 
 const StudentApp: React.FC<StudentAppProps> = ({
