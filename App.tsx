@@ -16,8 +16,10 @@ import ExerciseManagerScreen from './components/ExerciseManagerScreen';
 import EvolutionScreen from './components/EvolutionScreen';
 import StudentProgressScreen from './components/StudentProgressScreen';
 import ChatScreen from './components/ChatScreen';
+import StudentSelectorModal from './components/StudentSelectorModal';
+import StudentDashboard from './components/StudentDashboard';
 import { WorkoutFolder, WorkoutTemplate, Student } from './types';
-import { ArrowLeft, Settings, Loader2, RefreshCw, CheckCircle2, X, Dumbbell, ArrowRight, Zap, Award, ChevronRight, Plus, Edit2 } from 'lucide-react';
+import { ArrowLeft, Settings, Loader2, RefreshCw, CheckCircle2, X, Dumbbell, ArrowRight, Zap, Award, ChevronRight, Plus, Edit2, Trash2 } from 'lucide-react';
 
 const STORAGE_KEY_AUTH = 'fitai_pro_auth_session';
 
@@ -48,6 +50,9 @@ const App: React.FC = () => {
   const [isOnboardingOpen, setIsOnboardingOpen] = useState(false);
   const [isManualBuilderOpen, setIsManualBuilderOpen] = useState(false);
   const [pendingStudentData, setPendingStudentData] = useState<OnboardingData | null>(null);
+  const [isStudentSelectorOpen, setIsStudentSelectorOpen] = useState(false);
+  const [pendingTemplate, setPendingTemplate] = useState<WorkoutTemplate | null>(null);
+  const [studentView, setStudentView] = useState<'dashboard' | 'workout'>('dashboard');
 
   const reloadStudents = useCallback(async () => {
     try {
@@ -159,6 +164,7 @@ const App: React.FC = () => {
     setActiveView('dashboard');
     setIsManualBuilderOpen(false);
     setIsOnboardingOpen(false);
+    setStudentView('dashboard'); // Reset student view when navigating
     if (tab !== 'students' || !selectedStudent) {
       setSelectedStudent(null);
     }
@@ -387,18 +393,8 @@ const App: React.FC = () => {
           onDeleteFolder={handleDeleteFolder}
           onBack={() => setActiveView('dashboard')}
           onUseInStudent={(template) => {
-            if (activeTab === 'students' && selectedStudent) {
-              // Já estamos no perfil de um aluno, apenas carregar os dados
-              setIsManualBuilderOpen(true);
-              // Como estamos editando o ManualBuilder, ele precisa do initialProgram
-              // Vou mudar o ManualBuilder.tsx para aceitar um template base ou carregar aqui
-            } else {
-              // Ir para aba de alunos e pedir para escolher um aluno?
-              // Ou abrir modal de escolha de aluno? Por simplicidade, vamos apenas avisar.
-              showToast("Selecione um aluno primeiro para aplicar este treino.");
-              setActiveTab('students');
-              setActiveView('dashboard');
-            }
+            setPendingTemplate(template);
+            setIsStudentSelectorOpen(true);
           }}
         />
       );
@@ -442,7 +438,7 @@ const App: React.FC = () => {
                         <Dumbbell size={20} className="text-white" />
                       </div>
                       <div>
-                        <h3 className="text-lg font-black text-white leading-tight">Biblioteca de Treinos</h3>
+                        <h3 className="text-lg font-black text-white leading-tight">Treinos</h3>
                         <p className="text-indigo-100 text-[10px] font-bold uppercase tracking-wider opacity-80">Gerenciar todas as rotinas</p>
                       </div>
                     </div>
@@ -557,6 +553,31 @@ const App: React.FC = () => {
                               >
                                 <Edit2 size={18} />
                               </button>
+                              <button
+                                onClick={async () => {
+                                  if (!confirm(`Excluir o treino "${prog.name}"?`)) return;
+                                  setIsSaving(true);
+                                  try {
+                                    const updatedPrograms = (selectedStudent.programs || []).filter(p => p.id !== prog.id);
+                                    const isCurrentProgram = selectedStudent.program?.id === prog.id;
+                                    const updated = {
+                                      ...selectedStudent,
+                                      programs: updatedPrograms,
+                                      program: isCurrentProgram ? (updatedPrograms[0] || null) : selectedStudent.program
+                                    };
+                                    await DataService.saveStudent(updated, authUser?.id);
+                                    await reloadStudents();
+                                    showToast("Treino excluído com sucesso!", "error");
+                                  } catch (e) {
+                                    showToast("Erro ao excluir treino", "error");
+                                  } finally {
+                                    setIsSaving(false);
+                                  }
+                                }}
+                                className="p-2 text-red-500 hover:bg-red-50 rounded-xl transition-all"
+                              >
+                                <Trash2 size={18} />
+                              </button>
                             </div>
                           </div>
                         </div>
@@ -643,6 +664,18 @@ const App: React.FC = () => {
     const loggedInStudent = students.find(s => s.id === authUser?.id);
     switch (activeTab) {
       case 'home':
+        if (!loggedInStudent) return null;
+
+        if (studentView === 'dashboard') {
+          return (
+            <StudentDashboard
+              student={loggedInStudent}
+              onNavigateToWorkout={() => setStudentView('workout')}
+              onNavigateToProgress={() => setActiveTab('evolution')}
+            />
+          );
+        }
+
         return (
           <StudentApp
             program={loggedInStudent?.program}
@@ -650,6 +683,7 @@ const App: React.FC = () => {
             currentStudentId={authUser!.id}
             onSelectStudent={() => { }}
             onFinishWorkout={handleFinishWorkout}
+            onBack={() => setStudentView('dashboard')}
           />
         );
       case 'evolution': return loggedInStudent ? <StudentProgressScreen student={loggedInStudent} /> : null;
@@ -704,6 +738,56 @@ const App: React.FC = () => {
           initialProgram={workoutToEdit || undefined}
           onSave={handleSaveWorkout}
           onCancel={() => setIsManualBuilderOpen(false)}
+        />
+      )}
+
+      {isStudentSelectorOpen && (
+        <StudentSelectorModal
+          students={students}
+          onSelect={async (student) => {
+            if (!pendingTemplate) return;
+
+            setIsSaving(true);
+            setIsStudentSelectorOpen(false);
+
+            try {
+              // Converter template para TrainingProgram
+              const newProgram: TrainingProgram = {
+                ...pendingTemplate,
+                id: Math.random().toString(36).substring(2, 11),
+                startDate: new Date().toISOString().split('T')[0],
+                endDate: undefined
+              };
+
+              // Adicionar o programa à lista de programas do aluno
+              const existingPrograms = student.programs || [];
+              const updatedStudent = {
+                ...student,
+                program: newProgram, // Define como programa ativo
+                programs: [newProgram, ...existingPrograms]
+              };
+
+              await DataService.saveStudent(updatedStudent, authUser?.id);
+              await reloadStudents();
+
+              showToast(`Treino "${pendingTemplate.name}" aplicado a ${student.name}!`);
+              setPendingTemplate(null);
+
+              // Navegar para o perfil do aluno
+              setSelectedStudent(updatedStudent);
+              setSelectedStudentView('workouts');
+              setActiveTab('students');
+              setActiveView('dashboard');
+            } catch (e) {
+              showToast("Erro ao aplicar treino ao aluno", "error");
+            } finally {
+              setIsSaving(false);
+            }
+          }}
+          onClose={() => {
+            setIsStudentSelectorOpen(false);
+            setPendingTemplate(null);
+          }}
         />
       )}
     </Layout>

@@ -9,6 +9,7 @@ import {
   Timer,
   Award,
   ArrowRight,
+  ArrowLeft,
   Users,
   History,
   Zap,
@@ -28,6 +29,7 @@ interface StudentAppProps {
   currentStudentId: string;
   onSelectStudent: (student: Student) => void;
   onFinishWorkout: (stats: { rpe_avg: number; completion: number; weights: Record<string, string>; duration: number }) => void;
+  onBack?: () => void;
 }
 
 const getYouTubeEmbedUrl = (url: string) => {
@@ -56,7 +58,8 @@ const StudentApp: React.FC<StudentAppProps> = ({
   students,
   currentStudentId,
   onSelectStudent,
-  onFinishWorkout
+  onFinishWorkout,
+  onBack
 }) => {
   const [currentDayIndex, setCurrentDayIndex] = useState(0);
   const [activeExerciseIndex, setActiveExerciseIndex] = useState<number | null>(null);
@@ -297,41 +300,23 @@ const StudentApp: React.FC<StudentAppProps> = ({
         </div>
       )}
 
-      {/* Student Quick Selector */}
-      {!isWorkoutActive && (
-        <div className="bg-white -mx-4 px-6 py-4 border-b border-slate-100 flex items-center gap-4 overflow-x-auto no-scrollbar">
-          <div className="flex-shrink-0 flex flex-col items-center">
-            <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 mb-1">
-              <Users size={20} />
-            </div>
-            <span className="text-[8px] font-black uppercase text-slate-300">Trocar</span>
-          </div>
-          <div className="h-8 w-[1px] bg-slate-100 flex-shrink-0"></div>
-          <div className="flex items-center gap-3">
-            {students.map(s => (
-              <button
-                key={s.id}
-                onClick={() => onSelectStudent(s)}
-                className={`flex-shrink-0 flex flex-col items-center gap-1 transition-all ${currentStudentId === s.id ? 'scale-110' : 'opacity-40 grayscale'}`}
-              >
-                <img
-                  src={s.avatar}
-                  className={`w-10 h-10 rounded-xl object-cover border-2 ${currentStudentId === s.id ? 'border-indigo-600 ring-2 ring-indigo-100' : 'border-transparent'}`}
-                  alt={s.name}
-                />
-                <span className={`text-[8px] font-black truncate max-w-[50px] ${currentStudentId === s.id ? 'text-indigo-600' : 'text-slate-500'}`}>
-                  {s.name.split(' ')[0]}
-                </span>
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
+
+
 
       <div className="flex items-center justify-between mb-2 px-1 mt-2">
-        <div>
-          <h2 className="text-2xl font-black text-slate-900">Meu Treino</h2>
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{program.name}</p>
+        <div className="flex items-center gap-3">
+          {onBack && (
+            <button
+              onClick={onBack}
+              className="p-2 bg-white rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors"
+            >
+              <ArrowLeft size={20} />
+            </button>
+          )}
+          <div>
+            <h2 className="text-2xl font-black text-slate-900">Meu Treino</h2>
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{program.name}</p>
+          </div>
         </div>
         <div className={`flex items-center gap-1.5 text-xs font-black px-4 py-2 rounded-full border transition-all ${isWorkoutActive ? 'bg-indigo-600 text-white border-indigo-600 shadow-lg shadow-indigo-600/40' : 'bg-white text-slate-400 border-slate-200'}`}>
           <Timer size={16} className={isWorkoutActive ? 'text-white' : 'text-slate-300'} />
@@ -536,14 +521,20 @@ const StudentApp: React.FC<StudentAppProps> = ({
                       </div>
                     </div>
                     <div className="space-y-1.5">
-                      <label className="text-[9px] font-black uppercase text-slate-400 ml-2">Dificuldade (RPE)</label>
+                      <label className="text-[9px] font-black uppercase text-slate-400 ml-2">Dificuldade</label>
                       <select
                         value={exerciseDetails[ex.name]?.rpe || ''}
                         onChange={(e) => updateDetail(ex.name, 'rpe', e.target.value)}
                         className="w-full bg-slate-100 border-2 border-transparent focus:border-indigo-500 focus:bg-white rounded-2xl py-3.5 px-4 text-sm font-black text-slate-700 transition-all shadow-inner"
                       >
-                        <option value="">RPE</option>
-                        {[6, 7, 8, 9, 10].map(n => <option key={n} value={n.toString()}>{n} - {n === 10 ? 'Máximo' : n >= 8 ? 'Intenso' : 'Moderado'}</option>)}
+                        <option value="">Selecione</option>
+                        <option value="1">Muito Leve</option>
+                        <option value="2">Leve</option>
+                        <option value="3">Moderada</option>
+                        <option value="4">Pouco Intensa</option>
+                        <option value="5">Intensa</option>
+                        <option value="6">Muito Intensa</option>
+                        <option value="7">Exaustão Máxima</option>
                       </select>
                     </div>
                   </div>

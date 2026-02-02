@@ -40,15 +40,16 @@ const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
   initialProgram
 }) => {
   const isTemplateMode = !studentName;
-  const [programName, setProgramName] = useState(initialProgram?.name || (isTemplateMode ? 'Novo Template' : `Treino de ${studentName}`));
+  const [programName, setProgramName] = useState(initialProgram?.name || (isTemplateMode ? '' : `Treino de ${studentName}`));
   const [goal, setGoal] = useState(initialProgram?.goal || studentGoal || 'Hipertrofia');
-  const [difficulty, setDifficulty] = useState<'beginner' | 'intermediate' | 'advanced'>(initialProgram?.difficulty || 'beginner');
+  const [difficulty, setDifficulty] = useState<'adaptation' | 'beginner' | 'intermediate' | 'advanced'>(initialProgram?.difficulty || 'beginner');
   const [startDate, setStartDate] = useState(initialProgram?.startDate || new Date().toISOString().split('T')[0]);
   const [endDate, setEndDate] = useState(initialProgram?.endDate || '');
   const [days, setDays] = useState<WorkoutDay[]>(initialProgram?.split || [
     { day: 'Dia A', label: 'Treino A', exercises: [] }
   ]);
   const [error, setError] = useState<string | null>(null);
+  const [observations, setObservations] = useState(initialProgram?.observations || '');
   const [generatingTips, setGeneratingTips] = useState<Record<string, boolean>>({});
 
   const [isLibraryOpen, setIsLibraryOpen] = useState(false);
@@ -167,7 +168,8 @@ const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
       split: filledDays,
       frequency: filledDays.length,
       goal: goal,
-      difficulty: difficulty
+      difficulty: difficulty,
+      observations: observations
     });
   };
 
@@ -179,7 +181,7 @@ const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
         </button>
         <div className="text-center">
           <h2 className="text-sm font-black text-slate-900 uppercase tracking-widest">
-            {isTemplateMode ? 'Criar Template' : 'Montar Treino'}
+            {isTemplateMode ? 'Criar Rotina' : 'Montar Treino'}
           </h2>
           <p className="text-[10px] font-bold text-slate-400">{isTemplateMode ? 'Biblioteca de Treinos' : studentName}</p>
         </div>
@@ -187,7 +189,7 @@ const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
           onClick={handleSave}
           className="bg-indigo-600 text-white px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest shadow-lg shadow-indigo-600/20 active:scale-95 transition-all"
         >
-          {isTemplateMode ? 'Salvar Template' : 'Salvar Treino'}
+          {isTemplateMode ? 'Salvar' : 'Salvar Treino'}
         </button>
       </header>
 
@@ -232,10 +234,11 @@ const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
           <div className="space-y-4">
             <div className="space-y-1.5">
               <label className="text-[10px] font-black uppercase text-slate-400 ml-1 tracking-widest">Dificuldade / Nível</label>
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-2 gap-2">
                 {[
+                  { id: 'adaptation', label: 'Adaptação' },
                   { id: 'beginner', label: 'Iniciante' },
-                  { id: 'intermediate', label: 'Intermed.' },
+                  { id: 'intermediate', label: 'Intermediário' },
                   { id: 'advanced', label: 'Avançado' }
                 ].map((level) => (
                   <button
@@ -275,6 +278,16 @@ const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
               </div>
             )}
           </div>
+        </div>
+
+        <div className="bg-white p-6 rounded-[32px] border border-slate-200 shadow-sm space-y-2">
+          <label className="text-[10px] font-black uppercase text-slate-400 ml-1 tracking-widest">Observações Gerais</label>
+          <textarea
+            value={observations}
+            onChange={(e) => setObservations(e.target.value)}
+            placeholder="Observações sobre o treino, restrições, orientações gerais..."
+            className="w-full bg-slate-50 border-none rounded-2xl px-5 py-4 font-medium text-slate-700 focus:ring-2 focus:ring-indigo-500 transition-all min-h-[100px] resize-none"
+          />
         </div>
 
         <div className="space-y-4">

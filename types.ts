@@ -36,10 +36,11 @@ export interface TrainingProgram {
   split: WorkoutDay[];
   frequency: number;
   goal: string;
-  difficulty?: 'beginner' | 'intermediate' | 'advanced';
+  difficulty?: 'adaptation' | 'beginner' | 'intermediate' | 'advanced';
   startDate?: string;
   endDate?: string;
   aiSuggestedChanges?: string;
+  observations?: string;
 }
 
 export interface WorkoutFolder {
