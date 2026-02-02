@@ -1,6 +1,6 @@
 
 import { createClient } from '@supabase/supabase-js';
-import { Student, WorkoutFolder, WorkoutTemplate } from "../types";
+import { Student, WorkoutFolder, WorkoutTemplate, AuthUser, UserRole } from "../types";
 import { LibraryExercise, EXERCISES_DB } from "../constants/exercises";
 
 // Estas variáveis serão injetadas pelo Vercel
@@ -24,24 +24,36 @@ export const DataService = {
       return data ? JSON.parse(data) : [];
     }
 
+    // Traz também dados do trainer (join)
     const { data, error } = await supabase
       .from('students')
-      .select('*')
+      .select('*, trainers:trainer_id(*)')
       .order('name');
 
     if (error) {
       console.error("Erro Supabase:", error);
       return [];
     }
-    return (data || []).map(s => ({
-      ...s,
-      phone: s.phone || '',
-      birthDate: s.birth_date || '',
-      gender: s.gender || '',
-      isActive: s.is_active !== false,
-      height: s.height || '',
-      weight: s.weight || ''
-    }));
+
+    return (data || []).map(s => {
+      // Mapeia dados do trainer se existirem
+      const trainer = s.trainers;
+
+      return {
+        ...s,
+        phone: s.phone || '',
+        birthDate: s.birth_date || '',
+        gender: s.gender || '',
+        isActive: s.is_active !== false,
+        height: s.height || '',
+        weight: s.weight || '',
+        // Campos do Tainer no Aluno
+        trainerName: trainer ? `${trainer.name} ${trainer.surname || ''}`.trim() : undefined,
+        trainerAvatar: trainer?.avatar,
+        trainerInstagram: trainer?.instagram,
+        trainerWhatsapp: trainer?.whatsapp
+      }
+    });
   },
 
   async saveStudent(student: Student, trainerId?: string): Promise<void> {
@@ -172,6 +184,7 @@ export const DataService = {
 
   async findTrainer(email: string): Promise<any | null> {
     if (!supabase) {
+      // Local mock could find by checking storage, but let's assume default flow
       const trainers = JSON.parse(localStorage.getItem('fitai_pro_trainers') || '[]');
       return trainers.find((t: any) => t.email === email) || null;
     }
@@ -184,6 +197,34 @@ export const DataService = {
 
     return data;
   },
+
+  async updateTrainer(trainer: Partial<AuthUser>): Promise<void> {
+    if (!supabase) {
+      // Mock save
+      const trainers = JSON.parse(localStorage.getItem('fitai_pro_trainers') || '[]');
+      const index = trainers.findIndex((t: any) => t.id === trainer.id);
+      if (index >= 0) {
+        trainers[index] = { ...trainers[index], ...trainer };
+        localStorage.setItem('fitai_pro_trainers', JSON.stringify(trainers));
+      }
+      return;
+    }
+
+    if (!trainer.id) return;
+
+    // Remove campos que não são colunas do banco se existirem
+    const { role, ...rest } = trainer as any;
+
+    const { error } = await supabase
+      .from('trainers')
+      .upsert({ ...rest, id: trainer.id });
+
+    if (error) {
+      console.error("Erro ao atualizar trainer:", error);
+      throw error;
+    }
+  },
+
 
   // --- TEMPLATES DE TREINO ---
   async getWorkoutFolders(): Promise<WorkoutFolder[]> {

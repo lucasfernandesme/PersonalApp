@@ -303,24 +303,26 @@ const StudentApp: React.FC<StudentAppProps> = ({
 
 
 
-      <div className="flex items-center justify-between mb-2 px-1 mt-2">
-        <div className="flex items-center gap-3">
-          {onBack && (
-            <button
-              onClick={onBack}
-              className="p-2 bg-white rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors"
-            >
-              <ArrowLeft size={20} />
-            </button>
-          )}
-          <div>
-            <h2 className="text-2xl font-black text-slate-900">Meu Treino</h2>
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{program.name}</p>
+      <div className="bg-white rounded-[32px] p-6 border border-slate-100 shadow-sm mb-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            {onBack && (
+              <button
+                onClick={onBack}
+                className="p-2 bg-slate-50 rounded-xl text-slate-600 hover:bg-slate-100 transition-colors"
+              >
+                <ArrowLeft size={20} />
+              </button>
+            )}
+            <div>
+              <h2 className="text-2xl font-black text-slate-900">Meu Treino</h2>
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{program.name}</p>
+            </div>
           </div>
-        </div>
-        <div className={`flex items-center gap-1.5 text-xs font-black px-4 py-2 rounded-full border transition-all ${isWorkoutActive ? 'bg-indigo-600 text-white border-indigo-600 shadow-lg shadow-indigo-600/40' : 'bg-white text-slate-400 border-slate-200'}`}>
-          <Timer size={16} className={isWorkoutActive ? 'text-white' : 'text-slate-300'} />
-          <span className="tabular-nums">{formatTime(seconds)}</span>
+          <div className={`flex items-center gap-1.5 text-xs font-black px-4 py-2 rounded-2xl border transition-all ${isWorkoutActive ? 'bg-indigo-600 text-white border-indigo-600 shadow-lg shadow-indigo-600/20' : 'bg-slate-50 text-slate-400 border-slate-100'}`}>
+            <Timer size={16} className={isWorkoutActive ? 'text-white' : 'text-slate-400'} />
+            <span className="tabular-nums">{formatTime(seconds)}</span>
+          </div>
         </div>
       </div>
 

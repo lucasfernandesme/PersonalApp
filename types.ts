@@ -10,6 +10,10 @@ export interface AuthUser {
   email: string;
   role: UserRole;
   avatar?: string;
+  surname?: string;
+  instagram?: string;
+  whatsapp?: string;
+  cref?: string;
 }
 
 export interface Exercise {
@@ -75,6 +79,11 @@ export interface Student {
   program?: TrainingProgram;
   programs?: TrainingProgram[];
   isActive?: boolean;
+  trainerId?: string;
+  trainerName?: string;
+  trainerAvatar?: string;
+  trainerInstagram?: string;
+  trainerWhatsapp?: string;
   history: {
     date: string;
     rpe_avg: number;

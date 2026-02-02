@@ -16,10 +16,13 @@ import ExerciseManagerScreen from './components/ExerciseManagerScreen';
 import EvolutionScreen from './components/EvolutionScreen';
 import StudentProgressScreen from './components/StudentProgressScreen';
 import ChatScreen from './components/ChatScreen';
+import TrainerProfile from './components/TrainerProfile';
+import StudentProfile from './components/StudentProfile';
 import StudentSelectorModal from './components/StudentSelectorModal';
 import StudentDashboard from './components/StudentDashboard';
 import { WorkoutFolder, WorkoutTemplate, Student } from './types';
-import { ArrowLeft, Settings, Loader2, RefreshCw, CheckCircle2, X, Dumbbell, ArrowRight, Zap, Award, ChevronRight, Plus, Edit2, Trash2 } from 'lucide-react';
+import { ArrowLeft, Settings, Loader2, RefreshCw, CheckCircle2, X, Dumbbell, ArrowRight, Zap, Award, ChevronRight, Plus, Edit2, Trash2, User, Calendar } from 'lucide-react';
+import { TrainingFrequencyCard } from './components/TrainingFrequencyCard';
 
 const STORAGE_KEY_AUTH = 'fitai_pro_auth_session';
 
@@ -39,7 +42,7 @@ const App: React.FC = () => {
   });
 
   const [activeView, setActiveView] = useState<'dashboard' | 'register' | 'exercises' | 'edit-student' | 'student-stats' | 'library'>('dashboard');
-  const [activeTab, setActiveTab] = useState<'home' | 'students' | 'evolution' | 'chat'>('home');
+  const [activeTab, setActiveTab] = useState<'home' | 'students' | 'evolution' | 'chat' | 'workout' | 'profile'>('home');
   const [students, setStudents] = useState<Student[]>([]);
   const [workoutTemplates, setWorkoutTemplates] = useState<WorkoutTemplate[]>([]);
   const [workoutFolders, setWorkoutFolders] = useState<WorkoutFolder[]>([]);
@@ -59,7 +62,6 @@ const App: React.FC = () => {
       const loadedStudents = await DataService.getStudents();
       setStudents(loadedStudents);
 
-      // Atualiza o aluno selecionado com os dados novos se ele existir
       setSelectedStudent(prev => {
         if (!prev) return null;
         return loadedStudents.find(s => s.id === prev.id) || null;
@@ -99,7 +101,6 @@ const App: React.FC = () => {
   useEffect(() => {
     const loadData = async () => {
       setIsLoading(true);
-
       try {
         await reloadStudents();
         await reloadExercises();
@@ -159,18 +160,18 @@ const App: React.FC = () => {
     };
   }, [customExercises]);
 
-  const handleNavigate = (tab: 'home' | 'students' | 'evolution' | 'chat') => {
+  const handleNavigate = (tab: 'home' | 'students' | 'evolution' | 'chat' | 'workout' | 'profile') => {
     setActiveTab(tab);
     setActiveView('dashboard');
     setIsManualBuilderOpen(false);
     setIsOnboardingOpen(false);
-    setStudentView('dashboard'); // Reset student view when navigating
+    setStudentView('dashboard');
     if (tab !== 'students' || !selectedStudent) {
       setSelectedStudent(null);
     }
   };
 
-  const handleSaveWorkout = useCallback(async (program: TrainingProgram) => {
+  const handleSaveWorkout = useCallback(async (program: TrainingProgram, targetStudent?: Student) => {
     setIsSaving(true);
     const enrichedProgram = enrichWithLibraryData(program);
 
@@ -182,7 +183,7 @@ const App: React.FC = () => {
           email: `${pendingStudentData.name.toLowerCase().replace(/\s/g, '.')}@email.com`,
           avatar: `https://picsum.photos/seed/${pendingStudentData.name}/100`,
           goal: pendingStudentData.goal,
-          gender: 'other', // Default for onboarding since it's not captured there yet
+          gender: 'other',
           experience: pendingStudentData.experience as any || 'beginner',
           injuries: pendingStudentData.injuries ? [pendingStudentData.injuries] : [],
           equipment: [pendingStudentData.equipment],
@@ -191,18 +192,19 @@ const App: React.FC = () => {
         };
         await DataService.saveStudent(newStudent, authUser?.id);
         setPendingStudentData(null);
-      } else if (selectedStudent) {
-        // Se o treino já existir na lista, apenas atualiza. Senão, adiciona.
-        const existingPrograms = selectedStudent.programs || [];
+      } else if (targetStudent || selectedStudent) {
+        const studentToUpdate = targetStudent || selectedStudent;
+        if (!studentToUpdate) return; // Should not happen given check
+
+        const existingPrograms = studentToUpdate.programs || [];
         const isExisting = existingPrograms.some(p => p.id === enrichedProgram.id);
 
         const updatedPrograms = isExisting
           ? existingPrograms.map(p => p.id === enrichedProgram.id ? enrichedProgram : p)
           : [enrichedProgram, ...existingPrograms];
 
-        // Se estivermos salvando como "ativo", ou se for novo, define como program principal
         const updated = {
-          ...selectedStudent,
+          ...studentToUpdate,
           program: enrichedProgram,
           programs: updatedPrograms
         };
@@ -265,7 +267,7 @@ const App: React.FC = () => {
     try {
       await DataService.deleteWorkoutFolder(id);
       await reloadFolders();
-      await reloadTemplates(); // templates podem ter o folderId limpo
+      await reloadTemplates();
       showToast("Pasta removida", "error");
     } catch (e) {
       showToast("Erro ao remover pasta", "error");
@@ -311,6 +313,19 @@ const App: React.FC = () => {
     }
   };
 
+  const handleUpdateTrainerProfile = async (updates: Partial<AuthUser>) => {
+    if (!authUser) return;
+    try {
+      await DataService.updateTrainer({ ...updates, id: authUser.id });
+      setAuthUser({ ...authUser, ...updates });
+      await reloadStudents(); // To ensure linked data is refreshed if applicable
+      showToast("Perfil atualizado e salvo!");
+    } catch (error) {
+      console.error("Failed to update profile", error);
+      showToast("Erro ao salvar perfil. Tente novamente.", "error");
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50">
@@ -338,17 +353,20 @@ const App: React.FC = () => {
               } else {
                 const newStudent: Student = {
                   ...formData,
-                  id: Math.random().toString(36).substring(2, 11),
+                  id: crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2, 11), // Try to use UUID
                   avatar: `https://picsum.photos/seed/${formData.name}/100`,
                   history: []
                 };
                 await DataService.saveStudent(newStudent, authUser?.id);
               }
               await reloadStudents();
-            } finally {
-              setIsSaving(false);
               setActiveView('dashboard');
               showToast(formData.id ? "Alterações salvas com sucesso!" : "Aluno cadastrado com sucesso!");
+            } catch (error) {
+              console.error("Erro ao salvar aluno:", error);
+              showToast("Erro ao salvar aluno. Verifique os dados.", "error");
+            } finally {
+              setIsSaving(false);
             }
           }}
           onDelete={async (id) => {
@@ -429,6 +447,9 @@ const App: React.FC = () => {
 
               {selectedStudentView === 'dashboard' ? (
                 <div className="space-y-4">
+                  {/* Frequency Card for Trainer */}
+                  <TrainingFrequencyCard student={selectedStudent} />
+
                   <button
                     onClick={() => setSelectedStudentView('workouts')}
                     className="group relative bg-gradient-to-r from-indigo-600 to-indigo-700 p-5 rounded-[24px] overflow-hidden transition-all active:scale-[0.98] shadow-xl shadow-indigo-600/20 text-left border border-white/10 flex items-center justify-between w-full"
@@ -502,9 +523,6 @@ const App: React.FC = () => {
 
                   <button
                     onClick={() => {
-                      // Para criar um NOVO, abrimos o manual builder sem o initialProgram
-                      // Mas o componente atual recebe initialProgram={selectedStudent?.program} lá embaixo.
-                      // Precisamos de um estado local para controlar o que abrir.
                       setWorkoutToEdit(null);
                       setIsManualBuilderOpen(true);
                     }}
@@ -612,6 +630,8 @@ const App: React.FC = () => {
                     </button>
                   </div>
 
+
+
                   {selectedStudent.program && (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
                       {selectedStudent.program.split.map((day, idx) => (
@@ -640,9 +660,8 @@ const App: React.FC = () => {
                     </div>
                   )}
                 </div>
-              )
-              }
-            </div >
+              )}
+            </div>
           );
         }
         return (
@@ -656,6 +675,8 @@ const App: React.FC = () => {
             onlyList={activeTab === 'students'}
           />
         );
+      case 'profile':
+        return <TrainerProfile user={authUser} onUpdateProfile={handleUpdateTrainerProfile} />;
       default: return null;
     }
   };
@@ -665,17 +686,14 @@ const App: React.FC = () => {
     switch (activeTab) {
       case 'home':
         if (!loggedInStudent) return null;
-
-        if (studentView === 'dashboard') {
-          return (
-            <StudentDashboard
-              student={loggedInStudent}
-              onNavigateToWorkout={() => setStudentView('workout')}
-              onNavigateToProgress={() => setActiveTab('evolution')}
-            />
-          );
-        }
-
+        return (
+          <StudentDashboard
+            student={loggedInStudent}
+            onNavigateToWorkout={() => setActiveTab('workout')}
+            onNavigateToProgress={() => setActiveTab('evolution')}
+          />
+        );
+      case 'workout':
         return (
           <StudentApp
             program={loggedInStudent?.program}
@@ -683,14 +701,17 @@ const App: React.FC = () => {
             currentStudentId={authUser!.id}
             onSelectStudent={() => { }}
             onFinishWorkout={handleFinishWorkout}
-            onBack={() => setStudentView('dashboard')}
+            onBack={() => setActiveTab('home')}
           />
         );
       case 'evolution': return loggedInStudent ? <StudentProgressScreen student={loggedInStudent} /> : null;
       case 'chat': return <ChatScreen role={UserRole.STUDENT} student={loggedInStudent || undefined} />;
+      case 'profile': return loggedInStudent ? <StudentProfile student={loggedInStudent} onUpdateProfile={(updates) => setAuthUser({ ...authUser, ...updates } as AuthUser)} /> : null;
       default: return null;
     }
   };
+
+  const loggedInStudent = students.find(s => s.id === authUser?.id);
 
   return (
     <Layout
@@ -700,6 +721,10 @@ const App: React.FC = () => {
       activeTab={activeTab}
       userName={authUser.name}
       userAvatar={authUser.avatar}
+      trainerSocials={loggedInStudent ? {
+        instagram: loggedInStudent.trainerInstagram,
+        whatsapp: loggedInStudent.trainerWhatsapp
+      } : undefined}
     >
       {/* Botão Flutuante de Status do Supabase */}
 
@@ -718,76 +743,69 @@ const App: React.FC = () => {
         </div>
       )}
 
+      {/* Modal Genérico de Onboarding */}
       {isOnboardingOpen && (
         <OnboardingModal
-          students={students}
           onClose={() => setIsOnboardingOpen(false)}
-          onProceedToManual={(data) => { setPendingStudentData(data); setIsOnboardingOpen(false); setIsManualBuilderOpen(true); }}
-          onAISuccess={(prog, data) => {
+          onFinish={(data) => {
             setPendingStudentData(data);
-            handleSaveWorkout(prog);
+            setIsOnboardingOpen(false);
+            setWorkoutToEdit(null); // Reset para garantir que é um treino novo
+            setIsManualBuilderOpen(true);
           }}
         />
       )}
 
+      {/* Manual Workout Builder */}
       {isManualBuilderOpen && (
         <ManualWorkoutBuilder
-          studentName={pendingStudentData?.name || selectedStudent?.name || "Aluno"}
-          studentGoal={pendingStudentData?.goal || selectedStudent?.goal || 'Hipertrofia'}
-          studentInjuries={pendingStudentData?.injuries || selectedStudent?.injuries?.join(', ') || ''}
-          initialProgram={workoutToEdit || undefined}
+          initialProgram={workoutToEdit || (pendingStudentData ? {
+            id: Math.random().toString(36).substring(2, 11),
+            name: `${pendingStudentData.goal} - ${pendingStudentData.experience}`,
+            split: [], // Será preenchido pelo builder
+            frequency: pendingStudentData.frequency,
+            goal: pendingStudentData.goal
+          } : undefined)}
           onSave={handleSaveWorkout}
-          onCancel={() => setIsManualBuilderOpen(false)}
+          onClose={() => setIsManualBuilderOpen(false)}
         />
       )}
 
+      {/* Modal de Seleção de Aluno para aplicar template */}
       {isStudentSelectorOpen && (
         <StudentSelectorModal
           students={students}
           onSelect={async (student) => {
-            if (!pendingTemplate) return;
-
-            setIsSaving(true);
-            setIsStudentSelectorOpen(false);
-
-            try {
-              // Converter template para TrainingProgram
-              const newProgram: TrainingProgram = {
+            if (pendingTemplate) {
+              // 1. Save the workout to the target student
+              await handleSaveWorkout({
                 ...pendingTemplate,
-                id: Math.random().toString(36).substring(2, 11),
-                startDate: new Date().toISOString().split('T')[0],
-                endDate: undefined
-              };
+                id: Math.random().toString(36).substring(2, 9),
+                startDate: new Date().toISOString().split('T')[0]
+              } as TrainingProgram, student);
 
-              // Adicionar o programa à lista de programas do aluno
-              const existingPrograms = student.programs || [];
-              const updatedStudent = {
-                ...student,
-                program: newProgram, // Define como programa ativo
-                programs: [newProgram, ...existingPrograms]
-              };
+              // 2. Fetch fresh data to ensure we have the updated workout
+              // Although handleSaveWorkout calls reloadStudents, we want to be sure and get the reference here
+              const freshStudents = await DataService.getStudents();
+              setStudents(freshStudents);
 
-              await DataService.saveStudent(updatedStudent, authUser?.id);
-              await reloadStudents();
+              // 3. Find the updated student object
+              const freshStudent = freshStudents.find(s => s.id === student.id);
 
-              showToast(`Treino "${pendingTemplate.name}" aplicado a ${student.name}!`);
+              // 4. Update selection and navigate
+              if (freshStudent) {
+                setSelectedStudent(freshStudent);
+                setSelectedStudentView('dashboard');
+                setActiveTab('students');
+              }
+
+              setIsStudentSelectorOpen(false);
               setPendingTemplate(null);
-
-              // Navegar para o perfil do aluno
-              setSelectedStudent(updatedStudent);
-              setSelectedStudentView('workouts');
-              setActiveTab('students');
-              setActiveView('dashboard');
-            } catch (e) {
-              showToast("Erro ao aplicar treino ao aluno", "error");
-            } finally {
-              setIsSaving(false);
             }
           }}
-          onClose={() => {
-            setIsStudentSelectorOpen(false);
-            setPendingTemplate(null);
-          }}
+          onClose={() => setIsStudentSelectorOpen(false)}
+          onAddStudent={() => { }} // Not needed here
+          onDeleteStudent={() => { }} // Not needed here
         />
       )}
     </Layout>
