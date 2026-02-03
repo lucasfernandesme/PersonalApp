@@ -40,7 +40,7 @@ const InstallPrompt: React.FC = () => {
             <Download size={24} />
           </div>
           <div>
-            <h4 className="font-black text-sm uppercase tracking-tight">Instale o FitAI Pro</h4>
+            <h4 className="font-black text-sm uppercase tracking-tight">Instale o PersonalFlow</h4>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
               {isIOS
                 ? 'Toque no ícone de compartilhar (seta pra cima) e selecione "Adicionar à Tela de Início".'

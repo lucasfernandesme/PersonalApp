@@ -117,7 +117,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin }) => {
           <div className="inline-flex p-4 bg-indigo-600 dark:bg-indigo-500 rounded-[28px] shadow-xl shadow-indigo-600/30 mb-4 animate-bounce transition-colors">
             <Dumbbell className="text-white w-8 h-8" />
           </div>
-          <h1 className="text-4xl font-black text-slate-900 dark:text-white tracking-tighter transition-colors">FitAI <span className="text-indigo-600 dark:text-indigo-400">Pro</span></h1>
+          <h1 className="text-4xl font-black text-slate-900 dark:text-white tracking-tighter transition-colors">PersonalFlow</h1>
           <p className="text-slate-400 dark:text-slate-500 font-bold uppercase text-[10px] tracking-[0.3em] transition-colors">
             {isCloud ? 'Cloud Database Connected' : 'High Performance Management'}
           </p>

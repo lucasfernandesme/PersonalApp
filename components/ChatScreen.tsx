@@ -21,7 +21,7 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ role, student }) => {
     {
       id: '1',
       role: 'assistant',
-      content: `Olá! Sou seu assistente FitAI. Como posso ajudar no seu ${role === UserRole.TRAINER ? 'trabalho com seus alunos' : 'treino'} hoje?`,
+      content: `Olá! Sou seu assistente PersonalFlow. Como posso ajudar no seu ${role === UserRole.TRAINER ? 'trabalho com seus alunos' : 'treino'} hoje?`,
       timestamp: new Date()
     }
   ]);
@@ -94,7 +94,7 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ role, student }) => {
           <MessageSquare size={20} />
         </div>
         <div>
-          <h2 className="text-xl font-black text-slate-900 dark:text-white leading-none transition-colors">FitAI Assistant</h2>
+          <h2 className="text-xl font-black text-slate-900 dark:text-white leading-none transition-colors">PersonalFlow Assistant</h2>
           <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-1 transition-colors">Inteligência Artificial Ativa</p>
         </div>
       </div>

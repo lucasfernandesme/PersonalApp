@@ -55,7 +55,7 @@ const Layout: React.FC<LayoutProps> = ({ children, role, onSwitchRole, onNavigat
           <div className="p-2 bg-indigo-600 rounded-lg">
             <Dumbbell className="w-6 h-6" />
           </div>
-          <span className="text-xl font-bold tracking-tight">FitAI <span className="text-indigo-400">Pro</span></span>
+          <span className="text-xl font-bold tracking-tight">PersonalFlow</span>
         </div>
 
         {/* Frequency Info */}
@@ -119,7 +119,7 @@ const Layout: React.FC<LayoutProps> = ({ children, role, onSwitchRole, onNavigat
           <div className="p-1.5 bg-indigo-600 rounded-md">
             <Dumbbell className="w-4 h-4 text-white" />
           </div>
-          <span className="font-extrabold text-slate-900 dark:text-white tracking-tight">FitAI <span className="text-indigo-600 dark:text-indigo-400">Pro</span></span>
+          <span className="font-extrabold text-slate-900 dark:text-white tracking-tight">PersonalFlow</span>
         </div>
         <button onClick={onSwitchRole} className="text-slate-400 p-2">
           <LogoutIcon size={20} />

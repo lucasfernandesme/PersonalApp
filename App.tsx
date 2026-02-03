@@ -331,7 +331,7 @@ const App: React.FC = () => {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-950">
         <Loader2 className="w-12 h-12 text-indigo-600 dark:text-indigo-500 animate-spin mb-4" />
-        <p className="text-slate-400 dark:text-slate-500 font-black uppercase text-[10px] tracking-widest">Carregando FitAI...</p>
+        <p className="text-slate-400 dark:text-slate-500 font-black uppercase text-[10px] tracking-widest">Carregando PersonalFlow...</p>
       </div>
     );
   }

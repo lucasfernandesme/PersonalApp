@@ -111,7 +111,7 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ students, onClose, on
           </div>
           <Sparkles className="absolute -top-4 -right-4 text-indigo-400 dark:text-indigo-300 animate-pulse" size={32} />
         </div>
-        <h2 className="text-3xl font-black text-white mb-4">FitAI está processando...</h2>
+        <h2 className="text-3xl font-black text-white mb-4">PersonalFlow está processando...</h2>
         <div className="space-y-4 max-w-xs">
           <p className="text-indigo-300 dark:text-indigo-400 font-bold text-xs uppercase tracking-[0.2em] animate-pulse">Personalizando Planilha</p>
           <div className="bg-white/5 dark:bg-slate-900/50 p-4 rounded-2xl border border-white/10 dark:border-slate-800 text-left transition-colors">
@@ -135,7 +135,7 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ students, onClose, on
           <ChevronLeft size={24} />
         </button>
         <div className="text-center">
-          <h2 className="text-lg font-black text-slate-900 dark:text-white">Gerador FitAI</h2>
+          <h2 className="text-lg font-black text-slate-900 dark:text-white">Gerador PersonalFlow</h2>
           <div className="flex justify-center gap-1.5 mt-1">
             {[1, 2, 3, 4].map(i => (
               <div key={i} className={`h-1 rounded-full transition-all ${step === i ? 'w-4 bg-indigo-600 dark:bg-indigo-500' : 'w-1 bg-slate-200 dark:bg-slate-800'}`}></div>
