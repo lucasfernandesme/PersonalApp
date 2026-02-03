@@ -15,22 +15,23 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile }
     const [activeModal, setActiveModal] = useState<'edit' | 'schedule' | 'reports' | null>(null);
 
     // Agenda State
-    const [events, setEvents] = useState<ScheduleEvent[]>([]);
+    const [events, setEvents] = useState<ScheduleEvent[]>(() => {
+        if (typeof window !== 'undefined') {
+            const saved = localStorage.getItem('fitai_pro_events');
+            return saved ? JSON.parse(saved) : [];
+        }
+        return [];
+    });
+
     const [students, setStudents] = useState<any[]>([]); // Need to fetch students for the dropdown
     const [isEventModalOpen, setIsEventModalOpen] = useState(false);
     const [selectedDateForEvent, setSelectedDateForEvent] = useState<Date>(new Date());
     const [eventToEdit, setEventToEdit] = useState<ScheduleEvent | undefined>(undefined);
 
-    // Load initial data for agenda (mock for now, or from local storage/db)
+    // Load initial data for students
     useEffect(() => {
         // Load Students for selector
         DataService.getStudents().then(setStudents);
-
-        // Load Events (Mocking local storage persistence for demo)
-        const savedEvents = localStorage.getItem('fitai_pro_events');
-        if (savedEvents) {
-            setEvents(JSON.parse(savedEvents));
-        }
     }, []);
 
     // Save events to local storage whenever they change

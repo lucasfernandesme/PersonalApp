@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { CheckCircle2 } from 'lucide-react';
 import { Student } from '../types';
 import FrequencyCalendarModal from './FrequencyCalendarModal';
+import { parseISO } from 'date-fns';
 
 interface TrainingFrequencyCardProps {
     student?: Student;
@@ -46,16 +47,19 @@ export const TrainingFrequencyCard: React.FC<TrainingFrequencyCardProps> = ({ st
 
         student.history.forEach(h => {
             // Converter data dd/mm/yyyy ou ISO para Date
-            let dateParts = h.date.split('/');
             let entryDate: Date;
 
-            if (dateParts.length === 3) {
+            if (h.date.includes('/')) {
                 // Formato PT-BR dd/mm/yyyy
+                const dateParts = h.date.split('/');
                 entryDate = new Date(parseInt(dateParts[2]), parseInt(dateParts[1]) - 1, parseInt(dateParts[0]));
             } else {
-                // Tentar ISO
+                // Tentar ISO com new Date
                 entryDate = new Date(h.date);
             }
+
+            // Normalize time to avoid timezone edge cases when comparing
+            entryDate.setHours(12, 0, 0, 0);
 
             if (entryDate >= startOfWeek && entryDate <= endOfWeek) {
                 completedDays.push(entryDate.getDay());

@@ -28,14 +28,19 @@ const FrequencyCalendarModal: React.FC<FrequencyCalendarModalProps> = ({ student
         if (!student?.history) return [];
 
         return student.history.map(h => {
+            let d: Date;
             // Handle both ISO and dd/mm/yyyy formats
             if (h.date.includes('/')) {
                 // dd/mm/yyyy
                 const parts = h.date.split('/');
-                return new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
+                d = new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
             } else {
-                return parseISO(h.date);
+                // Use new Date() for ISO strings to leverage potential UTC offset behavior if needed
+                d = new Date(h.date);
             }
+            // Normalize to noon to ensure consistent day comparison
+            d.setHours(12, 0, 0, 0);
+            return d;
         }).filter(d => isValid(d));
     }, [student]);
 
