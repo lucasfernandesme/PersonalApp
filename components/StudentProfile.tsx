@@ -28,7 +28,7 @@ const StudentProfile: React.FC<StudentProfileProps> = ({ student, onUpdateProfil
     return (
         <div className="space-y-6 pb-24 animate-in fade-in duration-300">
             {/* Header Profile */}
-            <div className="bg-white rounded-[32px] p-8 border border-slate-100 shadow-sm flex flex-col items-center">
+            <div className="bg-white dark:bg-slate-900 rounded-[32px] p-8 border border-slate-100 dark:border-slate-800 shadow-sm flex flex-col items-center transition-colors">
                 <div className="relative">
                     <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-emerald-500 shadow-xl mb-4">
                         <img
@@ -44,28 +44,28 @@ const StudentProfile: React.FC<StudentProfileProps> = ({ student, onUpdateProfil
                         <Edit2 size={16} />
                     </button>
                 </div>
-                <h2 className="text-2xl font-black text-slate-800 text-center">{student.name}</h2>
-                <p className="text-sm font-bold text-slate-400 uppercase tracking-wide">Aluno</p>
+                <h2 className="text-2xl font-black text-slate-800 dark:text-white text-center transition-colors">{student.name}</h2>
+                <p className="text-sm font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wide">Aluno</p>
             </div>
 
             {/* Stats Cards */}
             <div className="grid grid-cols-2 gap-4">
-                <div className="bg-white p-4 rounded-[28px] border border-slate-100 shadow-sm flex flex-col items-center justify-center gap-2">
-                    <div className="w-10 h-10 bg-emerald-50 rounded-full flex items-center justify-center text-emerald-600">
+                <div className="bg-white dark:bg-slate-900 p-4 rounded-[28px] border border-slate-100 dark:border-slate-800 shadow-sm flex flex-col items-center justify-center gap-2 transition-colors">
+                    <div className="w-10 h-10 bg-emerald-50 dark:bg-emerald-900/20 rounded-full flex items-center justify-center text-emerald-600 dark:text-emerald-400 transition-colors">
                         <Target size={20} />
                     </div>
                     <div className="text-center">
-                        <p className="text-[10px] font-black text-slate-400 uppercase">Objetivo</p>
-                        <p className="text-sm font-bold text-slate-800">{student.goal || 'Não definido'}</p>
+                        <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase">Objetivo</p>
+                        <p className="text-sm font-bold text-slate-800 dark:text-white transition-colors">{student.goal || 'Não definido'}</p>
                     </div>
                 </div>
-                <div className="bg-white p-4 rounded-[28px] border border-slate-100 shadow-sm flex flex-col items-center justify-center gap-2">
-                    <div className="w-10 h-10 bg-indigo-50 rounded-full flex items-center justify-center text-indigo-600">
+                <div className="bg-white dark:bg-slate-900 p-4 rounded-[28px] border border-slate-100 dark:border-slate-800 shadow-sm flex flex-col items-center justify-center gap-2 transition-colors">
+                    <div className="w-10 h-10 bg-indigo-50 dark:bg-indigo-900/20 rounded-full flex items-center justify-center text-indigo-600 dark:text-indigo-400 transition-colors">
                         <GraduationCap size={20} />
                     </div>
                     <div className="text-center">
-                        <p className="text-[10px] font-black text-slate-400 uppercase">Nível</p>
-                        <p className="text-sm font-bold text-slate-800">{student.experience || 'Iniciante'}</p>
+                        <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase">Nível</p>
+                        <p className="text-sm font-bold text-slate-800 dark:text-white transition-colors">{student.experience || 'Iniciante'}</p>
                     </div>
                 </div>
             </div>
@@ -74,42 +74,44 @@ const StudentProfile: React.FC<StudentProfileProps> = ({ student, onUpdateProfil
             <div className="space-y-3">
                 <button
                     onClick={() => setActiveModal('edit')}
-                    className="w-full bg-white p-6 rounded-[28px] border border-slate-100 shadow-sm flex items-center gap-4 hover:bg-slate-50 transition-all group"
+                    className="w-full bg-white dark:bg-slate-900 p-6 rounded-[28px] border border-slate-100 dark:border-slate-800 shadow-sm flex items-center gap-4 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all group"
                 >
-                    <div className="w-12 h-12 bg-emerald-100 rounded-2xl flex items-center justify-center text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+                    <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/30 rounded-2xl flex items-center justify-center text-emerald-600 dark:text-emerald-400 group-hover:bg-emerald-600 group-hover:text-white transition-all">
                         <User size={24} />
                     </div>
                     <div className="text-left flex-1">
-                        <h3 className="font-black text-slate-900 text-lg">Editar Perfil</h3>
-                        <p className="text-sm font-medium text-slate-400">Alterar nome e objetivo</p>
+                        <h3 className="font-black text-slate-900 dark:text-white text-lg transition-colors">Editar Perfil</h3>
+                        <p className="text-sm font-medium text-slate-400 dark:text-slate-500">Alterar nome e objetivo</p>
                     </div>
                 </button>
             </div>
 
             {/* Modal Editar Perfil */}
             {activeModal === 'edit' && (
-                <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
-                    <div className="bg-white rounded-[32px] w-full max-w-sm shadow-2xl p-6 relative">
-                        <button onClick={() => setActiveModal(null)} className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600"><X size={24} /></button>
-                        <h3 className="text-xl font-black text-slate-900 mb-6">Editar Perfil</h3>
+                <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
+                    <div className="bg-white dark:bg-slate-900 rounded-[32px] w-full max-w-sm shadow-2xl p-6 relative border dark:border-slate-800 transition-colors">
+                        <button onClick={() => setActiveModal(null)} className="absolute top-4 right-4 p-2 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
+                            <X size={24} />
+                        </button>
+                        <h3 className="text-xl font-black text-slate-900 dark:text-white mb-6 transition-colors">Editar Perfil</h3>
 
                         <div className="space-y-4">
                             <div>
-                                <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Nome Completo</label>
+                                <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase mb-2">Nome Completo</label>
                                 <input
                                     type="text"
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
-                                    className="w-full px-4 py-3 bg-slate-50 border-none rounded-2xl font-bold text-slate-800 focus:ring-2 focus:ring-emerald-500"
+                                    className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border-none rounded-2xl font-bold text-slate-800 dark:text-white focus:ring-2 focus:ring-emerald-500 transition-all"
                                 />
                             </div>
 
                             <div>
-                                <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Objetivo</label>
+                                <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase mb-2">Objetivo</label>
                                 <select
                                     value={goal}
                                     onChange={(e) => setGoal(e.target.value)}
-                                    className="w-full px-4 py-3 bg-slate-50 border-none rounded-2xl font-bold text-slate-800 focus:ring-2 focus:ring-emerald-500 appearance-none"
+                                    className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border-none rounded-2xl font-bold text-slate-800 dark:text-white focus:ring-2 focus:ring-emerald-500 appearance-none transition-all"
                                 >
                                     <option value="Emagrecimento">Emagrecimento</option>
                                     <option value="Hipertrofia">Hipertrofia</option>

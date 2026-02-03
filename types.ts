@@ -101,3 +101,17 @@ export interface OnboardingData {
   equipment: string;
   observations?: string;
 }
+
+export interface ScheduleEvent {
+  id: string;
+  trainerId: string;
+  studentId?: string; // Optional link to a registered student
+  studentName?: string; // For searching/displaying if not fully linked or just a name
+  title: string;
+  description?: string;
+  start: string; // ISO string
+  end: string; // ISO string
+  location?: string;
+  isRecurring?: boolean;
+  status: 'planned' | 'completed' | 'cancelled';
+}

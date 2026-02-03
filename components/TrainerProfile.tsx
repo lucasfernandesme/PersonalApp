@@ -1,6 +1,10 @@
-import React, { useState, useRef } from 'react';
-import { User, Calendar, Edit2, CheckCircle2, ChevronRight, X, Camera, Eye, EyeOff } from 'lucide-react';
-import { AuthUser } from '../types';
+import React, { useState, useRef, useEffect } from 'react';
+import { User, Calendar, Edit2, CheckCircle2, ChevronRight, X, Camera, Eye, EyeOff, BarChart2 } from 'lucide-react';
+import { AuthUser, ScheduleEvent } from '../types'; // Import ScheduleEvent
+import AgendaScreen from './AgendaScreen';
+import ScheduleEventModal from './ScheduleEventModal';
+import ReportsScreen from './ReportsScreen';
+import { DataService } from '../services/dataService'; // Assuming DataService will handle fetching students
 
 interface TrainerProfileProps {
     user: AuthUser;
@@ -8,7 +12,55 @@ interface TrainerProfileProps {
 }
 
 const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile }) => {
-    const [activeModal, setActiveModal] = useState<'edit' | 'schedule' | null>(null);
+    const [activeModal, setActiveModal] = useState<'edit' | 'schedule' | 'reports' | null>(null);
+
+    // Agenda State
+    const [events, setEvents] = useState<ScheduleEvent[]>([]);
+    const [students, setStudents] = useState<any[]>([]); // Need to fetch students for the dropdown
+    const [isEventModalOpen, setIsEventModalOpen] = useState(false);
+    const [selectedDateForEvent, setSelectedDateForEvent] = useState<Date>(new Date());
+    const [eventToEdit, setEventToEdit] = useState<ScheduleEvent | undefined>(undefined);
+
+    // Load initial data for agenda (mock for now, or from local storage/db)
+    useEffect(() => {
+        // Load Students for selector
+        DataService.getStudents().then(setStudents);
+
+        // Load Events (Mocking local storage persistence for demo)
+        const savedEvents = localStorage.getItem('fitai_pro_events');
+        if (savedEvents) {
+            setEvents(JSON.parse(savedEvents));
+        }
+    }, []);
+
+    // Save events to local storage whenever they change
+    useEffect(() => {
+        localStorage.setItem('fitai_pro_events', JSON.stringify(events));
+    }, [events]);
+
+    const handleAddEvent = (eventData: Partial<ScheduleEvent>) => {
+        if (eventData.id) {
+            // Edit existing
+            setEvents(prev => prev.map(e => e.id === eventData.id ? { ...e, ...eventData } as ScheduleEvent : e));
+        } else {
+            // Add new
+            const newEvent: ScheduleEvent = {
+                id: Math.random().toString(36).substr(2, 9),
+                trainerId: user.id,
+                ...eventData
+            } as ScheduleEvent;
+            setEvents(prev => [...prev, newEvent]);
+        }
+        setIsEventModalOpen(false);
+        setEventToEdit(undefined);
+    };
+
+    const handleDeleteEvent = (eventId: string) => {
+        setEvents(prev => prev.filter(e => e.id !== eventId));
+        setIsEventModalOpen(false);
+        setEventToEdit(undefined);
+    };
+
 
     // Form States
     const [formData, setFormData] = useState({
@@ -65,11 +117,11 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile }
     };
 
     return (
-        <div className="space-y-6 pb-24 animate-in fade-in duration-300">
+        <div className="space-y-6 pb-24 animate-in fade-in duration-300 transition-colors">
             {/* Header Profile */}
-            <div className="bg-white rounded-[32px] p-8 border border-slate-100 shadow-sm flex flex-col items-center">
+            <div className="bg-white dark:bg-slate-900 rounded-[32px] p-8 border border-slate-100 dark:border-slate-800 shadow-sm flex flex-col items-center transition-colors">
                 <div className="relative group cursor-pointer" onClick={() => activeModal === 'edit' && handlePhotoClick()}>
-                    <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-indigo-500 shadow-xl mb-4 relative z-10 bg-slate-100">
+                    <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-indigo-500 shadow-xl mb-4 relative z-10 bg-slate-100 dark:bg-slate-800 transition-colors">
                         <img
                             src={user.avatar || `https://ui-avatars.com/api/?name=${user.name}&background=6366f1&color=fff`}
                             alt={user.name}
@@ -79,72 +131,88 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile }
                     {/* Edit Badge for main view */}
                     <button
                         onClick={(e) => { e.stopPropagation(); setActiveModal('edit'); }}
-                        className="absolute bottom-6 right-0 p-2 bg-indigo-600 text-white rounded-xl shadow-lg hover:bg-indigo-700 transition-colors z-20"
+                        className="absolute bottom-6 right-0 p-2 bg-indigo-600 dark:bg-indigo-500 text-white rounded-xl shadow-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-colors z-20"
                     >
                         <Edit2 size={16} />
                     </button>
                 </div>
-                <h2 className="text-2xl font-black text-slate-800 text-center">{user.name} {user.surname}</h2>
-                <p className="text-sm font-bold text-slate-400 uppercase tracking-wide">Personal Trainer {user.cref ? `• CREF: ${user.cref}` : ''}</p>
+                <h2 className="text-2xl font-black text-slate-800 dark:text-white text-center transition-colors">{user.name} {user.surname}</h2>
+                <p className="text-sm font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wide transition-colors">Personal Trainer {user.cref ? `• CREF: ${user.cref}` : ''}</p>
             </div>
 
             {/* Grid de Opções */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <button
                     onClick={() => setActiveModal('edit')}
-                    className="bg-white p-6 rounded-[28px] border border-slate-100 shadow-sm flex items-center justify-between hover:bg-slate-50 transition-all group"
+                    className="bg-white dark:bg-slate-900 p-6 rounded-[28px] border border-slate-100 dark:border-slate-800 shadow-sm flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800 transition-all group"
                 >
                     <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-indigo-100 rounded-2xl flex items-center justify-center text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+                        <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/30 rounded-2xl flex items-center justify-center text-indigo-600 dark:text-indigo-400 group-hover:bg-indigo-600 dark:group-hover:bg-indigo-500 group-hover:text-white dark:group-hover:text-white transition-colors">
                             <User size={24} />
                         </div>
                         <div className="text-left">
-                            <h3 className="font-black text-slate-900 text-lg">Editar Perfil</h3>
-                            <p className="text-sm font-medium text-slate-400">Alterar dados pessoais</p>
+                            <h3 className="font-black text-slate-900 dark:text-white text-lg transition-colors">Editar Perfil</h3>
+                            <p className="text-sm font-medium text-slate-400 dark:text-slate-500 transition-colors">Alterar dados pessoais</p>
                         </div>
                     </div>
-                    <ChevronRight className="text-slate-300 group-hover:text-indigo-600 transition-colors" />
+                    <ChevronRight className="text-slate-300 dark:text-slate-700 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors" />
                 </button>
 
                 <button
                     onClick={() => setActiveModal('schedule')}
-                    className="bg-white p-6 rounded-[28px] border border-slate-100 shadow-sm flex items-center justify-between hover:bg-slate-50 transition-all group"
+                    className="bg-white dark:bg-slate-900 p-6 rounded-[28px] border border-slate-100 dark:border-slate-800 shadow-sm flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800 transition-all group"
                 >
                     <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-indigo-100 rounded-2xl flex items-center justify-center text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+                        <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/30 rounded-2xl flex items-center justify-center text-indigo-600 dark:text-indigo-400 group-hover:bg-indigo-600 dark:group-hover:bg-indigo-500 group-hover:text-white dark:group-hover:text-white transition-colors">
                             <Calendar size={24} />
                         </div>
                         <div className="text-left">
-                            <h3 className="font-black text-slate-900 text-lg">Agenda</h3>
-                            <p className="text-sm font-medium text-slate-400">Gerenciar horários</p>
+                            <h3 className="font-black text-slate-900 dark:text-white text-lg transition-colors">Agenda</h3>
+                            <p className="text-sm font-medium text-slate-400 dark:text-slate-500 transition-colors">Gerenciar horários</p>
                         </div>
                     </div>
-                    <ChevronRight className="text-slate-300 group-hover:text-indigo-600 transition-colors" />
+                    <ChevronRight className="text-slate-300 dark:text-slate-700 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors" />
+                </button>
+
+                <button
+                    onClick={() => setActiveModal('reports')}
+                    className="bg-white dark:bg-slate-900 p-6 rounded-[28px] border border-slate-100 dark:border-slate-800 shadow-sm flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800 transition-all group md:col-span-2"
+                >
+                    <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/30 rounded-2xl flex items-center justify-center text-indigo-600 dark:text-indigo-400 group-hover:bg-indigo-600 dark:group-hover:bg-indigo-500 group-hover:text-white dark:group-hover:text-white transition-colors">
+                            <BarChart2 size={24} />
+                        </div>
+                        <div className="text-left">
+                            <h3 className="font-black text-slate-900 dark:text-white text-lg transition-colors">Relatórios de Aulas</h3>
+                            <p className="text-sm font-medium text-slate-400 dark:text-slate-500 transition-colors">Filtrar e analisar atendimentos</p>
+                        </div>
+                    </div>
+                    <ChevronRight className="text-slate-300 dark:text-slate-700 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors" />
                 </button>
             </div>
 
             {/* Modal Editar Perfil */}
             {activeModal === 'edit' && (
-                <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200 overflow-y-auto">
-                    <div className="bg-white rounded-[32px] w-full max-w-lg shadow-2xl p-6 relative max-h-[90vh] overflow-y-auto">
-                        <button onClick={() => setActiveModal(null)} className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600"><X size={24} /></button>
-                        <h3 className="text-xl font-black text-slate-900 mb-6 sticky top-0 bg-white z-10 pb-2 border-b border-transparent">Editar Perfil</h3>
+                <div className="fixed inset-0 z-50 bg-black/60 dark:bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200 overflow-y-auto">
+                    <div className="bg-white dark:bg-slate-900 rounded-[32px] w-full max-w-lg shadow-2xl p-6 relative max-h-[90vh] overflow-y-auto border dark:border-slate-800 transition-colors">
+                        <button onClick={() => setActiveModal(null)} className="absolute top-4 right-4 p-2 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"><X size={24} /></button>
+                        <h3 className="text-xl font-black text-slate-900 dark:text-white mb-6 sticky top-0 bg-white dark:bg-slate-900 z-10 pb-2 border-b border-transparent transition-colors">Editar Perfil</h3>
 
                         <div className="space-y-4">
                             {/* Foto Upload */}
                             <div className="flex flex-col items-center justify-center mb-6">
                                 <div className="relative group cursor-pointer" onClick={handlePhotoClick}>
-                                    <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-indigo-100 group-hover:border-indigo-200 transition-all">
+                                    <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-indigo-100 dark:border-indigo-900/50 group-hover:border-indigo-200 dark:group-hover:border-indigo-500 transition-all">
                                         <img
                                             src={user.avatar || `https://ui-avatars.com/api/?name=${user.name}&background=6366f1&color=fff`}
                                             className="w-full h-full object-cover"
                                         />
                                     </div>
-                                    <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <div className="absolute inset-0 bg-black/40 dark:bg-black/60 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                                         <Camera className="text-white" size={24} />
                                     </div>
                                 </div>
-                                <p className="text-xs font-bold text-indigo-600 mt-2 cursor-pointer" onClick={handlePhotoClick}>Alterar Foto</p>
+                                <p className="text-xs font-bold text-indigo-600 dark:text-indigo-400 mt-2 cursor-pointer transition-colors" onClick={handlePhotoClick}>Alterar Foto</p>
                                 <input
                                     type="file"
                                     ref={fileInputRef}
@@ -156,107 +224,107 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile }
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">Nome</label>
+                                    <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase mb-1.5 ml-1 transition-colors">Nome</label>
                                     <input
                                         type="text"
                                         name="name"
                                         value={formData.name}
                                         onChange={handleInputChange}
-                                        className="w-full px-4 py-3 bg-slate-50 border-none rounded-2xl font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500"
+                                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border-none rounded-2xl font-bold text-slate-800 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-indigo-500 transition-colors"
                                         placeholder="Seu nome"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">Sobrenome</label>
+                                    <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase mb-1.5 ml-1 transition-colors">Sobrenome</label>
                                     <input
                                         type="text"
                                         name="surname"
                                         value={formData.surname}
                                         onChange={handleInputChange}
-                                        className="w-full px-4 py-3 bg-slate-50 border-none rounded-2xl font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500"
+                                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border-none rounded-2xl font-bold text-slate-800 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-indigo-500 transition-colors"
                                         placeholder="Sobrenome"
                                     />
                                 </div>
                             </div>
 
                             <div>
-                                <label className="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">Email</label>
+                                <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase mb-1.5 ml-1 transition-colors">Email</label>
                                 <input
                                     type="email"
                                     name="email"
                                     value={formData.email}
                                     onChange={handleInputChange}
-                                    className="w-full px-4 py-3 bg-slate-50 border-none rounded-2xl font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500"
+                                    className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border-none rounded-2xl font-bold text-slate-800 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-indigo-500 transition-colors"
                                     placeholder="seu@email.com"
                                 />
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">Instagram</label>
+                                    <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase mb-1.5 ml-1 transition-colors">Instagram</label>
                                     <input
                                         type="text"
                                         name="instagram"
                                         value={formData.instagram}
                                         onChange={handleInputChange}
-                                        className="w-full px-4 py-3 bg-slate-50 border-none rounded-2xl font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500"
+                                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border-none rounded-2xl font-bold text-slate-800 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-indigo-500 transition-colors"
                                         placeholder="@usuario"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">CREF</label>
+                                    <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase mb-1.5 ml-1 transition-colors">CREF</label>
                                     <input
                                         type="text"
                                         name="cref"
                                         value={formData.cref}
                                         onChange={handleInputChange}
-                                        className="w-full px-4 py-3 bg-slate-50 border-none rounded-2xl font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500"
+                                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border-none rounded-2xl font-bold text-slate-800 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-indigo-500 transition-colors"
                                         placeholder="000000-G/UF"
                                     />
                                 </div>
                             </div>
 
                             <div>
-                                <label className="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">WhatsApp</label>
+                                <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase mb-1.5 ml-1 transition-colors">WhatsApp</label>
                                 <input
                                     type="text"
                                     name="whatsapp"
                                     value={formData.whatsapp}
                                     onChange={handleInputChange}
-                                    className="w-full px-4 py-3 bg-slate-50 border-none rounded-2xl font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500"
+                                    className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border-none rounded-2xl font-bold text-slate-800 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-indigo-500 transition-colors"
                                     placeholder="(00) 00000-0000"
                                 />
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="relative">
-                                    <label className="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">Senha</label>
+                                    <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase mb-1.5 ml-1 transition-colors">Senha</label>
                                     <div className="relative">
                                         <input
                                             type={showPassword ? "text" : "password"}
                                             name="password"
                                             value={formData.password}
                                             onChange={handleInputChange}
-                                            className="w-full px-4 py-3 bg-slate-50 border-none rounded-2xl font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500 pr-10"
+                                            className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border-none rounded-2xl font-bold text-slate-800 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-indigo-500 pr-10 transition-colors"
                                             placeholder="••••••"
                                         />
                                         <button
                                             type="button"
                                             onClick={() => setShowPassword(!showPassword)}
-                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-indigo-600"
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
                                         >
                                             {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                                         </button>
                                     </div>
                                 </div>
                                 <div>
-                                    <label className="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">Confirmar Senha</label>
+                                    <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase mb-1.5 ml-1 transition-colors">Confirmar Senha</label>
                                     <input
                                         type="password"
                                         name="confirmPassword"
                                         value={formData.confirmPassword}
                                         onChange={handleInputChange}
-                                        className="w-full px-4 py-3 bg-slate-50 border-none rounded-2xl font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500"
+                                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border-none rounded-2xl font-bold text-slate-800 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-indigo-500 transition-colors"
                                         placeholder="••••••"
                                     />
                                 </div>
@@ -265,7 +333,7 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile }
                             <div className="pt-4">
                                 <button
                                     onClick={handleSaveProfile}
-                                    className="w-full py-4 bg-indigo-600 text-white font-black rounded-2xl shadow-lg shadow-indigo-600/20 hover:bg-indigo-700 transition-all active:scale-95"
+                                    className="w-full py-4 bg-indigo-600 dark:bg-indigo-500 text-white font-black rounded-2xl shadow-lg shadow-indigo-600/20 hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-all active:scale-95"
                                 >
                                     Salvar Alterações
                                 </button>
@@ -275,18 +343,53 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile }
                 </div>
             )}
 
-            {/* Modal Agenda (Placeholder) */}
-            {activeModal === 'schedule' && (
-                <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
-                    <div className="bg-white rounded-[32px] w-full max-w-md shadow-2xl p-6 relative h-[600px] flex flex-col">
-                        <button onClick={() => setActiveModal(null)} className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600"><X size={24} /></button>
-                        <h3 className="text-xl font-black text-slate-900 mb-2">Agenda</h3>
-                        <p className="text-sm font-medium text-slate-400 mb-6">Seus próximos compromissos.</p>
+            {/* Modal Relatórios */}
+            {activeModal === 'reports' && (
+                <div className="fixed inset-0 z-50 bg-black/60 dark:bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
+                    <div className="bg-white dark:bg-slate-900 rounded-[32px] w-full max-w-2xl shadow-2xl p-6 relative h-[80vh] flex flex-col border dark:border-slate-800 transition-colors">
+                        <button onClick={() => setActiveModal(null)} className="absolute top-4 right-4 p-2 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors z-10"><X size={24} /></button>
+                        <ReportsScreen
+                            events={events}
+                            students={students}
+                            onClose={() => setActiveModal(null)}
+                        />
+                    </div>
+                </div>
+            )}
 
-                        <div className="flex-1 flex flex-col items-center justify-center text-slate-300 gap-4">
-                            <Calendar size={64} className="opacity-20" />
-                            <p className="font-bold">Funcionalidade de Agenda em breve</p>
-                        </div>
+            {/* Modal Agenda */}
+            {activeModal === 'schedule' && (
+                <div className="fixed inset-0 z-50 bg-black/60 dark:bg-black/80 backdrop-blur-sm flex items-center justify-center p-0 md:p-4 animate-in fade-in duration-200">
+                    <div className="bg-white dark:bg-slate-900 md:rounded-[32px] w-full h-full md:max-w-4xl shadow-2xl p-6 relative flex flex-col border dark:border-slate-800 transition-colors">
+
+                        <button onClick={() => setActiveModal(null)} className="absolute top-4 right-4 p-2 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors z-10"><X size={24} /></button>
+
+                        <AgendaScreen
+                            events={events}
+                            students={students}
+                            onAddEvent={(date) => {
+                                setSelectedDateForEvent(date);
+                                setEventToEdit(undefined);
+                                setIsEventModalOpen(true);
+                            }}
+                            onEditEvent={(event) => {
+                                setEventToEdit(event);
+                                setIsEventModalOpen(true);
+                            }}
+                            onClose={() => setActiveModal(null)}
+                        />
+
+                        {isEventModalOpen && (
+                            <ScheduleEventModal
+                                initialDate={selectedDateForEvent}
+                                existingEvent={eventToEdit}
+                                students={students}
+                                onSave={handleAddEvent}
+                                onDelete={handleDeleteEvent}
+                                onClose={() => setIsEventModalOpen(false)}
+                            />
+                        )}
+
                     </div>
                 </div>
             )}

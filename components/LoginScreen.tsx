@@ -111,31 +111,35 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin }) => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-6">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center p-6 transition-colors">
       <div className="w-full max-w-md space-y-8 animate-in fade-in duration-500">
         <div className="text-center space-y-2">
-          <div className="inline-flex p-4 bg-indigo-600 rounded-[28px] shadow-xl shadow-indigo-600/30 mb-4 animate-bounce">
+          <div className="inline-flex p-4 bg-indigo-600 dark:bg-indigo-500 rounded-[28px] shadow-xl shadow-indigo-600/30 mb-4 animate-bounce transition-colors">
             <Dumbbell className="text-white w-8 h-8" />
           </div>
-          <h1 className="text-4xl font-black text-slate-900 tracking-tighter">FitAI <span className="text-indigo-600">Pro</span></h1>
-          <p className="text-slate-400 font-bold uppercase text-[10px] tracking-[0.3em]">
+          <h1 className="text-4xl font-black text-slate-900 dark:text-white tracking-tighter transition-colors">FitAI <span className="text-indigo-600 dark:text-indigo-400">Pro</span></h1>
+          <p className="text-slate-400 dark:text-slate-500 font-bold uppercase text-[10px] tracking-[0.3em] transition-colors">
             {isCloud ? 'Cloud Database Connected' : 'High Performance Management'}
           </p>
         </div>
 
         {!isRegistering ? (
           <>
-            <div className="bg-white p-2 rounded-[32px] shadow-sm border border-slate-100 flex gap-1">
+            <div className="bg-white dark:bg-slate-900 p-2 rounded-[32px] shadow-sm border border-slate-100 dark:border-slate-800 flex gap-1 transition-colors">
               <button
                 onClick={() => setRole(UserRole.TRAINER)}
-                className={`flex-1 flex items-center justify-center gap-2 py-4 rounded-[24px] text-xs font-black uppercase tracking-widest transition-all ${role === UserRole.TRAINER ? 'bg-slate-900 text-white shadow-lg' : 'text-slate-400 hover:bg-slate-50'}`}
+                className={`flex-1 flex items-center justify-center gap-2 py-4 rounded-[24px] text-xs font-black uppercase tracking-widest transition-all ${role === UserRole.TRAINER
+                  ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-lg'
+                  : 'text-slate-400 dark:text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800'}`}
               >
                 <Users size={16} />
                 Personal
               </button>
               <button
                 onClick={() => setRole(UserRole.STUDENT)}
-                className={`flex-1 flex items-center justify-center gap-2 py-4 rounded-[24px] text-xs font-black uppercase tracking-widest transition-all ${role === UserRole.STUDENT ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-400 hover:bg-slate-50'}`}
+                className={`flex-1 flex items-center justify-center gap-2 py-4 rounded-[24px] text-xs font-black uppercase tracking-widest transition-all ${role === UserRole.STUDENT
+                  ? 'bg-indigo-600 dark:bg-indigo-500 text-white shadow-lg'
+                  : 'text-slate-400 dark:text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800'}`}
               >
                 <UserCircle size={16} />
                 Aluno
@@ -145,37 +149,40 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin }) => {
             <form onSubmit={handleLogin} className="space-y-4">
               <div className="space-y-2">
                 <div className="relative group">
-                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-indigo-600 transition-colors" size={20} />
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 dark:text-slate-600 group-focus-within:text-indigo-600 dark:group-focus-within:text-indigo-400 transition-colors" size={20} />
                   <input
                     type="email"
                     placeholder="E-mail"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="w-full bg-white border-2 border-slate-100 rounded-[24px] pl-12 pr-6 py-5 font-bold focus:border-indigo-600 focus:bg-white transition-all outline-none"
+                    className="w-full bg-white dark:bg-slate-800 border-2 border-slate-50 dark:border-slate-800 rounded-[24px] pl-12 pr-6 py-5 font-bold text-slate-900 dark:text-white focus:border-indigo-600 dark:focus:border-indigo-500 transition-all outline-none placeholder:text-slate-300 dark:placeholder:text-slate-600"
                   />
                 </div>
                 <div className="relative group">
-                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-indigo-600 transition-colors" size={20} />
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 dark:text-slate-600 group-focus-within:text-indigo-600 dark:group-focus-within:text-indigo-400 transition-colors" size={20} />
                   <input
                     type="password"
                     placeholder="Senha"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    className="w-full bg-white border-2 border-slate-100 rounded-[24px] pl-12 pr-6 py-5 font-bold focus:border-indigo-600 focus:bg-white transition-all outline-none"
+                    className="w-full bg-white dark:bg-slate-800 border-2 border-slate-50 dark:border-slate-800 rounded-[24px] pl-12 pr-6 py-5 font-bold text-slate-900 dark:text-white focus:border-indigo-600 dark:focus:border-indigo-500 transition-all outline-none placeholder:text-slate-300 dark:placeholder:text-slate-600"
                   />
                 </div>
               </div>
 
               {error && (
-                <p className="text-center text-red-500 text-[10px] font-black uppercase tracking-widest animate-in shake">{error}</p>
+                <p className="text-center text-red-500 text-[10px] font-black uppercase tracking-widest animate-in shake transition-colors">{error}</p>
               )}
 
               <button
                 type="submit"
                 disabled={isLoading}
-                className={`w-full py-5 rounded-[24px] font-black uppercase text-xs tracking-[0.2em] flex items-center justify-center gap-3 shadow-2xl transition-all active:scale-95 ${role === UserRole.TRAINER ? 'bg-slate-900 shadow-slate-900/20' : 'bg-indigo-600 shadow-indigo-600/20'} text-white disabled:opacity-50`}
+                className={`w-full py-5 rounded-[24px] font-black uppercase text-xs tracking-[0.2em] flex items-center justify-center gap-3 shadow-2xl transition-all active:scale-95 ${role === UserRole.TRAINER
+                  ? 'bg-slate-900 dark:bg-white shadow-slate-900/20 dark:shadow-white/10 text-white dark:text-slate-900'
+                  : 'bg-indigo-600 dark:bg-indigo-500 shadow-indigo-600/20 text-white'
+                  } disabled:opacity-50`}
               >
                 {isLoading ? <Loader2 className="animate-spin" size={20} /> : <>Entrar no App <ChevronRight size={18} /></>}
               </button>
@@ -185,26 +192,26 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin }) => {
               {role === UserRole.TRAINER ? (
                 <button
                   onClick={() => setIsRegistering(true)}
-                  className="text-[10px] font-black uppercase tracking-widest text-indigo-600 hover:underline"
+                  className="text-[10px] font-black uppercase tracking-widest text-indigo-600 dark:text-indigo-400 hover:underline transition-colors"
                 >
                   Criar Conta Personal
                 </button>
               ) : (
-                <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest px-8 leading-relaxed">
-                  Senha padrão: 123456 (até que você mude no cadastro do aluno)
+                <p className="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest px-8 leading-relaxed transition-colors">
+                  Senha padrão: 123456 <span className="opacity-50">(até que você mude no cadastro do aluno)</span>
                 </p>
               )}
             </div>
           </>
         ) : (
           <div className="space-y-6 animate-in slide-in-from-right duration-300">
-            <button onClick={() => setIsRegistering(false)} className="flex items-center gap-2 text-slate-400 hover:text-slate-600 font-bold text-xs uppercase tracking-widest">
+            <button onClick={() => setIsRegistering(false)} className="flex items-center gap-2 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 font-bold text-xs uppercase tracking-widest transition-colors">
               <ArrowLeft size={16} /> Voltar
             </button>
 
             <div className="space-y-2">
-              <h2 className="text-2xl font-black text-slate-900">Cadastro Cloud</h2>
-              <p className="text-slate-400 text-xs font-medium">Sua conta será salva no banco de dados do Supabase.</p>
+              <h2 className="text-2xl font-black text-slate-900 dark:text-white transition-colors">Cadastro Cloud</h2>
+              <p className="text-slate-400 dark:text-slate-500 text-xs font-medium transition-colors">Sua conta será salva no banco de dados do Supabase.</p>
             </div>
 
             <form onSubmit={handleRegister} className="space-y-4">
@@ -215,7 +222,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin }) => {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   required
-                  className="w-full bg-white border-2 border-slate-100 rounded-[24px] px-6 py-4 font-bold focus:border-indigo-600 transition-all outline-none"
+                  className="w-full bg-white dark:bg-slate-800 border-2 border-slate-50 dark:border-slate-800 rounded-[24px] px-6 py-4 font-bold text-slate-900 dark:text-white focus:border-indigo-600 dark:focus:border-indigo-500 transition-all outline-none placeholder:text-slate-300 dark:placeholder:text-slate-600"
                 />
                 <input
                   type="email"
@@ -223,7 +230,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin }) => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="w-full bg-white border-2 border-slate-100 rounded-[24px] px-6 py-4 font-bold focus:border-indigo-600 transition-all outline-none"
+                  className="w-full bg-white dark:bg-slate-800 border-2 border-slate-50 dark:border-slate-800 rounded-[24px] px-6 py-4 font-bold text-slate-900 dark:text-white focus:border-indigo-600 dark:focus:border-indigo-500 transition-all outline-none placeholder:text-slate-300 dark:placeholder:text-slate-600"
                 />
                 <input
                   type="password"
@@ -231,24 +238,22 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin }) => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="w-full bg-white border-2 border-slate-100 rounded-[24px] px-6 py-4 font-bold focus:border-indigo-600 transition-all outline-none"
+                  className="w-full bg-white dark:bg-slate-800 border-2 border-slate-50 dark:border-slate-800 rounded-[24px] px-6 py-4 font-bold text-slate-900 dark:text-white focus:border-indigo-600 dark:focus:border-indigo-500 transition-all outline-none placeholder:text-slate-300 dark:placeholder:text-slate-600"
                 />
               </div>
 
-              {error && <p className="text-center text-red-500 text-[10px] font-black uppercase tracking-widest">{error}</p>}
+              {error && <p className="text-center text-red-500 text-[10px] font-black uppercase tracking-widest animate-in shake transition-colors">{error}</p>}
 
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-5 bg-indigo-600 text-white rounded-[24px] font-black uppercase text-xs tracking-[0.2em] flex items-center justify-center gap-3 shadow-2xl shadow-indigo-600/20 active:scale-95 disabled:opacity-50"
+                className="w-full py-5 bg-indigo-600 dark:bg-indigo-500 text-white rounded-[24px] font-black uppercase text-xs tracking-[0.2em] flex items-center justify-center gap-3 shadow-2xl shadow-indigo-600/20 active:scale-95 disabled:opacity-50"
               >
                 {isLoading ? <Loader2 className="animate-spin" size={20} /> : <>Criar Conta na Nuvem <Cloud size={18} /></>}
               </button>
             </form>
           </div>
         )}
-
-
       </div>
     </div>
   );

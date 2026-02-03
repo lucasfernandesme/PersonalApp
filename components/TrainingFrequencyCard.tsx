@@ -1,13 +1,15 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import { CheckCircle2 } from 'lucide-react';
 import { Student } from '../types';
+import FrequencyCalendarModal from './FrequencyCalendarModal';
 
 interface TrainingFrequencyCardProps {
     student?: Student;
 }
 
 export const TrainingFrequencyCard: React.FC<TrainingFrequencyCardProps> = ({ student }) => {
+    const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+
     // Calcular dias da semana com treino
     const today = new Date().getDay(); // 0 = Domingo, 1 = Segunda, etc
     const daysOfWeek = ['S', 'T', 'Q', 'Q', 'S', 'S', 'D'];
@@ -62,38 +64,54 @@ export const TrainingFrequencyCard: React.FC<TrainingFrequencyCardProps> = ({ st
     }
 
     return (
-        <div className="bg-white rounded-[32px] p-6 border border-slate-100 shadow-sm w-full">
-            <h3 className="text-slate-800 font-black text-sm mb-4 uppercase tracking-tight">Frequência de Treinos</h3>
-            <div className="flex justify-between items-center">
-                {daysOfWeek.map((day, index) => {
-                    // Ajuste de índice: 0 (Segunda) -> 1 (Date.getDay()), 6 (Domingo) -> 0
-                    const dayValue = (index + 1) % 7;
+        <>
+            <div
+                onClick={() => setIsCalendarOpen(true)}
+                className="bg-white dark:bg-slate-900 rounded-[32px] p-6 border border-slate-100 dark:border-slate-800 shadow-sm w-full transition-colors duration-300 cursor-pointer hover:border-indigo-200 dark:hover:border-indigo-800 group relative"
+            >
+                <div className="flex justify-between items-center mb-4">
+                    <h3 className="text-slate-800 dark:text-white font-black text-sm uppercase tracking-tight">Frequência de Treinos</h3>
+                    <span className="text-[10px] uppercase font-bold text-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity">Ver Histórico</span>
+                </div>
 
-                    const isTrainingDay = trainingDays.includes(dayValue);
-                    const isCompleted = completedDays.includes(dayValue);
-                    const isToday = dayValue === today;
+                <div className="flex justify-between items-center">
+                    {daysOfWeek.map((day, index) => {
+                        // Ajuste de índice: 0 (Segunda) -> 1 (Date.getDay()), 6 (Domingo) -> 0
+                        const dayValue = (index + 1) % 7;
 
-                    return (
-                        <div key={index} className="flex flex-col items-center gap-2">
-                            <div
-                                className={`w-9 h-9 md:w-12 md:h-12 rounded-2xl flex items-center justify-center font-bold text-sm transition-all ${isCompleted
-                                    ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/30'
-                                    : isTrainingDay
-                                        ? 'border-2 border-emerald-400 text-emerald-600 bg-emerald-50'
-                                        : isToday
-                                            ? 'bg-amber-100 text-amber-600 border border-amber-200'
-                                            : 'border border-slate-100 text-slate-300'
-                                    }`}
-                            >
-                                {isCompleted ? <CheckCircle2 size={20} /> : day}
+                        const isTrainingDay = trainingDays.includes(dayValue);
+                        const isCompleted = completedDays.includes(dayValue);
+                        const isToday = dayValue === today;
+
+                        return (
+                            <div key={index} className="flex flex-col items-center gap-2">
+                                <div
+                                    className={`w-9 h-9 md:w-12 md:h-12 rounded-2xl flex items-center justify-center font-bold text-sm transition-all ${isCompleted
+                                        ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/30'
+                                        : isTrainingDay
+                                            ? 'border-2 border-emerald-400 text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30'
+                                            : isToday
+                                                ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-700'
+                                                : 'border border-slate-100 dark:border-slate-800 text-slate-300 dark:text-slate-600'
+                                        }`}
+                                >
+                                    {isCompleted ? <CheckCircle2 size={20} /> : day}
+                                </div>
+                                {isToday && (
+                                    <div className="w-1.5 h-1.5 rounded-full bg-amber-400"></div>
+                                )}
                             </div>
-                            {isToday && (
-                                <div className="w-1.5 h-1.5 rounded-full bg-amber-400"></div>
-                            )}
-                        </div>
-                    );
-                })}
+                        );
+                    })}
+                </div>
             </div>
-        </div>
+
+            {isCalendarOpen && (
+                <FrequencyCalendarModal
+                    student={student}
+                    onClose={() => setIsCalendarOpen(false)}
+                />
+            )}
+        </>
     );
 };

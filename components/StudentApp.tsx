@@ -136,11 +136,11 @@ const StudentApp: React.FC<StudentAppProps> = ({
   if (!program || !program.split || program.split.length === 0) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center p-8 text-center animate-in fade-in duration-500">
-        <div className="w-20 h-20 bg-slate-100 text-slate-300 rounded-full flex items-center justify-center mb-6">
+        <div className="w-20 h-20 bg-slate-100 dark:bg-slate-900 text-slate-300 dark:text-slate-700 rounded-full flex items-center justify-center mb-6">
           <Dumbbell size={40} />
         </div>
-        <h2 className="text-2xl font-black text-slate-800 mb-2">Sem Treino Ativo</h2>
-        <p className="text-slate-500 text-sm max-w-xs">Seu Personal ainda não liberou sua ficha de treino para este período.</p>
+        <h2 className="text-2xl font-black text-slate-800 dark:text-white mb-2">Sem Treino Ativo</h2>
+        <p className="text-slate-500 dark:text-slate-400 text-sm max-w-xs">Seu Personal ainda não liberou sua ficha de treino para este período.</p>
       </div>
     );
   }
@@ -254,19 +254,19 @@ const StudentApp: React.FC<StudentAppProps> = ({
   if (isFinished) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center p-8 text-center animate-in zoom-in-95 duration-500">
-        <div className="w-24 h-24 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mb-6 shadow-xl shadow-emerald-100/50">
+        <div className="w-24 h-24 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center mb-6 shadow-xl shadow-emerald-100/50 dark:shadow-emerald-900/10">
           <Award size={48} />
         </div>
-        <h2 className="text-3xl font-black text-slate-900 mb-2">Treino Concluído!</h2>
-        <p className="text-slate-500 font-medium mb-8">Excelente trabalho hoje. Suas cargas foram salvas na ficha.</p>
+        <h2 className="text-3xl font-black text-slate-900 dark:text-white mb-2">Treino Concluído!</h2>
+        <p className="text-slate-500 dark:text-slate-400 font-medium mb-8">Excelente trabalho hoje. Suas cargas foram salvas na ficha.</p>
         <div className="grid grid-cols-2 gap-4 w-full max-w-xs">
-          <div className="bg-white p-4 rounded-3xl border border-slate-100 shadow-sm">
-            <p className="text-[10px] font-black text-slate-400 uppercase">Tempo Total</p>
-            <p className="text-xl font-black text-slate-800">{formatTime(seconds)}</p>
+          <div className="bg-white dark:bg-slate-900 p-4 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm transition-colors">
+            <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase">Tempo Total</p>
+            <p className="text-xl font-black text-slate-800 dark:text-white">{formatTime(seconds)}</p>
           </div>
-          <div className="bg-white p-4 rounded-3xl border border-slate-100 shadow-sm">
-            <p className="text-[10px] font-black text-slate-400 uppercase">Conclusão</p>
-            <p className="text-xl font-black text-emerald-600">{Math.round((completedExercises.size / (currentDay?.exercises?.length || 1)) * 100)}%</p>
+          <div className="bg-white dark:bg-slate-900 p-4 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm transition-colors">
+            <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase">Conclusão</p>
+            <p className="text-xl font-black text-emerald-600 dark:text-emerald-400">{Math.round((completedExercises.size / (currentDay?.exercises?.length || 1)) * 100)}%</p>
           </div>
         </div>
       </div>
@@ -278,7 +278,7 @@ const StudentApp: React.FC<StudentAppProps> = ({
       {/* Rest Timer Overlay */}
       {restSeconds !== null && restSeconds >= 0 && (
         <div className="fixed top-20 left-4 right-4 z-50 animate-in slide-in-from-top-4 duration-300">
-          <div className="bg-slate-900 text-white rounded-[28px] p-3 flex items-center justify-between shadow-2xl border border-slate-800 backdrop-blur-md bg-slate-900/95">
+          <div className="bg-slate-900 dark:bg-slate-950 text-white rounded-[28px] p-3 flex items-center justify-between shadow-2xl border border-slate-800 dark:border-slate-800 backdrop-blur-md bg-slate-900/95 dark:bg-slate-950/95">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 bg-indigo-600 rounded-2xl flex flex-col items-center justify-center shadow-lg shadow-indigo-600/20">
                 <span className="text-[7px] font-black uppercase text-white/60">Rest</span>
@@ -300,27 +300,24 @@ const StudentApp: React.FC<StudentAppProps> = ({
         </div>
       )}
 
-
-
-
-      <div className="bg-white rounded-[32px] p-6 border border-slate-100 shadow-sm mb-6">
+      <div className="bg-white dark:bg-slate-900 rounded-[32px] p-6 border border-slate-100 dark:border-slate-800 shadow-sm mb-6 transition-colors">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             {onBack && (
               <button
                 onClick={onBack}
-                className="p-2 bg-slate-50 rounded-xl text-slate-600 hover:bg-slate-100 transition-colors"
+                className="p-2 bg-slate-50 dark:bg-slate-800 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
               >
                 <ArrowLeft size={20} />
               </button>
             )}
             <div>
-              <h2 className="text-2xl font-black text-slate-900">Meu Treino</h2>
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{program.name}</p>
+              <h2 className="text-2xl font-black text-slate-900 dark:text-white">Meu Treino</h2>
+              <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">{program.name}</p>
             </div>
           </div>
-          <div className={`flex items-center gap-1.5 text-xs font-black px-4 py-2 rounded-2xl border transition-all ${isWorkoutActive ? 'bg-indigo-600 text-white border-indigo-600 shadow-lg shadow-indigo-600/20' : 'bg-slate-50 text-slate-400 border-slate-100'}`}>
-            <Timer size={16} className={isWorkoutActive ? 'text-white' : 'text-slate-400'} />
+          <div className={`flex items-center gap-1.5 text-xs font-black px-4 py-2 rounded-2xl border transition-all ${isWorkoutActive ? 'bg-indigo-600 text-white border-indigo-600 shadow-lg shadow-indigo-600/20' : 'bg-slate-50 dark:bg-slate-800 text-slate-400 dark:text-slate-500 border-slate-100 dark:border-slate-800'}`}>
+            <Timer size={16} className={isWorkoutActive ? 'text-white' : 'text-slate-400 dark:text-slate-500'} />
             <span className="tabular-nums">{formatTime(seconds)}</span>
           </div>
         </div>
@@ -339,7 +336,7 @@ const StudentApp: React.FC<StudentAppProps> = ({
               }}
               className={`flex-shrink-0 min-w-[90px] px-4 py-3 rounded-2xl text-xs font-black uppercase transition-all border ${currentDayIndex === i
                 ? 'bg-indigo-600 text-white border-indigo-600 shadow-lg shadow-indigo-600/20'
-                : 'bg-white text-slate-400 border-slate-200'
+                : 'bg-white dark:bg-slate-900 text-slate-400 dark:text-slate-500 border-slate-200 dark:border-slate-800'
                 }`}
             >
               {d.day}
@@ -348,26 +345,26 @@ const StudentApp: React.FC<StudentAppProps> = ({
         </div>
       )}
 
-      <div className={`bg-white rounded-[32px] p-6 border border-slate-200 flex flex-col gap-4 relative overflow-hidden shadow-sm transition-all ${isWorkoutActive ? 'ring-2 ring-indigo-500' : ''}`}>
+      <div className={`bg-white dark:bg-slate-900 rounded-[32px] p-6 border border-slate-200 dark:border-slate-800 flex flex-col gap-4 relative overflow-hidden shadow-sm transition-all ${isWorkoutActive ? 'ring-2 ring-indigo-500' : ''}`}>
         <div className="relative z-10">
           <div className="flex items-center gap-2 mb-1">
-            <Zap size={14} className="text-indigo-600" />
-            <span className="text-[10px] font-black uppercase text-indigo-600 tracking-widest">Foco do Dia</span>
+            <Zap size={14} className="text-indigo-600 dark:text-indigo-400" />
+            <span className="text-[10px] font-black uppercase text-indigo-600 dark:text-indigo-400 tracking-widest">Foco do Dia</span>
           </div>
-          <h3 className="text-2xl font-black text-slate-900 leading-tight">{currentDay.label}</h3>
+          <h3 className="text-2xl font-black text-slate-900 dark:text-white leading-tight">{currentDay.label}</h3>
         </div>
 
         {!isWorkoutActive ? (
           <button
             onClick={() => setIsWorkoutActive(true)}
-            className="relative z-10 w-full bg-slate-900 text-white py-5 rounded-2xl font-black uppercase text-xs tracking-[0.2em] flex items-center justify-center gap-3 active:scale-95 transition-all shadow-xl hover:bg-slate-800"
+            className="relative z-10 w-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 py-5 rounded-2xl font-black uppercase text-xs tracking-[0.2em] flex items-center justify-center gap-3 active:scale-95 transition-all shadow-xl hover:bg-slate-800 dark:hover:bg-slate-100"
           >
-            <Play size={18} fill="white" />
+            <Play size={18} fill="currentColor" />
             Iniciar Sessão
           </button>
         ) : (
           <div className="relative z-10 flex items-center justify-between">
-            <div className="flex items-center gap-2 text-emerald-600 font-bold text-[10px] uppercase bg-emerald-50 w-fit px-3 py-1.5 rounded-full border border-emerald-100">
+            <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-bold text-[10px] uppercase bg-emerald-50 dark:bg-emerald-900/20 w-fit px-3 py-1.5 rounded-full border border-emerald-100 dark:border-emerald-800">
               <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
               Ativo
             </div>
@@ -375,16 +372,16 @@ const StudentApp: React.FC<StudentAppProps> = ({
         )}
 
         <div className="grid grid-cols-2 gap-3 relative z-10">
-          <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
-            <p className="text-[10px] font-black text-slate-400 uppercase mb-1">Exercícios</p>
-            <p className="text-lg font-black text-slate-800">{currentDay.exercises.length}</p>
+          <div className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-2xl border border-slate-100 dark:border-slate-800 transition-colors">
+            <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase mb-1">Exercícios</p>
+            <p className="text-lg font-black text-slate-800 dark:text-white">{currentDay.exercises.length}</p>
           </div>
-          <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
-            <p className="text-[10px] font-black text-slate-400 uppercase mb-1">Concluídos</p>
-            <p className="text-lg font-black text-slate-800">{completedExercises.size}/{currentDay.exercises.length}</p>
+          <div className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-2xl border border-slate-100 dark:border-slate-800 transition-colors">
+            <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase mb-1">Concluídos</p>
+            <p className="text-lg font-black text-slate-800 dark:text-white">{completedExercises.size}/{currentDay.exercises.length}</p>
           </div>
         </div>
-        <Dumbbell className="absolute -right-6 -bottom-6 w-32 h-32 text-slate-50 -rotate-12" />
+        <Dumbbell className="absolute -right-6 -bottom-6 w-32 h-32 text-slate-50 dark:text-slate-800/50 -rotate-12 transition-colors" />
       </div>
 
       <div className={`space-y-3 transition-all duration-500 ${!isWorkoutActive ? 'opacity-40 grayscale pointer-events-none' : 'opacity-100'}`}>
@@ -398,8 +395,10 @@ const StudentApp: React.FC<StudentAppProps> = ({
           return (
             <div
               key={idx}
-              className={`bg-white rounded-[28px] border transition-all ${activeExerciseIndex === idx ? 'border-indigo-500 ring-4 ring-indigo-50 shadow-lg' : 'border-slate-200'
-                } ${isCompleted ? 'bg-slate-50 border-emerald-100' : ''}`}
+              className={`bg-white dark:bg-slate-900 rounded-[28px] border transition-all ${activeExerciseIndex === idx
+                ? 'border-indigo-500 ring-4 ring-indigo-50 dark:ring-indigo-900/20 shadow-lg'
+                : 'border-slate-200 dark:border-slate-800'
+                } ${isCompleted ? 'bg-slate-50 dark:bg-slate-800/40 border-emerald-100 dark:border-emerald-900/40' : ''}`}
             >
               <div
                 className="p-4 flex items-center justify-between cursor-pointer"
@@ -413,22 +412,24 @@ const StudentApp: React.FC<StudentAppProps> = ({
                     }}
                     className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all ${isCompleted
                       ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30'
-                      : 'bg-slate-100 text-slate-300'
+                      : 'bg-slate-100 dark:bg-slate-800 text-slate-300 dark:text-slate-600'
                       }`}
                   >
                     <CheckCircle2 size={26} />
                   </button>
                   <div>
-                    <h4 className={`font-bold text-sm transition-all ${isCompleted ? 'text-slate-400 line-through' : 'text-slate-800'}`}>
+                    <h4 className={`font-bold text-sm transition-all ${isCompleted ? 'text-slate-400 dark:text-slate-500 line-through' : 'text-slate-800 dark:text-white'}`}>
                       {ex.name}
                     </h4>
                     <div className="flex items-center gap-2 mt-0.5">
-                      <span className={`text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-tighter ${isCompleted ? 'bg-emerald-100 text-emerald-700' : 'bg-indigo-50 text-indigo-600'
+                      <span className={`text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-tighter ${isCompleted
+                        ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400'
+                        : 'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400'
                         }`}>
                         {doneSetsCount}/{setsCount} Séries
                       </span>
                       {lastWeight && !isCompleted && (
-                        <span className="text-[9px] font-bold text-slate-400 flex items-center gap-1">
+                        <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 flex items-center gap-1">
                           <History size={10} /> Ant: {lastWeight}kg
                         </span>
                       )}
@@ -437,26 +438,26 @@ const StudentApp: React.FC<StudentAppProps> = ({
                 </div>
                 <div className="flex items-center gap-2">
                   {!isCompleted && ex.videoUrl && (
-                    <div className="w-8 h-8 bg-indigo-50 text-indigo-400 rounded-lg flex items-center justify-center">
+                    <div className="w-8 h-8 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-400 dark:text-indigo-500 rounded-lg flex items-center justify-center">
                       <Eye size={16} />
                     </div>
                   )}
-                  <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-slate-300 group-hover:bg-slate-100">
+                  <div className="w-10 h-10 bg-slate-50 dark:bg-slate-800 rounded-xl flex items-center justify-center text-slate-300 dark:text-slate-600 transition-colors">
                     <ChevronRight className={`transition-transform duration-300 ${activeExerciseIndex === idx ? 'rotate-90 text-indigo-500' : ''}`} size={18} />
                   </div>
                 </div>
               </div>
 
               {activeExerciseIndex === idx && (
-                <div className="px-5 pb-6 pt-2 border-t border-slate-50 space-y-5 animate-in slide-in-from-top-2 duration-300">
+                <div className="px-5 pb-6 pt-2 border-t border-slate-50 dark:border-slate-800 space-y-5 animate-in slide-in-from-top-2 duration-300">
 
                   {/* Set Tracker UI */}
                   <div className="space-y-3">
                     <div className="flex items-center justify-between px-1">
-                      <p className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Acompanhamento de Séries</p>
+                      <p className="text-[10px] font-black uppercase text-slate-400 dark:text-slate-500 tracking-wider">Acompanhamento de Séries</p>
                       <div className="flex items-center gap-2">
-                        <p className="text-[10px] font-black text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full">{ex.reps} Reps</p>
-                        <p className="text-[10px] font-black text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full flex items-center gap-1">
+                        <p className="text-[10px] font-black text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 px-2 py-0.5 rounded-full transition-colors">{ex.reps} Reps</p>
+                        <p className="text-[10px] font-black text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 px-2 py-0.5 rounded-full flex items-center gap-1 transition-colors">
                           <Clock size={10} /> {ex.rest} Descanso
                         </p>
                       </div>
@@ -468,7 +469,7 @@ const StudentApp: React.FC<StudentAppProps> = ({
                           onClick={() => toggleSet(ex.name, sIdx, setsCount, ex.rest)}
                           className={`w-12 h-12 rounded-2xl flex flex-col items-center justify-center border-2 transition-all active:scale-90 ${isSetDone
                             ? 'bg-emerald-500 border-emerald-500 text-white shadow-lg shadow-emerald-500/20'
-                            : 'bg-white border-slate-100 text-slate-400 hover:border-indigo-200'
+                            : 'bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 text-slate-400 dark:text-slate-500 hover:border-indigo-200 dark:hover:border-indigo-900'
                             }`}
                         >
                           <span className="text-[9px] font-black uppercase opacity-60">Série</span>
@@ -479,7 +480,7 @@ const StudentApp: React.FC<StudentAppProps> = ({
                     </div>
                   </div>
 
-                  <div className="h-px bg-slate-50 w-full"></div>
+                  <div className="h-px bg-slate-50 dark:bg-slate-800 w-full transition-colors"></div>
 
                   {/* Guia de Execução Inteligente (In-App) */}
                   <div className="flex flex-col gap-2">
@@ -502,7 +503,7 @@ const StudentApp: React.FC<StudentAppProps> = ({
                           });
                         }
                       }}
-                      className="w-full flex items-center justify-center gap-2 py-3 bg-indigo-50 text-indigo-600 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-indigo-100 transition-all border border-indigo-100"
+                      className="w-full flex items-center justify-center gap-2 py-3 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-all border border-indigo-100 dark:border-indigo-800"
                     >
                       <Info size={14} />
                       {ex.videoUrl ? 'Ver Guia de Execução' : 'Como Fazer? (Guia Rápido)'}
@@ -511,23 +512,23 @@ const StudentApp: React.FC<StudentAppProps> = ({
 
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1.5">
-                      <label className="text-[9px] font-black uppercase text-slate-400 ml-2">Carga Usada (kg)</label>
+                      <label className="text-[9px] font-black uppercase text-slate-400 dark:text-slate-500 ml-2">Carga Usada (kg)</label>
                       <div className="relative">
                         <input
                           type="number"
                           placeholder={ex.weight?.toString() || "0"}
                           value={exerciseDetails[ex.name]?.weight ?? (ex.weight?.toString() || '')}
                           onChange={(e) => updateDetail(ex.name, 'weight', e.target.value)}
-                          className="w-full bg-slate-100 border-2 border-transparent focus:border-indigo-500 focus:bg-white rounded-2xl py-3.5 px-4 text-sm font-black transition-all shadow-inner"
+                          className="w-full bg-slate-100 dark:bg-slate-800 border-2 border-transparent focus:border-indigo-500 dark:focus:border-indigo-500 focus:bg-white dark:focus:bg-slate-900 rounded-2xl py-3.5 px-4 text-sm font-black text-slate-900 dark:text-white transition-all shadow-inner"
                         />
                       </div>
                     </div>
                     <div className="space-y-1.5">
-                      <label className="text-[9px] font-black uppercase text-slate-400 ml-2">Dificuldade</label>
+                      <label className="text-[9px] font-black uppercase text-slate-400 dark:text-slate-500 ml-2">Dificuldade</label>
                       <select
                         value={exerciseDetails[ex.name]?.rpe || ''}
                         onChange={(e) => updateDetail(ex.name, 'rpe', e.target.value)}
-                        className="w-full bg-slate-100 border-2 border-transparent focus:border-indigo-500 focus:bg-white rounded-2xl py-3.5 px-4 text-sm font-black text-slate-700 transition-all shadow-inner"
+                        className="w-full bg-slate-100 dark:bg-slate-800 border-2 border-transparent focus:border-indigo-500 dark:focus:border-indigo-500 focus:bg-white dark:focus:bg-slate-900 rounded-2xl py-3.5 px-4 text-sm font-black text-slate-700 dark:text-slate-300 transition-all shadow-inner"
                       >
                         <option value="">Selecione</option>
                         <option value="1">Muito Leve</option>
@@ -542,9 +543,9 @@ const StudentApp: React.FC<StudentAppProps> = ({
                   </div>
 
                   {ex.notes && (
-                    <div className="p-4 bg-indigo-50/50 rounded-2xl border border-indigo-100/50">
-                      <p className="text-[10px] font-black text-indigo-600 uppercase mb-1">Dica do Personal</p>
-                      <p className="text-xs text-indigo-900 font-medium leading-relaxed italic">"{ex.notes}"</p>
+                    <div className="p-4 bg-indigo-50/50 dark:bg-indigo-900/10 rounded-2xl border border-indigo-100/50 dark:border-indigo-900/30">
+                      <p className="text-[10px] font-black text-indigo-600 dark:text-indigo-400 uppercase mb-1">Dica do Personal</p>
+                      <p className="text-xs text-indigo-900 dark:text-indigo-200 font-medium leading-relaxed italic">"{ex.notes}"</p>
                     </div>
                   )}
                 </div>
@@ -556,21 +557,21 @@ const StudentApp: React.FC<StudentAppProps> = ({
 
       {/* Execution Guide Modal (In-App Experience) */}
       {showExecutionGuide && (
-        <div className="fixed inset-0 z-[100] bg-slate-900/80 backdrop-blur-xl flex items-center justify-center p-4 animate-in fade-in duration-300">
-          <div className="bg-white w-full max-w-lg rounded-[40px] overflow-hidden relative shadow-2xl flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-300">
-            <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-white relative z-10">
+        <div className="fixed inset-0 z-[100] bg-slate-900/80 dark:bg-slate-950/80 backdrop-blur-xl flex items-center justify-center p-4 animate-in fade-in duration-300">
+          <div className="bg-white dark:bg-slate-900 w-full max-w-lg rounded-[40px] overflow-hidden relative shadow-2xl flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-300 border dark:border-slate-800">
+            <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-white dark:bg-slate-900 relative z-10">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center">
+                <div className="w-10 h-10 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-2xl flex items-center justify-center">
                   <Play size={20} fill="currentColor" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-black text-slate-900 uppercase tracking-wider">Tutorial de Execução</h3>
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Mantenha a postura correta</p>
+                  <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider">Tutorial de Execução</h3>
+                  <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Mantenha a postura correta</p>
                 </div>
               </div>
               <button
                 onClick={() => setShowExecutionGuide(null)}
-                className="p-3 bg-slate-100 text-slate-500 rounded-2xl hover:bg-slate-200 transition-all"
+                className="p-3 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 rounded-2xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-all"
               >
                 <X size={20} />
               </button>
@@ -578,9 +579,9 @@ const StudentApp: React.FC<StudentAppProps> = ({
 
             <div className="w-full bg-slate-950 relative aspect-video">
               {isImageLoading && (
-                <div className="absolute inset-0 flex flex-col items-center justify-center z-10">
+                <div className="absolute inset-0 flex flex-col items-center justify-center z-10 bg-slate-950">
                   <Loader2 size={32} className="text-indigo-400 animate-spin mb-2" />
-                  <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Carregando Guia...</span>
+                  <span className="text-[10px] font-black text-slate-500 dark:text-slate-600 uppercase tracking-widest">Carregando Guia...</span>
                 </div>
               )}
 
@@ -602,18 +603,18 @@ const StudentApp: React.FC<StudentAppProps> = ({
               )}
             </div>
 
-            <div className="p-6 bg-slate-50">
+            <div className="p-6 bg-slate-50 dark:bg-slate-900/50">
               <div className="flex items-center gap-4 mb-4">
-                <div className="flex-1 p-4 bg-white rounded-2xl border border-slate-200">
-                  <p className="text-[9px] font-black text-slate-400 uppercase mb-1">Dica de Ouro</p>
-                  <p className="text-xs text-slate-700 font-medium leading-relaxed italic">
+                <div className="flex-1 p-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800">
+                  <p className="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase mb-1">Dica de Ouro</p>
+                  <p className="text-xs text-slate-700 dark:text-slate-300 font-medium leading-relaxed italic">
                     {showExecutionGuide.notes || "Controle o peso na descida e sinta a musculatura trabalhando. 🧠💪"}
                   </p>
                 </div>
               </div>
               <button
                 onClick={() => setShowExecutionGuide(null)}
-                className="w-full py-4 bg-slate-900 text-white rounded-2xl font-black uppercase text-[11px] tracking-widest shadow-xl active:scale-[0.98] transition-all"
+                className="w-full py-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl font-black uppercase text-[11px] tracking-widest shadow-xl active:scale-[0.98] transition-all hover:bg-slate-800 dark:hover:bg-slate-100"
               >
                 Voltar para o Treino
               </button>
@@ -628,7 +629,7 @@ const StudentApp: React.FC<StudentAppProps> = ({
           <div className="bg-indigo-600 p-1 rounded-[32px] shadow-2xl shadow-indigo-600/40">
             <button
               onClick={handleFinish}
-              className="w-full bg-white text-indigo-600 font-black uppercase text-[11px] tracking-[0.2em] py-4 rounded-[28px] flex items-center justify-center gap-3 active:scale-[0.98] transition-all hover:bg-slate-50"
+              className="w-full bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 font-black uppercase text-[11px] tracking-[0.2em] py-4 rounded-[28px] flex items-center justify-center gap-3 active:scale-[0.98] transition-all hover:bg-slate-50 dark:hover:bg-slate-800"
             >
               Encerrar Treino
               <ArrowRight size={18} />
