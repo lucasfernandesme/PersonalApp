@@ -7,7 +7,7 @@ interface ScheduleEventModalProps {
     initialDate: Date;
     existingEvent?: ScheduleEvent;
     students: Student[];
-    onSave: (event: Partial<ScheduleEvent>) => void;
+    onSave: (event: Partial<ScheduleEvent> & { recurringDays?: number[], recurrenceDuration?: number }) => void;
     onDelete?: (eventId: string) => void;
     onClose: () => void;
 }
@@ -21,6 +21,8 @@ const ScheduleEventModal: React.FC<ScheduleEventModalProps> = ({ initialDate, ex
     const [location, setLocation] = useState('');
     const [description, setDescription] = useState('');
     const [isRecurring, setIsRecurring] = useState(false);
+    const [recurringDays, setRecurringDays] = useState<number[]>([]);
+    const [recurrenceDuration, setRecurrenceDuration] = useState<number>(1);
     const [status, setStatus] = useState<'planned' | 'completed' | 'cancelled'>('planned');
 
     useEffect(() => {
@@ -86,6 +88,8 @@ const ScheduleEventModal: React.FC<ScheduleEventModalProps> = ({ initialDate, ex
             location,
             description,
             isRecurring,
+            recurringDays: isRecurring ? recurringDays : undefined,
+            recurrenceDuration: isRecurring ? recurrenceDuration : undefined,
             status
         });
     };
@@ -218,16 +222,73 @@ const ScheduleEventModal: React.FC<ScheduleEventModalProps> = ({ initialDate, ex
                         </div>
                     </div>
 
-                    {/* Recurring Toggle */}
-                    <div className="flex items-center gap-3 p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl cursor-pointer" onClick={() => setIsRecurring(!isRecurring)}>
-                        <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${isRecurring ? 'bg-indigo-600 border-indigo-600' : 'border-slate-300 dark:border-slate-600'}`}>
-                            {isRecurring && <CheckCircle2 size={14} className="text-white" />}
+                    {/* Recurring Options */}
+                    <div className="space-y-3 p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl transition-all">
+                        <div className="flex items-center gap-3 cursor-pointer" onClick={() => setIsRecurring(!isRecurring)}>
+                            <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${isRecurring ? 'bg-indigo-600 border-indigo-600' : 'border-slate-300 dark:border-slate-600'}`}>
+                                {isRecurring && <CheckCircle2 size={14} className="text-white" />}
+                            </div>
+                            <div className="flex-1">
+                                <p className="font-bold text-slate-800 dark:text-white text-sm">Repetir Aula</p>
+                                <p className="text-xs text-slate-400 dark:text-slate-500">Criar agendamentos recorrentes.</p>
+                            </div>
+                            <Repeat size={20} className={isRecurring ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400'} />
                         </div>
-                        <div className="flex-1">
-                            <p className="font-bold text-slate-800 dark:text-white text-sm">Repetir toda semana</p>
-                            <p className="text-xs text-slate-400 dark:text-slate-500">Cria aulas recorrentes no mesmo horário.</p>
-                        </div>
-                        <Repeat size={20} className={isRecurring ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400'} />
+
+                        {isRecurring && (
+                            <div className="pt-3 border-t border-slate-200 dark:border-slate-700 space-y-4 animate-in slide-in-from-top-2 duration-200">
+
+                                {/* Days of Week */}
+                                <div>
+                                    <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase mb-2">Dias da Semana</label>
+                                    <div className="flex gap-2 justify-between">
+                                        {['D', 'S', 'T', 'Q', 'Q', 'S', 'S'].map((day, idx) => {
+                                            const isSelected = recurringDays.includes(idx);
+                                            return (
+                                                <button
+                                                    key={idx}
+                                                    onClick={() => {
+                                                        if (isSelected) {
+                                                            setRecurringDays(prev => prev.filter(d => d !== idx));
+                                                        } else {
+                                                            setRecurringDays(prev => [...prev, idx]);
+                                                        }
+                                                    }}
+                                                    className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${isSelected
+                                                        ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20 scale-105'
+                                                        : 'bg-white dark:bg-slate-700 text-slate-400 dark:text-slate-400 hover:bg-indigo-100 dark:hover:bg-slate-600'
+                                                        }`}
+                                                >
+                                                    {day}
+                                                </button>
+                                            )
+                                        })}
+                                    </div>
+                                </div>
+
+                                {/* Duration */}
+                                <div>
+                                    <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase mb-2">Repetir por</label>
+                                    <div className="relative">
+                                        <select
+                                            value={recurrenceDuration}
+                                            onChange={(e) => setRecurrenceDuration(parseInt(e.target.value))}
+                                            className="w-full px-4 py-3 bg-white dark:bg-slate-700 border-none rounded-2xl font-bold text-slate-800 dark:text-white appearance-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
+                                        >
+                                            {Array.from({ length: 12 }, (_, i) => i + 1).map(months => (
+                                                <option key={months} value={months}>
+                                                    {months} {months === 1 ? 'Mês' : 'Meses'}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+                                            <Repeat size={16} />
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        )}
                     </div>
 
                 </div>

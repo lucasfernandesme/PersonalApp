@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import {
   Users,
@@ -55,16 +54,16 @@ const TrainerDashboard: React.FC<TrainerDashboardProps> = ({
       {/* Header */}
       {!onlyList && (
         <div className="flex flex-col gap-2">
-          <h2 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">Olá, Lucas 👋</h2>
-          <p className="text-slate-400 dark:text-slate-500 font-medium">Você tem {activeCount} alunos ativos.</p>
+          <h2 className="text-3xl font-black text-zinc-900 dark:text-white tracking-tight">Olá, Lucas 👋</h2>
+          <p className="text-zinc-400 dark:text-zinc-500 font-medium">Você tem {activeCount} alunos ativos.</p>
         </div>
       )}
 
       {/* Título da Seção quando em modo Lista */}
       {onlyList && (
         <div className="flex flex-col gap-2">
-          <h2 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">Meus Alunos</h2>
-          <p className="text-slate-400 dark:text-slate-500 font-medium">Gerencie sua base de clientes ({students.length}).</p>
+          <h2 className="text-3xl font-black text-zinc-900 dark:text-white tracking-tight">Meus Alunos</h2>
+          <p className="text-zinc-400 dark:text-zinc-500 font-medium">Gerencie sua base de clientes ({students.length}).</p>
         </div>
       )}
 
@@ -73,42 +72,42 @@ const TrainerDashboard: React.FC<TrainerDashboardProps> = ({
         <div className="grid grid-cols-2 gap-4">
           <button
             onClick={onOpenStudentRegistration}
-            className="bg-white dark:bg-slate-900 p-6 rounded-[32px] border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col items-start gap-4 hover:border-indigo-200 dark:hover:border-indigo-800 transition-all active:scale-95 group"
+            className="bg-white dark:bg-zinc-900 p-6 rounded-[32px] border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col items-start gap-4 hover:border-indigo-200 dark:hover:border-indigo-800 transition-all active:scale-95 group"
           >
             <div className="w-12 h-12 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-2xl flex items-center justify-center group-hover:bg-indigo-600 group-hover:text-white transition-all">
               <UserPlus size={24} />
             </div>
             <div className="text-left">
-              <p className="font-black text-slate-800 dark:text-white text-sm">Novo Aluno</p>
-              <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase mt-1">Cadastro Completo</p>
+              <p className="font-black text-zinc-800 dark:text-white text-sm">Novo Aluno</p>
+              <p className="text-[10px] text-zinc-400 dark:text-zinc-500 font-bold uppercase mt-1">Cadastro Completo</p>
             </div>
           </button>
 
           <button
             onClick={onOpenExerciseManager}
-            className="bg-white dark:bg-slate-900 p-6 rounded-[32px] border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col items-start gap-4 hover:border-emerald-200 dark:hover:border-emerald-800 transition-all active:scale-95 group"
+            className="bg-white dark:bg-zinc-900 p-6 rounded-[32px] border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col items-start gap-4 hover:border-emerald-200 dark:hover:border-emerald-800 transition-all active:scale-95 group"
           >
             <div className="w-12 h-12 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-2xl flex items-center justify-center group-hover:bg-emerald-600 group-hover:text-white transition-all">
               <PlusCircle size={24} />
             </div>
             <div className="text-left">
-              <p className="font-black text-slate-800 dark:text-white text-sm">Exercícios</p>
-              <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase mt-1">Biblioteca</p>
+              <p className="font-black text-zinc-800 dark:text-white text-sm">Exercícios</p>
+              <p className="text-[10px] text-zinc-400 dark:text-zinc-500 font-bold uppercase mt-1">Biblioteca</p>
             </div>
           </button>
 
           <button
             onClick={onOpenWorkoutLibrary}
-            className="col-span-2 bg-white dark:bg-slate-900 p-6 rounded-[32px] border border-slate-200 dark:border-slate-800 shadow-sm flex flex-row items-center gap-6 hover:border-amber-200 dark:hover:border-amber-800 transition-all active:scale-95 group"
+            className="col-span-2 bg-white dark:bg-zinc-900 p-6 rounded-[32px] border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-row items-center gap-6 hover:border-amber-200 dark:hover:border-amber-800 transition-all active:scale-95 group"
           >
             <div className="w-14 h-14 bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 rounded-2xl flex items-center justify-center group-hover:bg-amber-600 group-hover:text-white transition-all transition-colors">
               <BookOpen size={28} />
             </div>
             <div className="text-left flex-1">
-              <p className="font-black text-slate-800 dark:text-white text-lg">Treinos Prontos</p>
-              <p className="text-xs text-slate-400 dark:text-slate-500 font-bold uppercase mt-1">Biblioteca de Treinos</p>
+              <p className="font-black text-zinc-800 dark:text-white text-lg">Treinos Prontos</p>
+              <p className="text-xs text-zinc-400 dark:text-zinc-500 font-bold uppercase mt-1">Biblioteca de Treinos</p>
             </div>
-            <div className="w-10 h-10 bg-slate-50 dark:bg-slate-800 rounded-xl flex items-center justify-center text-slate-300 dark:text-slate-600 group-hover:bg-amber-600 group-hover:text-white transition-all">
+            <div className="w-10 h-10 bg-zinc-50 dark:bg-zinc-800 rounded-xl flex items-center justify-center text-zinc-300 dark:text-zinc-600 group-hover:bg-amber-600 group-hover:text-white transition-all">
               <ChevronRight size={20} />
             </div>
           </button>
@@ -117,28 +116,28 @@ const TrainerDashboard: React.FC<TrainerDashboardProps> = ({
 
       {/* Tabs - Só aparece na tela de Meus Alunos */}
       {onlyList && (
-        <div className="flex bg-slate-100/50 dark:bg-slate-800/50 p-1.5 rounded-[24px] gap-1">
+        <div className="flex bg-zinc-100/50 dark:bg-zinc-800/50 p-1.5 rounded-[24px] gap-1">
           <button
             onClick={() => setActiveTab('active')}
             className={`flex-1 py-3 px-4 rounded-[18px] text-xs font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 ${activeTab === 'active'
-              ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm'
-              : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'
+              ? 'bg-white dark:bg-zinc-700 text-indigo-600 dark:text-indigo-400 shadow-sm'
+              : 'text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300'
               }`}
           >
             Ativos
-            <span className={`px-2 py-0.5 rounded-full text-[10px] ${activeTab === 'active' ? 'bg-indigo-50 dark:bg-indigo-900/30' : 'bg-slate-200 dark:bg-slate-700'}`}>
+            <span className={`px-2 py-0.5 rounded-full text-[10px] ${activeTab === 'active' ? 'bg-indigo-50 dark:bg-indigo-900/30' : 'bg-zinc-200 dark:bg-zinc-700'}`}>
               {activeCount}
             </span>
           </button>
           <button
             onClick={() => setActiveTab('inactive')}
             className={`flex-1 py-3 px-4 rounded-[18px] text-xs font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 ${activeTab === 'inactive'
-              ? 'bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-200 shadow-sm'
-              : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'
+              ? 'bg-white dark:bg-zinc-700 text-zinc-600 dark:text-zinc-200 shadow-sm'
+              : 'text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300'
               }`}
           >
             Inativos
-            <span className={`px-2 py-0.5 rounded-full text-[10px] ${activeTab === 'inactive' ? 'bg-slate-200 dark:bg-slate-600' : 'bg-slate-200 dark:bg-slate-700'}`}>
+            <span className={`px-2 py-0.5 rounded-full text-[10px] ${activeTab === 'inactive' ? 'bg-zinc-200 dark:bg-zinc-600' : 'bg-zinc-200 dark:bg-zinc-700'}`}>
               {inactiveCount}
             </span>
           </button>
@@ -147,11 +146,11 @@ const TrainerDashboard: React.FC<TrainerDashboardProps> = ({
 
       {/* Search Bar */}
       <div className="relative">
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 dark:text-slate-600" size={20} />
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-300 dark:text-zinc-600" size={20} />
         <input
           type="text"
           placeholder="Buscar por nome do aluno..."
-          className="w-full pl-12 pr-6 py-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[24px] text-sm font-bold shadow-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-500 focus:border-transparent transition-all"
+          className="w-full pl-12 pr-6 py-5 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-[24px] text-sm font-bold shadow-sm text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-500 focus:border-transparent transition-all"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
@@ -160,7 +159,7 @@ const TrainerDashboard: React.FC<TrainerDashboardProps> = ({
       {/* Student List */}
       <div className="space-y-4">
         <div className="flex items-center justify-between px-2">
-          <h3 className="font-black text-slate-400 dark:text-slate-500 uppercase text-[10px] tracking-[0.2em]">
+          <h3 className="font-black text-zinc-400 dark:text-zinc-500 uppercase text-[10px] tracking-[0.2em]">
             {searchTerm ? `Resultados (${filteredStudents.length})` : 'Toque para gerenciar'}
           </h3>
         </div>
@@ -170,16 +169,16 @@ const TrainerDashboard: React.FC<TrainerDashboardProps> = ({
             <div
               key={student.id}
               onClick={() => onSelectStudent(student)}
-              className="group bg-white dark:bg-slate-900 p-5 rounded-[32px] border border-slate-200 dark:border-slate-800 flex items-center justify-between active:scale-[0.98] transition-all shadow-sm hover:shadow-md hover:border-indigo-100 dark:hover:border-indigo-800 cursor-pointer"
+              className="group bg-white dark:bg-zinc-900 p-5 rounded-[32px] border border-zinc-200 dark:border-zinc-800 flex items-center justify-between active:scale-[0.98] transition-all shadow-sm hover:shadow-md hover:border-indigo-100 dark:hover:border-indigo-800 cursor-pointer"
             >
               <div className="flex items-center gap-4">
                 <div className="relative">
                   <img src={student.avatar} className={`w-16 h-16 rounded-[22px] object-cover shadow-sm group-hover:ring-4 group-hover:ring-indigo-50 dark:group-hover:ring-indigo-900/30 transition-all ${student.isActive === false ? 'grayscale opacity-60' : ''}`} alt="" />
-                  <div className={`absolute -bottom-1 -right-1 w-5 h-5 border-4 border-white dark:border-slate-900 rounded-full ${student.isActive === false ? 'bg-slate-300 dark:bg-slate-600' : 'bg-emerald-500'}`}></div>
+                  <div className={`absolute -bottom-1 -right-1 w-5 h-5 border-4 border-white dark:border-zinc-900 rounded-full ${student.isActive === false ? 'bg-zinc-300 dark:bg-zinc-600' : 'bg-emerald-500'}`}></div>
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
-                    <h4 className="font-black text-slate-800 dark:text-white text-lg group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-1">{student.name}</h4>
+                    <h4 className="font-black text-zinc-800 dark:text-white text-lg group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-1">{student.name}</h4>
                     {student.phone && (
                       <button
                         onClick={(e) => {
@@ -202,23 +201,23 @@ const TrainerDashboard: React.FC<TrainerDashboardProps> = ({
                     )}
                   </div>
                   <div className="flex items-center gap-2 mt-1">
-                    <span className="text-[10px] font-black uppercase text-slate-400 bg-slate-50 dark:bg-slate-800 px-2 py-0.5 rounded-md">{student.goal}</span>
-                    <span className="w-1 h-1 bg-slate-200 dark:bg-slate-700 rounded-full"></span>
-                    <span className="text-[10px] font-black uppercase text-slate-400 dark:text-slate-500">{student.experience}</span>
+                    <span className="text-[10px] font-black uppercase text-zinc-400 bg-zinc-50 dark:bg-zinc-800 px-2 py-0.5 rounded-md">{student.goal}</span>
+                    <span className="w-1 h-1 bg-zinc-200 dark:bg-zinc-700 rounded-full"></span>
+                    <span className="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500">{student.experience}</span>
                   </div>
                 </div>
               </div>
               <div className="flex items-center gap-2">
                 <span className="hidden md:block text-[10px] font-black uppercase text-indigo-600 dark:text-indigo-400 opacity-0 group-hover:opacity-100 transition-opacity">Ver Perfil</span>
-                <div className="w-12 h-12 bg-slate-50 dark:bg-slate-800 rounded-2xl flex items-center justify-center text-slate-300 dark:text-slate-600 group-hover:bg-indigo-600 dark:group-hover:bg-indigo-500 group-hover:text-white transition-all shadow-sm">
+                <div className="w-12 h-12 bg-zinc-50 dark:bg-zinc-800 rounded-2xl flex items-center justify-center text-zinc-300 dark:text-zinc-600 group-hover:bg-indigo-600 dark:group-hover:bg-indigo-500 group-hover:text-white transition-all shadow-sm">
                   <ChevronRight size={24} />
                 </div>
               </div>
             </div>
           ))
         ) : (
-          <div className="py-12 text-center bg-white dark:bg-slate-900 rounded-[32px] border border-dashed border-slate-200 dark:border-slate-800">
-            <p className="text-slate-400 dark:text-slate-500 font-bold">
+          <div className="py-12 text-center bg-white dark:bg-zinc-900 rounded-[32px] border border-dashed border-zinc-200 dark:border-zinc-800">
+            <p className="text-zinc-400 dark:text-zinc-500 font-bold">
               {activeTab === 'inactive' ? 'Nenhum aluno inativo.' : 'Nenhum aluno encontrado.'}
             </p>
             {activeTab === 'active' && (
@@ -234,13 +233,13 @@ const TrainerDashboard: React.FC<TrainerDashboardProps> = ({
       </div>
 
       {!onlyList && (
-        <div className="bg-gradient-to-br from-slate-900 to-indigo-950 dark:from-indigo-950 dark:to-slate-950 rounded-[40px] p-8 text-white relative overflow-hidden shadow-2xl">
+        <div className="bg-gradient-to-br from-zinc-900 to-indigo-950 dark:from-indigo-950 dark:to-zinc-950 rounded-[40px] p-8 text-white relative overflow-hidden shadow-2xl">
           <div className="relative z-10 max-w-[200px]">
             <h4 className="font-black text-xl mb-2 leading-tight">Gere treinos em segundos</h4>
-            <p className="text-sm text-slate-400 font-medium mb-6">Use nossa inteligência para otimizar suas fichas.</p>
+            <p className="text-sm text-zinc-400 font-medium mb-6">Use nossa inteligência para otimizar suas fichas.</p>
             <button
               onClick={onOpenOnboarding}
-              className="bg-white dark:bg-slate-800 text-slate-900 dark:text-white px-6 py-3 rounded-2xl text-xs font-black uppercase tracking-widest shadow-lg active:scale-95 transition-all flex items-center gap-2"
+              className="bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white px-6 py-3 rounded-2xl text-xs font-black uppercase tracking-widest shadow-lg active:scale-95 transition-all flex items-center gap-2"
             >
               Começar IA
               <ExternalLink size={14} />

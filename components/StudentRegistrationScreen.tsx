@@ -78,26 +78,26 @@ const StudentRegistrationScreen: React.FC<StudentRegistrationScreenProps> = ({ o
   };
 
   return (
-    <div className="fixed inset-0 z-[100] bg-slate-50 dark:bg-slate-950 flex flex-col animate-in slide-in-from-right duration-300">
-      <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 p-4 sticky top-0 z-10 flex items-center gap-4">
-        <button onClick={onBack} className="p-2 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
+    <div className="fixed inset-0 z-[100] bg-zinc-50 dark:bg-zinc-950 flex flex-col animate-in slide-in-from-right duration-300">
+      <header className="bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 p-4 sticky top-0 z-10 flex items-center gap-4">
+        <button onClick={onBack} className="p-2 text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors">
           <ArrowLeft size={24} />
         </button>
-        <h2 className="text-lg font-black text-slate-900 dark:text-white">{initialData ? 'Editar Aluno' : 'Cadastrar Novo Aluno'}</h2>
+        <h2 className="text-lg font-black text-zinc-900 dark:text-white">{initialData ? 'Editar Aluno' : 'Cadastrar Novo Aluno'}</h2>
       </header>
 
       <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-8 pb-32">
         <div className="space-y-4">
-          <label className="text-[10px] font-black uppercase text-slate-400 dark:text-slate-500 ml-1">Informações Pessoais <span className="text-red-500">*</span></label>
+          <label className="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 ml-1">Informações Pessoais <span className="text-red-500">*</span></label>
 
           <div className="space-y-1">
             <div className="relative">
-              <User className="absolute left-4 top-4 text-slate-300 dark:text-slate-600" size={20} />
+              <User className="absolute left-4 top-4 text-zinc-300 dark:text-zinc-600" size={20} />
               <input
                 required
                 type="text"
                 placeholder="Nome completo"
-                className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl pl-12 pr-6 py-4 font-bold text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:ring-2 focus:ring-indigo-500 transition-colors"
+                className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl pl-12 pr-6 py-4 font-bold text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:ring-2 focus:ring-indigo-500 transition-colors"
                 value={formData.name}
                 onChange={e => setFormData({ ...formData, name: e.target.value })}
               />
@@ -106,12 +106,12 @@ const StudentRegistrationScreen: React.FC<StudentRegistrationScreenProps> = ({ o
 
           <div className="space-y-1">
             <div className="relative">
-              <Mail className="absolute left-4 top-4 text-slate-300 dark:text-slate-600" size={20} />
+              <Mail className="absolute left-4 top-4 text-zinc-300 dark:text-zinc-600" size={20} />
               <input
                 required
                 type="email"
                 placeholder="E-mail"
-                className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl pl-12 pr-6 py-4 font-bold text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:ring-2 focus:ring-indigo-500 transition-colors"
+                className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl pl-12 pr-6 py-4 font-bold text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:ring-2 focus:ring-indigo-500 transition-colors"
                 value={formData.email}
                 onChange={e => setFormData({ ...formData, email: e.target.value })}
               />
@@ -120,26 +120,26 @@ const StudentRegistrationScreen: React.FC<StudentRegistrationScreenProps> = ({ o
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
-              <label className="text-[9px] font-black uppercase text-slate-400 dark:text-slate-500 ml-1">WhatsApp <span className="text-red-500">*</span></label>
+              <label className="text-[9px] font-black uppercase text-zinc-400 dark:text-zinc-500 ml-1">WhatsApp <span className="text-red-500">*</span></label>
               <div className="relative">
-                <Phone className="absolute left-4 top-4 text-slate-300 dark:text-slate-600" size={20} />
+                <Phone className="absolute left-4 top-4 text-zinc-300 dark:text-zinc-600" size={20} />
                 <input
                   type="tel"
                   placeholder="(00) 00000-0000"
-                  className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl pl-12 pr-6 py-4 font-bold text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:ring-2 focus:ring-indigo-500 text-sm transition-colors"
+                  className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl pl-12 pr-6 py-4 font-bold text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:ring-2 focus:ring-indigo-500 text-sm transition-colors"
                   value={formData.phone}
                   onChange={e => setFormData({ ...formData, phone: formatPhone(e.target.value) })}
                 />
               </div>
             </div>
             <div className="space-y-1">
-              <label className="text-[9px] font-black uppercase text-slate-400 dark:text-slate-500 ml-1">Nascimento <span className="text-red-500">*</span></label>
+              <label className="text-[9px] font-black uppercase text-zinc-400 dark:text-zinc-500 ml-1">Nascimento <span className="text-red-500">*</span></label>
               <div className="relative">
-                <Calendar className="absolute left-4 top-4 text-slate-300 dark:text-slate-600" size={20} />
+                <Calendar className="absolute left-4 top-4 text-zinc-300 dark:text-zinc-600" size={20} />
                 <input
                   type="date"
                   required
-                  className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl pl-12 pr-4 py-4 font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 text-sm transition-colors"
+                  className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl pl-12 pr-4 py-4 font-bold text-zinc-900 dark:text-white focus:ring-2 focus:ring-indigo-500 text-sm transition-colors"
                   value={formData.birthDate}
                   onChange={e => setFormData({ ...formData, birthDate: e.target.value })}
                 />
@@ -148,7 +148,7 @@ const StudentRegistrationScreen: React.FC<StudentRegistrationScreenProps> = ({ o
           </div>
 
           <div className="space-y-3">
-            <label className="text-[10px] font-black uppercase text-slate-400 dark:text-slate-500 ml-1">Gênero <span className="text-red-500">*</span></label>
+            <label className="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 ml-1">Gênero <span className="text-red-500">*</span></label>
             <div className="grid grid-cols-3 gap-2">
               {[
                 { id: 'male', label: 'Masculino' },
@@ -161,7 +161,7 @@ const StudentRegistrationScreen: React.FC<StudentRegistrationScreenProps> = ({ o
                   onClick={() => setFormData({ ...formData, gender: g.id as any })}
                   className={`p-3 rounded-2xl border-2 font-bold text-[10px] uppercase tracking-tighter transition-all ${formData.gender === g.id
                     ? 'bg-indigo-600 text-white border-indigo-600 shadow-lg shadow-indigo-600/20'
-                    : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-400 dark:text-slate-500 hover:border-slate-300 dark:hover:border-slate-700'
+                    : 'bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-400 dark:text-zinc-500 hover:border-zinc-300 dark:hover:border-zinc-700'
                     }`}
                 >
                   {g.label}
@@ -173,7 +173,7 @@ const StudentRegistrationScreen: React.FC<StudentRegistrationScreenProps> = ({ o
 
         <div className="space-y-6">
           <div className="space-y-3">
-            <label className="text-[10px] font-black uppercase text-slate-400 dark:text-slate-500 ml-1">Objetivo principal</label>
+            <label className="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 ml-1">Objetivo principal</label>
             <div className="grid grid-cols-2 gap-3">
               {goals.map(g => (
                 <button
@@ -182,7 +182,7 @@ const StudentRegistrationScreen: React.FC<StudentRegistrationScreenProps> = ({ o
                   onClick={() => setFormData({ ...formData, goal: g })}
                   className={`p-4 rounded-2xl border-2 font-bold text-xs transition-all ${formData.goal === g
                     ? 'bg-indigo-600 text-white border-indigo-600 shadow-lg shadow-indigo-600/20'
-                    : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-400 dark:text-slate-500 hover:border-slate-300 dark:hover:border-slate-700'
+                    : 'bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-400 dark:text-zinc-500 hover:border-zinc-300 dark:hover:border-zinc-700'
                     }`}
                 >
                   {g}
@@ -191,7 +191,7 @@ const StudentRegistrationScreen: React.FC<StudentRegistrationScreenProps> = ({ o
             </div>
           </div>
           <div className="space-y-3">
-            <label className="text-[10px] font-black uppercase text-slate-400 dark:text-slate-500 ml-1">Nível de Experiência</label>
+            <label className="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 ml-1">Nível de Experiência</label>
             <div className="grid grid-cols-3 gap-2">
               {levels.map(l => (
                 <button
@@ -199,8 +199,8 @@ const StudentRegistrationScreen: React.FC<StudentRegistrationScreenProps> = ({ o
                   key={l.id}
                   onClick={() => setFormData({ ...formData, experience: l.id })}
                   className={`p-3 rounded-2xl border-2 font-bold text-[10px] uppercase tracking-tighter transition-all ${formData.experience === l.id
-                    ? 'bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 border-slate-900 dark:border-slate-100 shadow-lg shadow-slate-900/20 dark:shadow-slate-100/10'
-                    : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-400 dark:text-slate-500 hover:border-slate-300 dark:hover:border-slate-700'
+                    ? 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 border-zinc-900 dark:border-zinc-100 shadow-lg shadow-zinc-900/20 dark:shadow-zinc-100/10'
+                    : 'bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-400 dark:text-zinc-500 hover:border-zinc-300 dark:hover:border-zinc-700'
                     }`}
                 >
                   {l.label}
@@ -212,13 +212,13 @@ const StudentRegistrationScreen: React.FC<StudentRegistrationScreenProps> = ({ o
 
         {initialData && (
           <div className="space-y-4">
-            <label className="text-[10px] font-black uppercase text-slate-400 dark:text-slate-500 ml-1">Status do Aluno</label>
+            <label className="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 ml-1">Status do Aluno</label>
             <button
               type="button"
               onClick={() => setFormData({ ...formData, isActive: !formData.isActive })}
               className={`w-full p-5 rounded-3xl border-2 flex items-center justify-between transition-all ${formData.isActive
                 ? 'bg-emerald-50 dark:bg-emerald-900/10 border-emerald-200 dark:border-emerald-800/50 text-emerald-700 dark:text-emerald-400'
-                : 'bg-slate-100 dark:bg-slate-800/50 border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400'
+                : 'bg-zinc-100 dark:bg-zinc-800/50 border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400'
                 }`}
             >
               <div className="flex flex-col items-start gap-1">
@@ -229,7 +229,7 @@ const StudentRegistrationScreen: React.FC<StudentRegistrationScreenProps> = ({ o
                   {formData.isActive ? 'Recebe notificações e acessa treinos' : 'Acesso suspenso temporariamente'}
                 </span>
               </div>
-              <div className={`w-12 h-6 rounded-full relative transition-colors ${formData.isActive ? 'bg-emerald-500' : 'bg-slate-300 dark:bg-slate-700'}`}>
+              <div className={`w-12 h-6 rounded-full relative transition-colors ${formData.isActive ? 'bg-emerald-500' : 'bg-zinc-300 dark:bg-zinc-700'}`}>
                 <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${formData.isActive ? 'right-1' : 'left-1'}`}></div>
               </div>
             </button>
@@ -237,7 +237,7 @@ const StudentRegistrationScreen: React.FC<StudentRegistrationScreenProps> = ({ o
         )}
       </form>
 
-      <div className="fixed bottom-0 left-0 right-0 p-6 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 flex gap-4 transition-colors">
+      <div className="fixed bottom-0 left-0 right-0 p-6 bg-white dark:bg-zinc-900 border-t border-zinc-100 dark:border-zinc-800 flex gap-4 transition-colors">
         {initialData && onDelete && (
           <button
             type="button"

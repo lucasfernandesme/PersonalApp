@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { TrainingFrequencyCard } from './TrainingFrequencyCard';
 import {
@@ -65,7 +64,7 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
     return (
         <div className="space-y-6 pb-24 animate-in fade-in duration-300">
             {/* Header com Avatar e Nome */}
-            <div className="bg-white dark:bg-slate-900 rounded-[32px] p-6 border border-slate-100 dark:border-slate-800 shadow-sm transition-colors duration-300">
+            <div className="bg-white dark:bg-zinc-900 rounded-[32px] p-6 border border-zinc-100 dark:border-zinc-800 shadow-sm transition-colors duration-300">
                 <div className="flex flex-col">
                     {/* Trainer Info - Centralizado */}
                     <div className="flex flex-col items-center justify-center mb-6">
@@ -76,14 +75,14 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
                                 className="w-full h-full object-cover"
                             />
                         </div>
-                        <h2 className="text-lg font-black text-slate-800 dark:text-white text-center">
+                        <h2 className="text-lg font-black text-zinc-800 dark:text-white text-center">
                             {student.trainerName || 'Seu Personal'}
                         </h2>
                     </div>
 
                     {/* Student Greeting - À Esquerda */}
                     <div>
-                        <p className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+                        <p className="text-2xl font-black text-zinc-900 dark:text-white tracking-tight">
                             {getGreeting()}, {student.name.split(' ')[0]}!
                         </p>
                     </div>
@@ -98,67 +97,67 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
                 {/* Treinos */}
                 <button
                     onClick={onNavigateToWorkout}
-                    className="bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-[28px] p-6 flex flex-col items-center justify-center gap-3 transition-all active:scale-95 border border-slate-100 dark:border-slate-800 shadow-sm col-span-2 group"
+                    className="bg-white dark:bg-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-[28px] p-6 flex flex-col items-center justify-center gap-3 transition-all active:scale-95 border border-zinc-100 dark:border-zinc-800 shadow-sm col-span-2 group"
                 >
                     <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/30 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-600/20 dark:shadow-emerald-900/10">
                         <Dumbbell size={24} className="text-emerald-600 dark:text-emerald-400" />
                     </div>
-                    <span className="text-slate-900 dark:text-white font-black text-base">Treinos</span>
+                    <span className="text-zinc-900 dark:text-white font-black text-base">Treinos</span>
                 </button>
 
                 {/* Avaliações */}
                 <button
                     onClick={() => setActiveModal('assessments')}
-                    className="bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-[28px] p-6 flex flex-col items-start gap-3 transition-all active:scale-95 border border-slate-100 dark:border-slate-800 shadow-sm group"
+                    className="bg-white dark:bg-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-[28px] p-6 flex flex-col items-start gap-3 transition-all active:scale-95 border border-zinc-100 dark:border-zinc-800 shadow-sm group"
                 >
                     <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/30 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-600/20 dark:shadow-emerald-900/10">
                         <Calendar size={24} className="text-emerald-600 dark:text-emerald-400" />
                     </div>
-                    <span className="text-slate-900 dark:text-white font-black text-base">Avaliações</span>
+                    <span className="text-zinc-900 dark:text-white font-black text-base">Avaliações</span>
                 </button>
 
                 {/* Meu Progresso */}
                 <button
                     onClick={onNavigateToProgress}
-                    className="bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-[28px] p-6 flex flex-col items-start gap-3 transition-all active:scale-95 border border-slate-100 dark:border-slate-800 shadow-sm group"
+                    className="bg-white dark:bg-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-[28px] p-6 flex flex-col items-start gap-3 transition-all active:scale-95 border border-zinc-100 dark:border-zinc-800 shadow-sm group"
                 >
                     <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/30 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-600/20 dark:shadow-emerald-900/10">
                         <TrendingUp size={24} className="text-emerald-600 dark:text-emerald-400" />
                     </div>
-                    <span className="text-slate-900 dark:text-white font-black text-base">Meu Progresso</span>
+                    <span className="text-zinc-900 dark:text-white font-black text-base">Meu Progresso</span>
                 </button>
 
                 {/* Faturas */}
                 <button
-                    className="bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-[28px] p-6 flex flex-col items-start gap-3 transition-all active:scale-95 border border-slate-100 dark:border-slate-800 shadow-sm group"
+                    className="bg-white dark:bg-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-[28px] p-6 flex flex-col items-start gap-3 transition-all active:scale-95 border border-zinc-100 dark:border-zinc-800 shadow-sm group"
                 >
                     <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/30 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-600/20 dark:shadow-emerald-900/10">
                         <DollarSign size={24} className="text-emerald-600 dark:text-emerald-400" />
                     </div>
-                    <span className="text-slate-900 dark:text-white font-black text-base">Faturas</span>
+                    <span className="text-zinc-900 dark:text-white font-black text-base">Faturas</span>
                 </button>
 
                 {/* Arquivos */}
                 <button
                     onClick={() => setActiveModal('files')}
-                    className="bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-[28px] p-6 flex flex-col items-start gap-3 transition-all active:scale-95 border border-slate-100 dark:border-slate-800 shadow-sm group"
+                    className="bg-white dark:bg-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-[28px] p-6 flex flex-col items-start gap-3 transition-all active:scale-95 border border-zinc-100 dark:border-zinc-800 shadow-sm group"
                 >
                     <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/30 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-600/20 dark:shadow-emerald-900/10">
                         <Archive size={24} className="text-emerald-600 dark:text-emerald-400" />
                     </div>
-                    <span className="text-slate-900 dark:text-white font-black text-base">Arquivos</span>
+                    <span className="text-zinc-900 dark:text-white font-black text-base">Arquivos</span>
                 </button>
             </div>
 
             {/* Modal de Arquivos */}
             {activeModal === 'files' && (
                 <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
-                    <div className="bg-white dark:bg-slate-900 rounded-[32px] w-full max-w-sm shadow-2xl p-6 relative border dark:border-slate-800">
-                        <button onClick={() => setActiveModal(null)} className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"><X size={24} /></button>
-                        <h3 className="text-xl font-black text-slate-900 dark:text-white mb-2">Enviar Arquivo</h3>
-                        <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-6">Selecione um arquivo para enviar ao seu personal.</p>
+                    <div className="bg-white dark:bg-zinc-900 rounded-[32px] w-full max-w-sm shadow-2xl p-6 relative border dark:border-zinc-800">
+                        <button onClick={() => setActiveModal(null)} className="absolute top-4 right-4 p-2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"><X size={24} /></button>
+                        <h3 className="text-xl font-black text-zinc-900 dark:text-white mb-2">Enviar Arquivo</h3>
+                        <p className="text-sm font-medium text-zinc-500 dark:text-zinc-400 mb-6">Selecione um arquivo para enviar ao seu personal.</p>
 
-                        <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-emerald-200 dark:border-emerald-900/50 rounded-2xl cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group">
+                        <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-emerald-200 dark:border-emerald-900/50 rounded-2xl cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors group">
                             <div className="flex flex-col items-center justify-center pt-5 pb-6">
                                 <Upload className="w-8 h-8 text-emerald-400 mb-2 group-hover:scale-110 transition-transform" />
                                 <p className="text-sm font-black text-emerald-600 uppercase tracking-wide">Selecionar Arquivo</p>
@@ -172,36 +171,36 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
             {/* Modal de Avaliações */}
             {activeModal === 'assessments' && (
                 <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
-                    <div className="bg-white dark:bg-slate-900 rounded-[32px] w-full max-w-md shadow-2xl p-6 relative h-[60vh] flex flex-col border dark:border-slate-800">
-                        <button onClick={() => setActiveModal(null)} className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"><X size={24} /></button>
+                    <div className="bg-white dark:bg-zinc-900 rounded-[32px] w-full max-w-md shadow-2xl p-6 relative h-[60vh] flex flex-col border dark:border-zinc-800">
+                        <button onClick={() => setActiveModal(null)} className="absolute top-4 right-4 p-2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"><X size={24} /></button>
                         <div className="mb-6">
-                            <h3 className="text-xl font-black text-slate-900 dark:text-white">Minhas Avaliações</h3>
-                            <p className="text-xs font-bold text-slate-400 mt-1">Acompanhe seus resultados</p>
+                            <h3 className="text-xl font-black text-zinc-900 dark:text-white">Minhas Avaliações</h3>
+                            <p className="text-xs font-bold text-zinc-400 mt-1">Acompanhe seus resultados</p>
                         </div>
 
                         <div className="flex-1 overflow-y-auto space-y-3 pr-2">
                             {assessments.map((assessment) => (
-                                <div key={assessment.id} className="p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 hover:border-emerald-100 dark:hover:border-emerald-900 transition-colors">
+                                <div key={assessment.id} className="p-4 bg-zinc-50 dark:bg-zinc-800 rounded-2xl border border-zinc-100 dark:border-zinc-700 hover:border-emerald-100 dark:hover:border-emerald-900 transition-colors">
                                     <div className="flex items-center justify-between mb-2">
                                         <div className="flex items-center gap-2">
                                             <Calendar size={14} className="text-emerald-500" />
-                                            <span className="text-xs font-black text-slate-700 dark:text-slate-300">{assessment.date}</span>
+                                            <span className="text-xs font-black text-zinc-700 dark:text-zinc-300">{assessment.date}</span>
                                         </div>
                                     </div>
                                     <div className="grid grid-cols-2 gap-2 mb-2">
-                                        <div className="bg-white dark:bg-slate-900 p-2 rounded-xl">
-                                            <p className="text-[9px] font-bold text-slate-400 uppercase">Peso</p>
-                                            <p className="text-sm font-black text-slate-800 dark:text-white">{assessment.weight}</p>
+                                        <div className="bg-white dark:bg-zinc-900 p-2 rounded-xl">
+                                            <p className="text-[9px] font-bold text-zinc-400 uppercase">Peso</p>
+                                            <p className="text-sm font-black text-zinc-800 dark:text-white">{assessment.weight}</p>
                                         </div>
-                                        <div className="bg-white dark:bg-slate-900 p-2 rounded-xl">
-                                            <p className="text-[9px] font-bold text-slate-400 uppercase">Gordura</p>
-                                            <p className="text-sm font-black text-slate-800 dark:text-white">{assessment.fat}</p>
+                                        <div className="bg-white dark:bg-zinc-900 p-2 rounded-xl">
+                                            <p className="text-[9px] font-bold text-zinc-400 uppercase">Gordura</p>
+                                            <p className="text-sm font-black text-zinc-800 dark:text-white">{assessment.fat}</p>
                                         </div>
                                     </div>
                                     {assessment.notes && (
-                                        <div className="flex gap-2 items-start mt-2 pt-2 border-t border-slate-200/50 dark:border-slate-700/50">
-                                            <FileText size={12} className="text-slate-400 mt-0.5 shrink-0" />
-                                            <p className="text-xs text-slate-600 dark:text-slate-400 leading-snug">{assessment.notes}</p>
+                                        <div className="flex gap-2 items-start mt-2 pt-2 border-t border-zinc-200/50 dark:border-zinc-700/50">
+                                            <FileText size={12} className="text-zinc-400 mt-0.5 shrink-0" />
+                                            <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-snug">{assessment.notes}</p>
                                         </div>
                                     )}
                                 </div>

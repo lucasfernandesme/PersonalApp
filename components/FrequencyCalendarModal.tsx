@@ -59,8 +59,8 @@ const FrequencyCalendarModal: React.FC<FrequencyCalendarModalProps> = ({ student
 
     return (
         <div className="fixed inset-0 z-[60] bg-black/60 dark:bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
-            <div className="bg-white dark:bg-slate-900 rounded-[32px] w-full max-w-md shadow-2xl p-6 relative border dark:border-slate-800 transition-colors animate-in zoom-in-95 duration-200">
-                <button onClick={onClose} className="absolute top-4 right-4 p-2 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
+            <div className="bg-white dark:bg-zinc-900 rounded-[32px] w-full max-w-md shadow-2xl p-6 relative border dark:border-zinc-800 transition-colors animate-in zoom-in-95 duration-200">
+                <button onClick={onClose} className="absolute top-4 right-4 p-2 text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors">
                     <X size={24} />
                 </button>
 
@@ -69,22 +69,22 @@ const FrequencyCalendarModal: React.FC<FrequencyCalendarModalProps> = ({ student
                         <Calendar size={24} />
                     </div>
                     <div>
-                        <h3 className="text-xl font-black text-slate-900 dark:text-white">Histórico de Frequência</h3>
-                        <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wide">
+                        <h3 className="text-xl font-black text-zinc-900 dark:text-white">Histórico de Frequência</h3>
+                        <p className="text-xs font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wide">
                             {student?.name}
                         </p>
                     </div>
                 </div>
 
                 {/* Calendar Header */}
-                <div className="flex items-center justify-between mb-6 bg-slate-50 dark:bg-slate-800/50 p-2 rounded-2xl">
-                    <button onClick={prevMonth} className="p-2 hover:bg-white dark:hover:bg-slate-700/50 rounded-xl transition-colors text-slate-500 dark:text-slate-400">
+                <div className="flex items-center justify-between mb-6 bg-zinc-50 dark:bg-zinc-800/50 p-2 rounded-2xl">
+                    <button onClick={prevMonth} className="p-2 hover:bg-white dark:hover:bg-zinc-700/50 rounded-xl transition-colors text-zinc-500 dark:text-zinc-400">
                         <ChevronLeft size={20} />
                     </button>
-                    <h4 className="font-black text-lg text-slate-800 dark:text-white capitalize">
+                    <h4 className="font-black text-lg text-zinc-800 dark:text-white capitalize">
                         {format(currentDate, 'MMMM yyyy', { locale: ptBR })}
                     </h4>
-                    <button onClick={nextMonth} className="p-2 hover:bg-white dark:hover:bg-slate-700/50 rounded-xl transition-colors text-slate-500 dark:text-slate-400">
+                    <button onClick={nextMonth} className="p-2 hover:bg-white dark:hover:bg-zinc-700/50 rounded-xl transition-colors text-zinc-500 dark:text-zinc-400">
                         <ChevronRight size={20} />
                     </button>
                 </div>
@@ -92,7 +92,7 @@ const FrequencyCalendarModal: React.FC<FrequencyCalendarModalProps> = ({ student
                 {/* Week Days */}
                 <div className="grid grid-cols-7 mb-2">
                     {['D', 'S', 'T', 'Q', 'Q', 'S', 'S'].map((day, i) => (
-                        <div key={i} className="text-center text-xs font-black text-slate-300 dark:text-slate-600 uppercase">
+                        <div key={i} className="text-center text-xs font-black text-zinc-300 dark:text-zinc-600 uppercase">
                             {day}
                         </div>
                     ))}
@@ -114,13 +114,13 @@ const FrequencyCalendarModal: React.FC<FrequencyCalendarModalProps> = ({ student
                                         ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30'
                                         : isToday
                                             ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800'
-                                            : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'
+                                            : 'text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800'
                                     }
                                 `}
                             >
                                 {format(day, 'd')}
                                 {isHistory && (
-                                    <div className="absolute -bottom-1 -right-1 bg-white dark:bg-slate-900 rounded-full p-0.5">
+                                    <div className="absolute -bottom-1 -right-1 bg-white dark:bg-zinc-900 rounded-full p-0.5">
                                         <CheckCircle2 size={10} className="text-emerald-500" />
                                     </div>
                                 )}
@@ -129,7 +129,7 @@ const FrequencyCalendarModal: React.FC<FrequencyCalendarModalProps> = ({ student
                     })}
                 </div>
 
-                <div className="mt-6 flex items-center justify-center gap-4 text-xs font-bold text-slate-400 dark:text-slate-500">
+                <div className="mt-6 flex items-center justify-center gap-4 text-xs font-bold text-zinc-400 dark:text-zinc-500">
                     <div className="flex items-center gap-1.5">
                         <div className="w-3 h-3 rounded-full bg-emerald-500"></div>
                         <span>Treino Realizado</span>

@@ -39,19 +39,76 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile }
         localStorage.setItem('fitai_pro_events', JSON.stringify(events));
     }, [events]);
 
-    const handleAddEvent = (eventData: Partial<ScheduleEvent>) => {
-        if (eventData.id) {
-            // Edit existing
-            setEvents(prev => prev.map(e => e.id === eventData.id ? { ...e, ...eventData } as ScheduleEvent : e));
+    const handleAddEvent = (eventData: Partial<ScheduleEvent> & { recurringDays?: number[], recurrenceDuration?: number }) => {
+        let newEvents: ScheduleEvent[] = [];
+
+        if (eventData.isRecurring && eventData.recurringDays && eventData.recurrenceDuration) {
+            // Generate recurring events
+            const startDate = new Date(eventData.start!);
+            const durationMonths = eventData.recurrenceDuration;
+            const targetDays = eventData.recurringDays; // 0=Sun, 1=Mon, etc.
+
+            // Calculate end date
+            const endDate = new Date(startDate);
+            endDate.setMonth(endDate.getMonth() + durationMonths);
+
+            let currentDate = new Date(startDate);
+
+            // Loop through each day until end date
+            while (currentDate <= endDate) {
+                // date-fns getDay returns 0 for Sunday
+                if (targetDays.includes(currentDate.getDay())) {
+                    // Create event for this day
+                    // Maintain the original time
+                    const eventStart = new Date(currentDate);
+                    const originalStart = new Date(eventData.start!);
+                    eventStart.setHours(originalStart.getHours(), originalStart.getMinutes(), 0);
+
+                    const eventEnd = new Date(currentDate);
+                    const originalEnd = new Date(eventData.end!);
+                    eventEnd.setHours(originalEnd.getHours(), originalEnd.getMinutes(), 0);
+
+                    newEvents.push({
+                        ...eventData,
+                        id: Math.random().toString(36).substr(2, 9),
+                        trainerId: user.id,
+                        start: eventStart.toISOString(),
+                        end: eventEnd.toISOString(),
+                        status: 'planned'
+                    } as ScheduleEvent);
+                }
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+
+            if (eventData.id) {
+                // If editing and converting to recurring, we might want to keep the original ID for the first one, 
+                // but for simplicity, allow generating new set. 
+                // NOTE: This simple logic creates NEW events. Updating a series is complex.
+                // We will update the state by adding these new ones.
+                setEvents(prev => {
+                    const filtered = prev.filter(e => e.id !== eventData.id); // Remove the one being edited if exists
+                    return [...filtered, ...newEvents];
+                });
+            } else {
+                setEvents(prev => [...prev, ...newEvents]);
+            }
+
         } else {
-            // Add new
-            const newEvent: ScheduleEvent = {
-                id: Math.random().toString(36).substr(2, 9),
-                trainerId: user.id,
-                ...eventData
-            } as ScheduleEvent;
-            setEvents(prev => [...prev, newEvent]);
+            // Single event logic (existing)
+            if (eventData.id) {
+                // Edit existing
+                setEvents(prev => prev.map(e => e.id === eventData.id ? { ...e, ...eventData } as ScheduleEvent : e));
+            } else {
+                // Add new
+                const newEvent: ScheduleEvent = {
+                    id: Math.random().toString(36).substr(2, 9),
+                    trainerId: user.id,
+                    ...eventData
+                } as ScheduleEvent;
+                setEvents(prev => [...prev, newEvent]);
+            }
         }
+
         setIsEventModalOpen(false);
         setEventToEdit(undefined);
     };
@@ -120,9 +177,9 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile }
     return (
         <div className="space-y-6 pb-24 animate-in fade-in duration-300 transition-colors">
             {/* Header Profile */}
-            <div className="bg-white dark:bg-slate-900 rounded-[32px] p-8 border border-slate-100 dark:border-slate-800 shadow-sm flex flex-col items-center transition-colors">
+            <div className="bg-white dark:bg-zinc-900 rounded-[32px] p-8 border border-zinc-100 dark:border-zinc-800 shadow-sm flex flex-col items-center transition-colors">
                 <div className="relative group cursor-pointer" onClick={() => activeModal === 'edit' && handlePhotoClick()}>
-                    <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-indigo-500 shadow-xl mb-4 relative z-10 bg-slate-100 dark:bg-slate-800 transition-colors">
+                    <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-indigo-500 shadow-xl mb-4 relative z-10 bg-zinc-100 dark:bg-zinc-800 transition-colors">
                         <img
                             src={user.avatar || `https://ui-avatars.com/api/?name=${user.name}&background=6366f1&color=fff`}
                             alt={user.name}
@@ -137,67 +194,67 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile }
                         <Edit2 size={16} />
                     </button>
                 </div>
-                <h2 className="text-2xl font-black text-slate-800 dark:text-white text-center transition-colors">{user.name} {user.surname}</h2>
-                <p className="text-sm font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wide transition-colors">Personal Trainer {user.cref ? `• CREF: ${user.cref}` : ''}</p>
+                <h2 className="text-2xl font-black text-zinc-800 dark:text-white text-center transition-colors">{user.name} {user.surname}</h2>
+                <p className="text-sm font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wide transition-colors">Personal Trainer {user.cref ? `• CREF: ${user.cref}` : ''}</p>
             </div>
 
             {/* Grid de Opções */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <button
                     onClick={() => setActiveModal('edit')}
-                    className="bg-white dark:bg-slate-900 p-6 rounded-[28px] border border-slate-100 dark:border-slate-800 shadow-sm flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800 transition-all group"
+                    className="bg-white dark:bg-zinc-900 p-6 rounded-[28px] border border-zinc-100 dark:border-zinc-800 shadow-sm flex items-center justify-between hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all group"
                 >
                     <div className="flex items-center gap-4">
                         <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/30 rounded-2xl flex items-center justify-center text-indigo-600 dark:text-indigo-400 group-hover:bg-indigo-600 dark:group-hover:bg-indigo-500 group-hover:text-white dark:group-hover:text-white transition-colors">
                             <User size={24} />
                         </div>
                         <div className="text-left">
-                            <h3 className="font-black text-slate-900 dark:text-white text-lg transition-colors">Editar Perfil</h3>
-                            <p className="text-sm font-medium text-slate-400 dark:text-slate-500 transition-colors">Alterar dados pessoais</p>
+                            <h3 className="font-black text-zinc-900 dark:text-white text-lg transition-colors">Editar Perfil</h3>
+                            <p className="text-sm font-medium text-zinc-400 dark:text-zinc-500 transition-colors">Alterar dados pessoais</p>
                         </div>
                     </div>
-                    <ChevronRight className="text-slate-300 dark:text-slate-700 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors" />
+                    <ChevronRight className="text-zinc-300 dark:text-zinc-700 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors" />
                 </button>
 
                 <button
                     onClick={() => setActiveModal('schedule')}
-                    className="bg-white dark:bg-slate-900 p-6 rounded-[28px] border border-slate-100 dark:border-slate-800 shadow-sm flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800 transition-all group"
+                    className="bg-white dark:bg-zinc-900 p-6 rounded-[28px] border border-zinc-100 dark:border-zinc-800 shadow-sm flex items-center justify-between hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all group"
                 >
                     <div className="flex items-center gap-4">
                         <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/30 rounded-2xl flex items-center justify-center text-indigo-600 dark:text-indigo-400 group-hover:bg-indigo-600 dark:group-hover:bg-indigo-500 group-hover:text-white dark:group-hover:text-white transition-colors">
                             <Calendar size={24} />
                         </div>
                         <div className="text-left">
-                            <h3 className="font-black text-slate-900 dark:text-white text-lg transition-colors">Agenda</h3>
-                            <p className="text-sm font-medium text-slate-400 dark:text-slate-500 transition-colors">Gerenciar horários</p>
+                            <h3 className="font-black text-zinc-900 dark:text-white text-lg transition-colors">Agenda</h3>
+                            <p className="text-sm font-medium text-zinc-400 dark:text-zinc-500 transition-colors">Gerenciar horários</p>
                         </div>
                     </div>
-                    <ChevronRight className="text-slate-300 dark:text-slate-700 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors" />
+                    <ChevronRight className="text-zinc-300 dark:text-zinc-700 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors" />
                 </button>
 
                 <button
                     onClick={() => setActiveModal('reports')}
-                    className="bg-white dark:bg-slate-900 p-6 rounded-[28px] border border-slate-100 dark:border-slate-800 shadow-sm flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800 transition-all group md:col-span-2"
+                    className="bg-white dark:bg-zinc-900 p-6 rounded-[28px] border border-zinc-100 dark:border-zinc-800 shadow-sm flex items-center justify-between hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all group md:col-span-2"
                 >
                     <div className="flex items-center gap-4">
                         <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/30 rounded-2xl flex items-center justify-center text-indigo-600 dark:text-indigo-400 group-hover:bg-indigo-600 dark:group-hover:bg-indigo-500 group-hover:text-white dark:group-hover:text-white transition-colors">
                             <BarChart2 size={24} />
                         </div>
                         <div className="text-left">
-                            <h3 className="font-black text-slate-900 dark:text-white text-lg transition-colors">Relatórios de Aulas</h3>
-                            <p className="text-sm font-medium text-slate-400 dark:text-slate-500 transition-colors">Filtrar e analisar atendimentos</p>
+                            <h3 className="font-black text-zinc-900 dark:text-white text-lg transition-colors">Relatórios de Aulas</h3>
+                            <p className="text-sm font-medium text-zinc-400 dark:text-zinc-500 transition-colors">Filtrar e analisar atendimentos</p>
                         </div>
                     </div>
-                    <ChevronRight className="text-slate-300 dark:text-slate-700 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors" />
+                    <ChevronRight className="text-zinc-300 dark:text-zinc-700 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors" />
                 </button>
             </div>
 
             {/* Modal Editar Perfil */}
             {activeModal === 'edit' && (
                 <div className="fixed inset-0 z-50 bg-black/60 dark:bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200 overflow-y-auto">
-                    <div className="bg-white dark:bg-slate-900 rounded-[32px] w-full max-w-lg shadow-2xl p-6 relative max-h-[90vh] overflow-y-auto border dark:border-slate-800 transition-colors">
-                        <button onClick={() => setActiveModal(null)} className="absolute top-4 right-4 p-2 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"><X size={24} /></button>
-                        <h3 className="text-xl font-black text-slate-900 dark:text-white mb-6 sticky top-0 bg-white dark:bg-slate-900 z-10 pb-2 border-b border-transparent transition-colors">Editar Perfil</h3>
+                    <div className="bg-white dark:bg-zinc-900 rounded-[32px] w-full max-w-lg shadow-2xl p-6 relative max-h-[90vh] overflow-y-auto border dark:border-zinc-800 transition-colors">
+                        <button onClick={() => setActiveModal(null)} className="absolute top-4 right-4 p-2 text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"><X size={24} /></button>
+                        <h3 className="text-xl font-black text-zinc-900 dark:text-white mb-6 sticky top-0 bg-white dark:bg-zinc-900 z-10 pb-2 border-b border-transparent transition-colors">Editar Perfil</h3>
 
                         <div className="space-y-4">
                             {/* Foto Upload */}
@@ -225,107 +282,107 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile }
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase mb-1.5 ml-1 transition-colors">Nome</label>
+                                    <label className="block text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase mb-1.5 ml-1 transition-colors">Nome</label>
                                     <input
                                         type="text"
                                         name="name"
                                         value={formData.name}
                                         onChange={handleInputChange}
-                                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border-none rounded-2xl font-bold text-slate-800 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-indigo-500 transition-colors"
+                                        className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800 border-none rounded-2xl font-bold text-zinc-800 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:ring-2 focus:ring-indigo-500 transition-colors"
                                         placeholder="Seu nome"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase mb-1.5 ml-1 transition-colors">Sobrenome</label>
+                                    <label className="block text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase mb-1.5 ml-1 transition-colors">Sobrenome</label>
                                     <input
                                         type="text"
                                         name="surname"
                                         value={formData.surname}
                                         onChange={handleInputChange}
-                                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border-none rounded-2xl font-bold text-slate-800 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-indigo-500 transition-colors"
+                                        className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800 border-none rounded-2xl font-bold text-zinc-800 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:ring-2 focus:ring-indigo-500 transition-colors"
                                         placeholder="Sobrenome"
                                     />
                                 </div>
                             </div>
 
                             <div>
-                                <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase mb-1.5 ml-1 transition-colors">Email</label>
+                                <label className="block text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase mb-1.5 ml-1 transition-colors">Email</label>
                                 <input
                                     type="email"
                                     name="email"
                                     value={formData.email}
                                     onChange={handleInputChange}
-                                    className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border-none rounded-2xl font-bold text-slate-800 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-indigo-500 transition-colors"
+                                    className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800 border-none rounded-2xl font-bold text-zinc-800 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:ring-2 focus:ring-indigo-500 transition-colors"
                                     placeholder="seu@email.com"
                                 />
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase mb-1.5 ml-1 transition-colors">Instagram</label>
+                                    <label className="block text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase mb-1.5 ml-1 transition-colors">Instagram</label>
                                     <input
                                         type="text"
                                         name="instagram"
                                         value={formData.instagram}
                                         onChange={handleInputChange}
-                                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border-none rounded-2xl font-bold text-slate-800 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-indigo-500 transition-colors"
+                                        className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800 border-none rounded-2xl font-bold text-zinc-800 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:ring-2 focus:ring-indigo-500 transition-colors"
                                         placeholder="@usuario"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase mb-1.5 ml-1 transition-colors">CREF</label>
+                                    <label className="block text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase mb-1.5 ml-1 transition-colors">CREF</label>
                                     <input
                                         type="text"
                                         name="cref"
                                         value={formData.cref}
                                         onChange={handleInputChange}
-                                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border-none rounded-2xl font-bold text-slate-800 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-indigo-500 transition-colors"
+                                        className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800 border-none rounded-2xl font-bold text-zinc-800 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:ring-2 focus:ring-indigo-500 transition-colors"
                                         placeholder="000000-G/UF"
                                     />
                                 </div>
                             </div>
 
                             <div>
-                                <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase mb-1.5 ml-1 transition-colors">WhatsApp</label>
+                                <label className="block text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase mb-1.5 ml-1 transition-colors">WhatsApp</label>
                                 <input
                                     type="text"
                                     name="whatsapp"
                                     value={formData.whatsapp}
                                     onChange={handleInputChange}
-                                    className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border-none rounded-2xl font-bold text-slate-800 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-indigo-500 transition-colors"
+                                    className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800 border-none rounded-2xl font-bold text-zinc-800 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:ring-2 focus:ring-indigo-500 transition-colors"
                                     placeholder="(00) 00000-0000"
                                 />
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="relative">
-                                    <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase mb-1.5 ml-1 transition-colors">Senha</label>
+                                    <label className="block text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase mb-1.5 ml-1 transition-colors">Senha</label>
                                     <div className="relative">
                                         <input
                                             type={showPassword ? "text" : "password"}
                                             name="password"
                                             value={formData.password}
                                             onChange={handleInputChange}
-                                            className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border-none rounded-2xl font-bold text-slate-800 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-indigo-500 pr-10 transition-colors"
+                                            className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800 border-none rounded-2xl font-bold text-zinc-800 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:ring-2 focus:ring-indigo-500 pr-10 transition-colors"
                                             placeholder="••••••"
                                         />
                                         <button
                                             type="button"
                                             onClick={() => setShowPassword(!showPassword)}
-                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                                            className="absolute right-3 top-1/2 -tranzinc-y-1/2 text-zinc-400 dark:text-zinc-500 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
                                         >
                                             {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                                         </button>
                                     </div>
                                 </div>
                                 <div>
-                                    <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase mb-1.5 ml-1 transition-colors">Confirmar Senha</label>
+                                    <label className="block text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase mb-1.5 ml-1 transition-colors">Confirmar Senha</label>
                                     <input
                                         type="password"
                                         name="confirmPassword"
                                         value={formData.confirmPassword}
                                         onChange={handleInputChange}
-                                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border-none rounded-2xl font-bold text-slate-800 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-indigo-500 transition-colors"
+                                        className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800 border-none rounded-2xl font-bold text-zinc-800 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:ring-2 focus:ring-indigo-500 transition-colors"
                                         placeholder="••••••"
                                     />
                                 </div>
@@ -347,8 +404,8 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile }
             {/* Modal Relatórios */}
             {activeModal === 'reports' && (
                 <div className="fixed inset-0 z-50 bg-black/60 dark:bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
-                    <div className="bg-white dark:bg-slate-900 rounded-[32px] w-full max-w-2xl shadow-2xl p-6 relative h-[80vh] flex flex-col border dark:border-slate-800 transition-colors">
-                        <button onClick={() => setActiveModal(null)} className="absolute top-4 right-4 p-2 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors z-10"><X size={24} /></button>
+                    <div className="bg-white dark:bg-zinc-900 rounded-[32px] w-full max-w-2xl shadow-2xl p-6 relative h-[80vh] flex flex-col border dark:border-zinc-800 transition-colors">
+                        <button onClick={() => setActiveModal(null)} className="absolute top-4 right-4 p-2 text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors z-10"><X size={24} /></button>
                         <ReportsScreen
                             events={events}
                             students={students}
@@ -361,9 +418,9 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile }
             {/* Modal Agenda */}
             {activeModal === 'schedule' && (
                 <div className="fixed inset-0 z-50 bg-black/60 dark:bg-black/80 backdrop-blur-sm flex items-center justify-center p-0 md:p-4 animate-in fade-in duration-200">
-                    <div className="bg-white dark:bg-slate-900 md:rounded-[32px] w-full h-full md:max-w-4xl shadow-2xl p-6 relative flex flex-col border dark:border-slate-800 transition-colors">
+                    <div className="bg-white dark:bg-zinc-900 md:rounded-[32px] w-full h-full md:max-w-4xl shadow-2xl p-6 relative flex flex-col border dark:border-zinc-800 transition-colors">
 
-                        <button onClick={() => setActiveModal(null)} className="absolute top-4 right-4 p-2 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors z-10"><X size={24} /></button>
+                        <button onClick={() => setActiveModal(null)} className="absolute top-4 right-4 p-2 text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors z-10"><X size={24} /></button>
 
                         <AgendaScreen
                             events={events}

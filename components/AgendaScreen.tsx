@@ -37,22 +37,22 @@ const AgendaScreen: React.FC<AgendaScreenProps> = ({ events, students, onAddEven
                         <CalendarIcon size={24} />
                     </div>
                     <div>
-                        <h2 className="text-2xl font-black text-slate-800 dark:text-white capitalize">
+                        <h2 className="text-2xl font-black text-zinc-800 dark:text-white capitalize">
                             {format(currentMonth, 'MMMM yyyy', { locale: ptBR })}
                         </h2>
-                        <p className="text-sm font-medium text-slate-400 dark:text-slate-500">Gerencie seus horários</p>
+                        <p className="text-sm font-medium text-zinc-400 dark:text-zinc-500">Gerencie seus horários</p>
                     </div>
                 </div>
                 <div className="flex gap-2">
                     <button
                         onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
-                        className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors text-slate-600 dark:text-slate-400"
+                        className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl transition-colors text-zinc-600 dark:text-zinc-400"
                     >
                         <ChevronLeft size={20} />
                     </button>
                     <button
                         onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
-                        className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors text-slate-600 dark:text-slate-400"
+                        className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl transition-colors text-zinc-600 dark:text-zinc-400"
                     >
                         <ChevronRight size={20} />
                     </button>
@@ -68,7 +68,7 @@ const AgendaScreen: React.FC<AgendaScreenProps> = ({ events, students, onAddEven
 
         for (let i = 0; i < 7; i++) {
             days.push(
-                <div className="text-center font-bold text-xs text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2" key={i}>
+                <div className="text-center font-bold text-xs text-zinc-400 dark:text-zinc-500 uppercase tracking-wider mb-2" key={i}>
                     {format(addDays(startDate, i), dateFormat, { locale: ptBR }).substring(0, 3)}
                 </div>
             );
@@ -101,15 +101,15 @@ const AgendaScreen: React.FC<AgendaScreenProps> = ({ events, students, onAddEven
 
                 days.push(
                     <div
-                        className={`min-h-[80px] p-2 border border-slate-100 dark:border-slate-800 relative transition-colors cursor-pointer group hover:bg-slate-50 dark:hover:bg-slate-800/50
-              ${!isCurrentMonth ? "bg-slate-50/50 dark:bg-slate-900/50 text-slate-300 dark:text-slate-700" : "bg-white dark:bg-slate-900"}
+                        className={`min-h-[80px] p-2 border border-zinc-100 dark:border-zinc-800 relative transition-colors cursor-pointer group hover:bg-zinc-50 dark:hover:bg-zinc-800/50
+              ${!isCurrentMonth ? "bg-zinc-50/50 dark:bg-zinc-900/50 text-zinc-300 dark:text-zinc-700" : "bg-white dark:bg-zinc-900"}
               ${isSelected ? "ring-2 ring-indigo-500 ring-inset z-10" : ""}
               ${i === 0 ? "rounded-l-2xl" : ""} ${i === 6 ? "rounded-r-2xl" : ""}
             `}
                         key={day.toString()}
                         onClick={() => setSelectedDate(cloneDay)}
                     >
-                        <span className={`text-sm font-bold ${!isCurrentMonth ? "text-slate-300 dark:text-slate-600" : "text-slate-700 dark:text-slate-300"}`}>
+                        <span className={`text-sm font-bold ${!isCurrentMonth ? "text-zinc-300 dark:text-zinc-600" : "text-zinc-700 dark:text-zinc-300"}`}>
                             {formattedDate}
                         </span>
 
@@ -122,7 +122,7 @@ const AgendaScreen: React.FC<AgendaScreenProps> = ({ events, students, onAddEven
                                 </div>
                             ))}
                             {dayEvents.length > 2 && (
-                                <p className="text-[9px] font-bold text-slate-400 pl-1">+{dayEvents.length - 2} mais</p>
+                                <p className="text-[9px] font-bold text-zinc-400 pl-1">+{dayEvents.length - 2} mais</p>
                             )}
                         </div>
 
@@ -155,11 +155,11 @@ const AgendaScreen: React.FC<AgendaScreenProps> = ({ events, students, onAddEven
             .sort((a, b) => parseISO(a.start).getTime() - parseISO(b.start).getTime());
 
         return (
-            <div className="mt-6 bg-slate-50 dark:bg-slate-800/50 rounded-[28px] p-6 animate-in slide-in-from-bottom duration-300">
+            <div className="mt-6 bg-zinc-50 dark:bg-zinc-800/50 rounded-[28px] p-6 animate-in slide-in-from-bottom duration-300">
                 <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-black text-slate-800 dark:text-white flex items-center gap-2">
+                    <h3 className="text-lg font-black text-zinc-800 dark:text-white flex items-center gap-2">
                         Agenda de {format(selectedDate, "dd 'de' MMMM", { locale: ptBR })}
-                        <span className="text-sm font-medium text-slate-400 bg-white dark:bg-slate-900 px-3 py-1 rounded-full border border-slate-100 dark:border-slate-800">
+                        <span className="text-sm font-medium text-zinc-400 bg-white dark:bg-zinc-900 px-3 py-1 rounded-full border border-zinc-100 dark:border-zinc-800">
                             {dayEvents.length} {dayEvents.length === 1 ? 'evento' : 'eventos'}
                         </span>
                     </h3>
@@ -174,14 +174,14 @@ const AgendaScreen: React.FC<AgendaScreenProps> = ({ events, students, onAddEven
                 <div className="space-y-3">
                     {dayEvents.length === 0 ? (
                         <div className="py-8 text-center">
-                            <p className="text-slate-400 dark:text-slate-500 text-sm font-medium">Nenhum agendamento para este dia.</p>
+                            <p className="text-zinc-400 dark:text-zinc-500 text-sm font-medium">Nenhum agendamento para este dia.</p>
                         </div>
                     ) : (
                         dayEvents.map(event => (
                             <div
                                 key={event.id}
                                 onClick={() => onEditEvent(event)}
-                                className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm hover:border-indigo-200 dark:hover:border-indigo-800 transition-all cursor-pointer group"
+                                className="bg-white dark:bg-zinc-900 p-4 rounded-2xl border border-zinc-100 dark:border-zinc-800 shadow-sm hover:border-indigo-200 dark:hover:border-indigo-800 transition-all cursor-pointer group"
                             >
                                 <div className="flex items-start justify-between">
                                     <div className="flex items-start gap-4">
@@ -190,18 +190,18 @@ const AgendaScreen: React.FC<AgendaScreenProps> = ({ events, students, onAddEven
                                             <span className="text-[10px] opacity-70">:{format(parseISO(event.start), 'mm')}</span>
                                         </div>
                                         <div>
-                                            <h4 className="font-bold text-slate-900 dark:text-white text-base group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                                            <h4 className="font-bold text-zinc-900 dark:text-white text-base group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
                                                 {event.title}
                                             </h4>
                                             <div className="flex flex-col gap-1 mt-1">
                                                 {event.studentName && (
-                                                    <div className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400">
+                                                    <div className="flex items-center gap-1.5 text-zinc-500 dark:text-zinc-400">
                                                         <User size={12} />
                                                         <span className="text-xs font-bold">{event.studentName}</span>
                                                     </div>
                                                 )}
                                                 {event.location && (
-                                                    <div className="flex items-center gap-1.5 text-slate-400 dark:text-slate-500">
+                                                    <div className="flex items-center gap-1.5 text-zinc-400 dark:text-zinc-500">
                                                         <MapPin size={12} />
                                                         <span className="text-xs">{event.location}</span>
                                                     </div>
@@ -210,7 +210,7 @@ const AgendaScreen: React.FC<AgendaScreenProps> = ({ events, students, onAddEven
                                         </div>
                                     </div>
                                     <div className="text-right">
-                                        <span className="text-[10px] font-bold text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-lg">
+                                        <span className="text-[10px] font-bold text-zinc-400 bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded-lg">
                                             {format(parseISO(event.end), 'HH:mm')} término
                                         </span>
                                     </div>

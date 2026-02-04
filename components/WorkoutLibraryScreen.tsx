@@ -82,14 +82,14 @@ const WorkoutLibraryScreen: React.FC<WorkoutLibraryScreenProps> = ({
                 <div className="flex flex-col gap-2">
                     <button
                         onClick={currentFolderId ? () => setCurrentFolderId(null) : onBack}
-                        className="flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors font-bold text-sm mb-2"
+                        className="flex items-center gap-2 text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 transition-colors font-bold text-sm mb-2"
                     >
                         <ArrowLeft size={18} /> {currentFolderId ? 'Voltar para Raiz' : 'Voltar'}
                     </button>
-                    <h2 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+                    <h2 className="text-3xl font-black text-zinc-900 dark:text-white tracking-tight">
                         {currentFolder ? currentFolder.name : 'Biblioteca de Treinos'}
                     </h2>
-                    <p className="text-slate-400 dark:text-slate-500 font-medium">
+                    <p className="text-zinc-400 dark:text-zinc-500 font-medium">
                         {currentFolder ? 'Treinos organizados nesta pasta.' : 'Seus modelos salvos para facilitar a prescrição.'}
                     </p>
                 </div>
@@ -104,13 +104,13 @@ const WorkoutLibraryScreen: React.FC<WorkoutLibraryScreenProps> = ({
                     </button>
 
                     {showAddMenu && (
-                        <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-700 z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                        <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-zinc-800 rounded-2xl shadow-xl border border-zinc-100 dark:border-zinc-700 z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
                             <button
                                 onClick={() => {
                                     setIsAdding(true);
                                     setShowAddMenu(false);
                                 }}
-                                className="w-full px-4 py-3 text-left text-sm font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-3 transition-colors"
+                                className="w-full px-4 py-3 text-left text-sm font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-700 flex items-center gap-3 transition-colors"
                             >
                                 <Dumbbell size={18} className="text-indigo-600 dark:text-indigo-400" />
                                 Novo Treino
@@ -121,7 +121,7 @@ const WorkoutLibraryScreen: React.FC<WorkoutLibraryScreenProps> = ({
                                         setIsAddingFolder(true);
                                         setShowAddMenu(false);
                                     }}
-                                    className="w-full px-4 py-3 text-left text-sm font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 border-t border-slate-50 dark:border-slate-700 flex items-center gap-3 transition-colors"
+                                    className="w-full px-4 py-3 text-left text-sm font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-700 border-t border-zinc-50 dark:border-zinc-700 flex items-center gap-3 transition-colors"
                                 >
                                     <Folder size={18} className="text-amber-500" />
                                     Nova Pasta
@@ -133,8 +133,8 @@ const WorkoutLibraryScreen: React.FC<WorkoutLibraryScreenProps> = ({
             </div>
 
             {isAddingFolder && (
-                <div className="bg-white dark:bg-slate-900 p-6 rounded-[32px] border-2 border-amber-100 dark:border-amber-900/50 shadow-xl shadow-amber-500/5 animate-in slide-in-from-top duration-300">
-                    <h3 className="font-black text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                <div className="bg-white dark:bg-zinc-900 p-6 rounded-[32px] border-2 border-amber-100 dark:border-amber-900/50 shadow-xl shadow-amber-500/5 animate-in slide-in-from-top duration-300">
+                    <h3 className="font-black text-zinc-900 dark:text-white mb-4 flex items-center gap-2">
                         <Folder size={20} className="text-amber-500" />
                         Nome da Nova Pasta
                     </h3>
@@ -143,7 +143,7 @@ const WorkoutLibraryScreen: React.FC<WorkoutLibraryScreenProps> = ({
                             autoFocus
                             type="text"
                             placeholder="Ex: Treinos de Iniciantes"
-                            className="flex-1 bg-slate-50 dark:bg-slate-800 border-none rounded-2xl px-6 py-4 font-bold focus:ring-2 focus:ring-amber-500 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
+                            className="flex-1 bg-zinc-50 dark:bg-zinc-800 border-none rounded-2xl px-6 py-4 font-bold focus:ring-2 focus:ring-amber-500 text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500"
                             value={newFolderName}
                             onChange={e => setNewFolderName(e.target.value)}
                             onKeyDown={e => {
@@ -168,7 +168,7 @@ const WorkoutLibraryScreen: React.FC<WorkoutLibraryScreenProps> = ({
                         </button>
                         <button
                             onClick={() => setIsAddingFolder(false)}
-                            className="px-4 text-slate-400 dark:text-slate-500 font-bold hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+                            className="px-4 text-zinc-400 dark:text-zinc-500 font-bold hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
                         >
                             Cancelar
                         </button>
@@ -178,11 +178,11 @@ const WorkoutLibraryScreen: React.FC<WorkoutLibraryScreenProps> = ({
 
             {/* Search Bar */}
             <div className="relative">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 dark:text-slate-600" size={20} />
+                <Search className="absolute left-4 top-1/2 -tranzinc-y-1/2 text-zinc-300 dark:text-zinc-600" size={20} />
                 <input
                     type="text"
                     placeholder="Buscar"
-                    className="w-full pl-12 pr-6 py-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[24px] text-sm font-bold shadow-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-500 focus:border-transparent transition-all"
+                    className="w-full pl-12 pr-6 py-5 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-[24px] text-sm font-bold shadow-sm text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-500 focus:border-transparent transition-all"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -196,14 +196,14 @@ const WorkoutLibraryScreen: React.FC<WorkoutLibraryScreenProps> = ({
                         {currentFolders.map(folder => (
                             <div
                                 key={folder.id}
-                                className="bg-white dark:bg-slate-900 p-5 rounded-[28px] border border-slate-200 dark:border-slate-800 flex items-center justify-between hover:border-amber-200 dark:hover:border-amber-900 transition-all group cursor-pointer shadow-sm"
+                                className="bg-white dark:bg-zinc-900 p-5 rounded-[28px] border border-zinc-200 dark:border-zinc-800 flex items-center justify-between hover:border-amber-200 dark:hover:border-amber-900 transition-all group cursor-pointer shadow-sm"
                                 onClick={() => setCurrentFolderId(folder.id)}
                             >
                                 <div className="flex items-center gap-4">
                                     <div className="w-12 h-12 bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-500 rounded-xl flex items-center justify-center group-hover:bg-amber-500 group-hover:text-white transition-all">
                                         <Folder size={24} />
                                     </div>
-                                    <span className="font-black text-slate-800 dark:text-white">{folder.name}</span>
+                                    <span className="font-black text-zinc-800 dark:text-white">{folder.name}</span>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <button
@@ -213,11 +213,11 @@ const WorkoutLibraryScreen: React.FC<WorkoutLibraryScreenProps> = ({
                                                 onDeleteFolder(folder.id);
                                             }
                                         }}
-                                        className="p-2 text-slate-300 hover:text-red-500 transition-colors"
+                                        className="p-2 text-zinc-300 hover:text-red-500 transition-colors"
                                     >
                                         <Trash2 size={16} />
                                     </button>
-                                    <ChevronRight size={18} className="text-slate-300" />
+                                    <ChevronRight size={18} className="text-zinc-300" />
                                 </div>
                             </div>
                         ))}
@@ -228,7 +228,7 @@ const WorkoutLibraryScreen: React.FC<WorkoutLibraryScreenProps> = ({
                     filteredTemplates.map(template => (
                         <div
                             key={template.id}
-                            className="bg-white dark:bg-slate-900 p-5 rounded-[32px] border border-slate-200 dark:border-slate-800 flex flex-col gap-4 shadow-sm hover:shadow-md hover:border-indigo-100 dark:hover:border-indigo-900 transition-all group"
+                            className="bg-white dark:bg-zinc-900 p-5 rounded-[32px] border border-zinc-200 dark:border-zinc-800 flex flex-col gap-4 shadow-sm hover:shadow-md hover:border-indigo-100 dark:hover:border-indigo-900 transition-all group"
                         >
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-4">
@@ -236,13 +236,13 @@ const WorkoutLibraryScreen: React.FC<WorkoutLibraryScreenProps> = ({
                                         <BookOpen size={28} />
                                     </div>
                                     <div>
-                                        <h4 className="font-black text-slate-800 dark:text-white text-lg group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">{template.name}</h4>
+                                        <h4 className="font-black text-zinc-800 dark:text-white text-lg group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">{template.name}</h4>
                                         <div className="flex items-center gap-2 mt-1">
-                                            <span className="text-[10px] font-black uppercase text-slate-400 bg-slate-50 dark:bg-slate-800 px-2 py-0.5 rounded-md">
+                                            <span className="text-[10px] font-black uppercase text-zinc-400 bg-zinc-50 dark:bg-zinc-800 px-2 py-0.5 rounded-md">
                                                 {template.split.length} Dias
                                             </span>
-                                            <span className="w-1 h-1 bg-slate-200 dark:bg-slate-700 rounded-full"></span>
-                                            <span className="text-[10px] font-black uppercase text-slate-400 dark:text-slate-500">
+                                            <span className="w-1 h-1 bg-zinc-200 dark:bg-zinc-700 rounded-full"></span>
+                                            <span className="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500">
                                                 {template.split.reduce((acc, current) => acc + current.exercises.length, 0)} Exercícios
                                             </span>
                                         </div>
@@ -253,7 +253,7 @@ const WorkoutLibraryScreen: React.FC<WorkoutLibraryScreenProps> = ({
                                     {currentFolderId && (
                                         <button
                                             onClick={() => onSaveTemplate({ ...template, folderId: null })}
-                                            className="p-3 bg-slate-50 dark:bg-slate-800 text-slate-400 dark:text-slate-500 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 hover:text-slate-600 dark:hover:text-slate-300 transition-all"
+                                            className="p-3 bg-zinc-50 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 rounded-xl hover:bg-zinc-200 dark:hover:bg-zinc-700 hover:text-zinc-600 dark:hover:text-zinc-300 transition-all"
                                             title="Mover para fora da pasta"
                                         >
                                             <ExternalLink size={18} className="rotate-180" />
@@ -261,14 +261,14 @@ const WorkoutLibraryScreen: React.FC<WorkoutLibraryScreenProps> = ({
                                     )}
                                     <button
                                         onClick={() => setEditingTemplate(template)}
-                                        className="p-3 bg-slate-50 dark:bg-slate-800 text-slate-400 dark:text-slate-500 rounded-xl hover:bg-indigo-50 dark:hover:bg-indigo-900/30 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all"
+                                        className="p-3 bg-zinc-50 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 rounded-xl hover:bg-indigo-50 dark:hover:bg-indigo-900/30 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all"
                                         title="Editar Template"
                                     >
                                         <Edit3 size={18} />
                                     </button>
                                     <button
                                         onClick={() => onDeleteTemplate(template.id)}
-                                        className="p-3 bg-slate-50 dark:bg-slate-800 text-slate-400 dark:text-slate-500 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/30 hover:text-red-500 dark:hover:text-red-400 transition-all"
+                                        className="p-3 bg-zinc-50 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/30 hover:text-red-500 dark:hover:text-red-400 transition-all"
                                         title="Excluir Template"
                                     >
                                         <Trash2 size={18} />
@@ -279,7 +279,7 @@ const WorkoutLibraryScreen: React.FC<WorkoutLibraryScreenProps> = ({
                             {onUseInStudent && (
                                 <button
                                     onClick={() => onUseInStudent(template)}
-                                    className="w-full py-3 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-200 border border-slate-100 dark:border-slate-800 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-indigo-600 dark:hover:bg-indigo-600 hover:text-white dark:hover:text-white hover:border-indigo-600 dark:hover:border-indigo-600 transition-all flex items-center justify-center gap-2"
+                                    className="w-full py-3 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200 border border-zinc-100 dark:border-zinc-800 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-indigo-600 dark:hover:bg-indigo-600 hover:text-white dark:hover:text-white hover:border-indigo-600 dark:hover:border-indigo-600 transition-all flex items-center justify-center gap-2"
                                 >
                                     <Copy size={16} />
                                     Usar no Aluno
@@ -288,11 +288,11 @@ const WorkoutLibraryScreen: React.FC<WorkoutLibraryScreenProps> = ({
                         </div>
                     ))
                 ) : (
-                    <div className="py-16 text-center bg-white dark:bg-slate-900 rounded-[40px] border border-dashed border-slate-200 dark:border-slate-800">
-                        <div className="w-16 h-16 bg-slate-50 dark:bg-slate-800 text-slate-200 dark:text-slate-700 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <div className="py-16 text-center bg-white dark:bg-zinc-900 rounded-[40px] border border-dashed border-zinc-200 dark:border-zinc-800">
+                        <div className="w-16 h-16 bg-zinc-50 dark:bg-zinc-800 text-zinc-200 dark:text-zinc-700 rounded-full flex items-center justify-center mx-auto mb-4">
                             <Dumbbell size={32} />
                         </div>
-                        <p className="text-slate-400 dark:text-slate-500 font-bold">
+                        <p className="text-zinc-400 dark:text-zinc-500 font-bold">
                             {searchTerm ? 'Nenhum resultado para sua busca.' : 'Esta pasta está vazia.'}
                         </p>
                     </div>

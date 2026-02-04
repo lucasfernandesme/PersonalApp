@@ -71,10 +71,10 @@ export const TrainingFrequencyCard: React.FC<TrainingFrequencyCardProps> = ({ st
         <>
             <div
                 onClick={() => setIsCalendarOpen(true)}
-                className="bg-white dark:bg-slate-900 rounded-[32px] p-6 border border-slate-100 dark:border-slate-800 shadow-sm w-full transition-colors duration-300 cursor-pointer hover:border-indigo-200 dark:hover:border-indigo-800 group relative"
+                className="bg-white dark:bg-zinc-900 rounded-[32px] p-6 border border-zinc-100 dark:border-zinc-800 shadow-sm w-full transition-colors duration-300 cursor-pointer hover:border-indigo-200 dark:hover:border-indigo-800 group relative"
             >
                 <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-slate-800 dark:text-white font-black text-sm uppercase tracking-tight">Frequência de Treinos</h3>
+                    <h3 className="text-zinc-800 dark:text-white font-black text-sm uppercase tracking-tight">Frequência de Treinos</h3>
                     <span className="text-[10px] uppercase font-bold text-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity">Ver Histórico</span>
                 </div>
 
@@ -96,7 +96,7 @@ export const TrainingFrequencyCard: React.FC<TrainingFrequencyCardProps> = ({ st
                                             ? 'border-2 border-emerald-400 text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30'
                                             : isToday
                                                 ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-700'
-                                                : 'border border-slate-100 dark:border-slate-800 text-slate-300 dark:text-slate-600'
+                                                : 'border border-zinc-100 dark:border-zinc-800 text-zinc-300 dark:text-zinc-600'
                                         }`}
                                 >
                                     {isCompleted ? <CheckCircle2 size={20} /> : day}
