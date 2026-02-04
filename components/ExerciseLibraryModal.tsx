@@ -24,7 +24,7 @@ const ExerciseLibraryModal: React.FC<ExerciseLibraryModalProps> = ({ onSelect, o
   return (
     <div className="fixed inset-0 z-[80] bg-white dark:bg-slate-900 flex flex-col animate-in slide-in-from-bottom duration-300 transition-colors">
       {/* Header */}
-      <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between sticky top-0 bg-white dark:bg-slate-900 z-10 transition-colors">
+      <div className="p-6 pt-14 md:pt-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between sticky top-0 bg-white dark:bg-slate-900 z-30 transition-colors">
         <div>
           <h2 className="text-xl font-black text-slate-900 dark:text-white transition-colors">Biblioteca</h2>
           <p className="text-xs text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider transition-colors">Escolha um exercício</p>

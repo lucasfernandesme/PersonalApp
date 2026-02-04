@@ -82,8 +82,9 @@ export const DataService = {
       injuries: student.injuries,
       equipment: student.equipment,
       program: student.program,
-      programs: student.programs,
-      history: student.history
+      programs: student.programs, // only one instance please
+      history: student.history,
+      files: student.files
     };
 
     if (trainerId) {

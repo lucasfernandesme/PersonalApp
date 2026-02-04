@@ -54,8 +54,14 @@ const TrainerDashboard: React.FC<TrainerDashboardProps> = ({
       {/* Header */}
       {!onlyList && (
         <div className="flex flex-col gap-2">
-          <h2 className="text-3xl font-black text-zinc-900 dark:text-white tracking-tight">Olá, Lucas 👋</h2>
-          <p className="text-zinc-400 dark:text-zinc-500 font-medium">Você tem {activeCount} alunos ativos.</p>
+          <h2 className="text-3xl font-black text-zinc-900 dark:text-white tracking-tight">
+            {(() => {
+              const hour = new Date().getHours();
+              if (hour < 12) return 'Bom dia';
+              if (hour < 18) return 'Boa tarde';
+              return 'Boa noite';
+            })()}, Lucas
+          </h2>
         </div>
       )}
 

@@ -20,8 +20,8 @@ import TrainerProfile from './components/TrainerProfile';
 import StudentProfile from './components/StudentProfile';
 import StudentSelectorModal from './components/StudentSelectorModal';
 import StudentDashboard from './components/StudentDashboard';
-import { WorkoutFolder, WorkoutTemplate, Student } from './types';
-import { ArrowLeft, Settings, Loader2, RefreshCw, CheckCircle2, X, Dumbbell, ArrowRight, Zap, Award, ChevronRight, Plus, Edit2, Trash2, User, Calendar } from 'lucide-react';
+import { WorkoutFolder, WorkoutTemplate, Student, StudentFile } from './types';
+import { ArrowLeft, Settings, Loader2, RefreshCw, CheckCircle2, X, Dumbbell, ArrowRight, Zap, Award, ChevronRight, Plus, Edit2, Trash2, User, Calendar, FileText } from 'lucide-react';
 import { TrainingFrequencyCard } from './components/TrainingFrequencyCard';
 import { ThemeProvider } from './contexts/ThemeContext';
 
@@ -57,6 +57,7 @@ const App: React.FC = () => {
   const [isStudentSelectorOpen, setIsStudentSelectorOpen] = useState(false);
   const [pendingTemplate, setPendingTemplate] = useState<WorkoutTemplate | null>(null);
   const [studentView, setStudentView] = useState<'dashboard' | 'workout'>('dashboard');
+  const [expandedWorkoutId, setExpandedWorkoutId] = useState<string | null>(null);
 
   const reloadStudents = useCallback(async () => {
     try {
@@ -329,7 +330,83 @@ const App: React.FC = () => {
 
   const renderTrainerContent = () => {
     if (activeView === 'register') {
-      return <StudentRegistrationScreen onBack={() => setActiveView('dashboard')} onSave={() => { setActiveView('dashboard'); reloadStudents(); }} />;
+      return (
+        <StudentRegistrationScreen
+          onBack={() => setActiveView('dashboard')}
+          onSave={async (studentData) => {
+            setIsSaving(true);
+            try {
+              // Create new student
+              const newStudent = {
+                id: Math.random().toString(36).substring(2, 11),
+                name: studentData.name,
+                email: studentData.email,
+                phone: studentData.phone,
+                birthDate: studentData.birthDate,
+                isActive: true,
+                program: null,
+                history: [],
+                // Default values or derived from form if available
+                goal: 'Hipertrofia',
+                experience: 'beginner',
+                files: [
+                  { id: '1', name: 'Avaliação Física.pdf', type: 'pdf', url: '#', date: '04/02/2026' },
+                  { id: '2', name: 'Dieta.pdf', type: 'pdf', url: '#', date: '01/02/2026' }
+                ]
+              };
+              await DataService.saveStudent(newStudent as any, authUser?.id);
+              await reloadStudents();
+              setActiveView('dashboard');
+              showToast("Aluno cadastrado com sucesso!");
+            } catch (e) {
+              showToast("Erro ao cadastrar.", "error");
+            } finally {
+              setIsSaving(false);
+            }
+          }}
+        />
+      );
+    }
+
+    if (activeView === 'edit-student' && selectedStudent) {
+      return (
+        <StudentRegistrationScreen
+          initialData={selectedStudent}
+          onBack={() => setActiveView('dashboard')}
+          onDelete={async (id) => {
+            if (confirm('Tem certeza?')) {
+              setIsSaving(true);
+              try {
+                await DataService.deleteStudent(id);
+                await reloadStudents();
+                setSelectedStudent(null);
+                setActiveView('dashboard');
+                setActiveTab('students');
+                showToast("Aluno removido.");
+              } catch (e) {
+                showToast("Erro ao remover.", "error");
+              } finally {
+                setIsSaving(false);
+              }
+            }
+          }}
+          onSave={async (studentData) => {
+            setIsSaving(true);
+            try {
+              const updated = { ...selectedStudent, ...studentData };
+              await DataService.saveStudent(updated, authUser?.id);
+              await reloadStudents();
+              setSelectedStudent(updated);
+              setActiveView('dashboard');
+              showToast("Dados atualizados!");
+            } catch (e) {
+              showToast("Erro ao salvar.", "error");
+            } finally {
+              setIsSaving(false);
+            }
+          }}
+        />
+      );
     }
     if (activeView === 'exercises') {
       return (
@@ -366,7 +443,7 @@ const App: React.FC = () => {
     }
 
     if (activeTab === 'profile') {
-      return <TrainerProfile user={authUser} onUpdateProfile={handleUpdateTrainerProfile} />;
+      return <TrainerProfile user={authUser} onUpdateProfile={handleUpdateTrainerProfile} onBack={() => setActiveTab('students')} />;
     }
 
     if (activeTab === 'evolution') {
@@ -389,7 +466,19 @@ const App: React.FC = () => {
     if (activeTab === 'students' && selectedStudent) {
       return (
         <div className="space-y-6 animate-in fade-in duration-300 pb-20">
-          <div className="flex items-center justify-end">
+          <div className="flex items-center justify-between">
+            <button
+              onClick={() => {
+                if (selectedStudentView === 'dashboard') {
+                  setSelectedStudent(null);
+                } else {
+                  setSelectedStudentView('dashboard');
+                }
+              }}
+              className="p-3 bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 rounded-2xl hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
+            >
+              <ArrowLeft size={20} />
+            </button>
             <button onClick={() => setActiveView('edit-student')} className="p-3 bg-slate-100 dark:bg-zinc-800 text-slate-500 dark:text-zinc-400 rounded-2xl hover:bg-slate-200 dark:hover:bg-zinc-700 transition-colors">
               <Settings size={20} />
             </button>
@@ -431,58 +520,112 @@ const App: React.FC = () => {
                 </div>
               </button>
 
-              {selectedStudent.program && (
-                <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                  <div className="flex items-center justify-between px-2">
-                    <h3 className="font-black text-slate-900 dark:text-white text-sm uppercase tracking-tight">Treino em Uso: {selectedStudent.program.name}</h3>
-                    <button
-                      onClick={() => {
-                        setWorkoutToEdit(selectedStudent.program || null);
-                        setIsManualBuilderOpen(true);
-                      }}
-                      className="text-[10px] font-black uppercase text-indigo-600"
-                    >
-                      Editar
-                    </button>
+              <button
+                onClick={() => setSelectedStudentView('files')}
+                className="group bg-white dark:bg-zinc-900 p-5 rounded-[24px] transition-all active:scale-[0.98] shadow-sm hover:shadow-md hover:border-indigo-200 dark:hover:border-indigo-800 text-left border border-slate-200 dark:border-zinc-800 flex items-center justify-between w-full"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform">
+                    <FileText size={24} />
                   </div>
+                  <div>
+                    <h3 className="text-lg font-black text-slate-900 dark:text-white leading-tight group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">Arquivos</h3>
+                    <p className="text-slate-500 dark:text-zinc-400 text-[10px] font-bold uppercase tracking-wider">Documentos e Anexos</p>
+                  </div>
+                </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {selectedStudent.program.split.map((day, idx) => (
-                      <div key={idx} className="bg-white dark:bg-zinc-900 p-5 rounded-[28px] border border-slate-100 dark:border-zinc-800 shadow-sm transition-colors duration-300">
-                        <h5 className="font-black text-slate-800 dark:text-zinc-200 text-sm mb-4 uppercase">{day.day}: {day.label}</h5>
-                        <div className="space-y-2">
-                          {day.exercises.map((ex, exIdx) => (
-                            <div key={exIdx} className="flex items-center justify-between text-xs py-1.5 border-b border-slate-50 dark:border-zinc-800 last:border-0">
-                              <span className="font-bold text-slate-600 dark:text-zinc-400 truncate max-w-[150px]">{ex.name}</span>
-                              <span className="text-slate-400 dark:text-zinc-500 font-bold tracking-tight">{ex.sets}x{ex.reps}</span>
-                            </div>
-                          ))}
+                <div className="w-10 h-10 bg-slate-50 dark:bg-zinc-800 rounded-xl flex items-center justify-center text-slate-300 dark:text-zinc-600 group-hover:bg-indigo-600 group-hover:text-white transition-all">
+                  <ArrowRight size={20} />
+                </div>
+              </button>
+
+              {/* Inline File List & Add Button */}
+
+
+
+            </div>
+          ) : selectedStudentView === 'files' ? (
+            <div className="space-y-6">
+              {/* Files Screen Header */}
+              <div className="flex items-center justify-between px-2">
+                <h3 className="font-black text-slate-400 dark:text-zinc-500 uppercase text-[10px] tracking-widest">Arquivos do Aluno</h3>
+              </div>
+
+              <div className="grid gap-4">
+                {/* Upload Area */}
+                <button
+                  onClick={() => {
+                    const input = document.createElement('input');
+                    input.type = 'file';
+                    input.onchange = async (e: any) => {
+                      if (e.target.files && e.target.files[0]) {
+                        const file = e.target.files[0];
+                        const newFile: StudentFile = {
+                          id: Math.random().toString(36).substr(2, 9),
+                          name: file.name,
+                          type: file.name.endsWith('.pdf') ? 'pdf' : 'image',
+                          url: '#',
+                          date: new Date().toLocaleDateString('pt-BR')
+                        };
+                        const updatedFiles = [...(selectedStudent.files || []), newFile];
+                        const updatedStudent = { ...selectedStudent, files: updatedFiles };
+
+                        setIsSaving(true);
+                        try {
+                          await DataService.saveStudent(updatedStudent, authUser?.id);
+
+                          // Update local states to reflect changes immediately in both views
+                          setSelectedStudent(updatedStudent);
+                          setStudents(prev => prev.map(s => s.id === updatedStudent.id ? updatedStudent : s));
+
+                          showToast("Arquivo adicionado!");
+                        } catch (err) {
+                          showToast("Erro ao adicionar arquivo", "error");
+                        } finally {
+                          setIsSaving(false);
+                        }
+                      }
+                    };
+                    input.click();
+                  }}
+                  className="w-full py-8 border-2 border-dashed border-zinc-200 dark:border-zinc-800 rounded-3xl flex flex-col items-center justify-center gap-2 hover:border-indigo-400 hover:bg-indigo-50/50 dark:hover:bg-indigo-900/10 transition-all group"
+                >
+                  <div className="w-12 h-12 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <Plus size={24} />
+                  </div>
+                  <p className="font-bold text-zinc-600 dark:text-zinc-400 text-sm">Adicionar Novo Arquivo</p>
+                </button>
+
+                {/* Full List */}
+                {(!selectedStudent.files || selectedStudent.files.length === 0) ? (
+                  <div className="text-center py-12">
+                    <p className="text-zinc-400 text-sm">Nenhum arquivo anexado ainda.</p>
+                  </div>
+                ) : (
+                  selectedStudent.files.map(file => (
+                    <div key={file.id} className="flex items-center justify-between p-4 bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-100 dark:border-zinc-800 shadow-sm">
+                      <div className="flex items-center gap-4">
+                        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${file.type === 'pdf' ? 'bg-red-50 text-red-500' : 'bg-blue-50 text-blue-500'} dark:bg-zinc-800`}>
+                          <FileText size={24} />
+                        </div>
+                        <div>
+                          <h4 className="font-bold text-zinc-900 dark:text-white">{file.name}</h4>
+                          <p className="text-xs text-zinc-400 uppercase font-bold">{file.date} • {file.type.toUpperCase()}</p>
                         </div>
                       </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="bg-white dark:bg-zinc-900 p-6 rounded-[32px] border border-slate-100 dark:border-zinc-800 shadow-sm transition-colors duration-300">
-                  <p className="text-[10px] font-black uppercase text-slate-400 dark:text-zinc-500 mb-1">Status</p>
-                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-black uppercase ${selectedStudent.isActive !== false ? 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400' : 'bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400'}`}>
-                    {selectedStudent.isActive !== false ? 'Ativo' : 'Inativo'}
-                  </span>
-                </div>
+                      <button className="p-2 text-zinc-400 hover:text-red-500 transition-colors">
+                        <Trash2 size={20} />
+                      </button>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           ) : selectedStudentView === 'workouts' ? (
             <div className="space-y-6">
               <div className="flex items-center justify-between px-2">
                 <h3 className="font-black text-slate-400 dark:text-zinc-500 uppercase text-[10px] tracking-widest">Gestão de Treinos</h3>
-                <button
-                  onClick={() => setSelectedStudentView('dashboard')}
-                  className="text-[10px] font-black uppercase text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 px-3 py-1.5 rounded-xl border border-indigo-100 dark:border-indigo-800"
-                >
-                  Voltar Dashboard
-                </button>
+
               </div>
 
               <button
@@ -506,15 +649,18 @@ const App: React.FC = () => {
                     >
                       <div className="flex items-center justify-between">
                         <div
-                          onClick={() => setSelectedStudentView('workout-detail')}
-                          className="cursor-pointer"
+                          onClick={() => setExpandedWorkoutId(expandedWorkoutId === prog.id ? null : prog.id)}
+                          className="cursor-pointer flex-1"
                         >
                           <div className="flex items-center gap-2 mb-2">
                             {selectedStudent.program?.id === prog.id && (
                               <span className="px-2 py-0.5 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 text-[9px] font-black uppercase rounded-md border border-emerald-100 dark:border-emerald-800">Ativo</span>
                             )}
                           </div>
-                          <h4 className="text-xl font-black text-slate-900 dark:text-white mb-1">{prog.name}</h4>
+                          <div className="flex items-center gap-2">
+                            <h4 className="text-xl font-black text-slate-900 dark:text-white mb-1">{prog.name}</h4>
+                            <ChevronRight size={16} className={`text-slate-400 transition-transform duration-300 ${expandedWorkoutId === prog.id ? 'rotate-90' : ''}`} />
+                          </div>
                           <div className="flex items-center gap-3 text-[10px] font-bold text-slate-400 uppercase">
                             <span>{prog.goal}</span>
                             {prog.endDate && (
@@ -525,6 +671,7 @@ const App: React.FC = () => {
                             )}
                           </div>
                         </div>
+
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => {
@@ -545,6 +692,27 @@ const App: React.FC = () => {
                           </button>
                         </div>
                       </div>
+
+                      {expandedWorkoutId === prog.id && (
+                        <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4 animate-in slide-in-from-top-4 fade-in duration-300">
+                          {prog.split.map((day, dIdx) => (
+                            <div key={dIdx} className="bg-white dark:bg-zinc-950 p-4 rounded-2xl border border-zinc-100 dark:border-zinc-800">
+                              <h5 className="font-black text-slate-800 dark:text-zinc-200 text-xs mb-3 uppercase flex items-center gap-2">
+                                <span className="h-6 w-auto min-w-[24px] px-1.5 bg-zinc-100 dark:bg-zinc-900 rounded-lg flex items-center justify-center text-[10px] border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 font-black">{day.day}</span>
+                                <span className="text-zinc-800 dark:text-zinc-100">{day.label}</span>
+                              </h5>
+                              <div className="space-y-2">
+                                {day.exercises.map((ex, exIdx) => (
+                                  <div key={exIdx} className="flex items-center justify-between text-[10px] py-1.5 border-b border-slate-200 dark:border-zinc-800/50 last:border-0">
+                                    <span className="font-bold text-zinc-600 dark:text-zinc-400 truncate flex-1">{ex.name}</span>
+                                    <span className="text-zinc-500 dark:text-zinc-500 font-black tracking-tight bg-zinc-50 dark:bg-zinc-900 px-2 py-0.5 rounded-md border border-zinc-100 dark:border-zinc-800">{ex.sets}x{ex.reps}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   ))
                 ) : (
@@ -608,9 +776,10 @@ const App: React.FC = () => {
                   </div>
                 )}
               </div>
-            </div>
-          ) : null}
-        </div>
+            </div >
+          ) : null
+          }
+        </div >
       );
     }
 
@@ -732,7 +901,7 @@ const App: React.FC = () => {
               goal: pendingStudentData.goal
             } : undefined)}
             onSave={handleSaveWorkout}
-            onClose={() => setIsManualBuilderOpen(false)}
+            onCancel={() => setIsManualBuilderOpen(false)}
           />
         )}
 

@@ -114,8 +114,8 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin }) => {
     <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 flex flex-col items-center justify-center p-6 transition-colors">
       <div className="w-full max-w-md space-y-8 animate-in fade-in duration-500">
         <div className="text-center space-y-2">
-          <div className="inline-flex p-4 bg-indigo-600 dark:bg-indigo-500 rounded-[28px] shadow-xl shadow-indigo-600/30 mb-4 animate-bounce transition-colors">
-            <Dumbbell className="text-white w-8 h-8" />
+          <div className="mb-6 hover:scale-105 transition-transform duration-300">
+            <img src="/logo.jpg" alt="PersonalFlow" className="w-24 h-24 rounded-full shadow-2xl shadow-indigo-500/20 mx-auto" />
           </div>
           <h1 className="text-4xl font-black text-slate-900 dark:text-white tracking-tighter transition-colors">PersonalFlow</h1>
           <p className="text-slate-400 dark:text-zinc-500 font-bold uppercase text-[10px] tracking-[0.3em] transition-colors">

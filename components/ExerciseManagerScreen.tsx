@@ -63,7 +63,7 @@ const ExerciseManagerScreen: React.FC<ExerciseManagerScreenProps> = ({ exercises
 
   return (
     <div className="fixed inset-0 z-[100] bg-zinc-50 dark:bg-zinc-950 flex flex-col animate-in slide-in-from-right duration-300">
-      <header className="bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 p-4 sticky top-0 z-10 flex items-center justify-between">
+      <header className="bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 p-4 pt-14 md:pt-4 sticky top-0 z-30 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-4">
           <button onClick={onBack} className="p-2 text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors">
             <ArrowLeft size={24} />

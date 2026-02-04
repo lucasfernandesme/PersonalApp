@@ -92,7 +92,7 @@ const StudentRegistrationScreen: React.FC<StudentRegistrationScreenProps> = ({ o
 
           <div className="space-y-1">
             <div className="relative">
-              <User className="absolute left-4 top-4 text-zinc-300 dark:text-zinc-600" size={20} />
+              <User className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-300 dark:text-zinc-600" size={20} />
               <input
                 required
                 type="text"
@@ -106,7 +106,7 @@ const StudentRegistrationScreen: React.FC<StudentRegistrationScreenProps> = ({ o
 
           <div className="space-y-1">
             <div className="relative">
-              <Mail className="absolute left-4 top-4 text-zinc-300 dark:text-zinc-600" size={20} />
+              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-300 dark:text-zinc-600" size={20} />
               <input
                 required
                 type="email"
@@ -122,7 +122,7 @@ const StudentRegistrationScreen: React.FC<StudentRegistrationScreenProps> = ({ o
             <div className="space-y-1">
               <label className="text-[9px] font-black uppercase text-zinc-400 dark:text-zinc-500 ml-1">WhatsApp <span className="text-red-500">*</span></label>
               <div className="relative">
-                <Phone className="absolute left-4 top-4 text-zinc-300 dark:text-zinc-600" size={20} />
+                <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-300 dark:text-zinc-600" size={20} />
                 <input
                   type="tel"
                   placeholder="(00) 00000-0000"
@@ -135,7 +135,7 @@ const StudentRegistrationScreen: React.FC<StudentRegistrationScreenProps> = ({ o
             <div className="space-y-1">
               <label className="text-[9px] font-black uppercase text-zinc-400 dark:text-zinc-500 ml-1">Nascimento <span className="text-red-500">*</span></label>
               <div className="relative">
-                <Calendar className="absolute left-4 top-4 text-zinc-300 dark:text-zinc-600" size={20} />
+                <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-300 dark:text-zinc-600" size={20} />
                 <input
                   type="date"
                   required

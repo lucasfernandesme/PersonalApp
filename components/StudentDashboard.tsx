@@ -164,6 +164,28 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
                             </div>
                             <input type="file" className="hidden" onChange={handleFileUpload} />
                         </label>
+
+                        {/* Listagem de Arquivos */}
+                        <div className="mt-6 flex-1 overflow-y-auto space-y-3">
+                            <h4 className="text-xs font-black text-zinc-400 uppercase tracking-wider mb-3">Seus Arquivos</h4>
+                            {(!student.files || student.files.length === 0) ? (
+                                <p className="text-xs text-zinc-400 text-center py-4">Nenhum arquivo enviado.</p>
+                            ) : (
+                                student.files.map((file) => (
+                                    <div key={file.id} className="flex items-center justify-between p-3 bg-zinc-50 dark:bg-zinc-800 rounded-xl border border-zinc-100 dark:border-zinc-700">
+                                        <div className="flex items-center gap-3">
+                                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${file.type === 'pdf' ? 'bg-red-50 text-red-500' : 'bg-blue-50 text-blue-500'} dark:bg-zinc-800`}>
+                                                <FileText size={16} />
+                                            </div>
+                                            <div>
+                                                <p className="font-bold text-xs text-zinc-800 dark:text-zinc-200">{file.name}</p>
+                                                <p className="text-[10px] text-zinc-400 uppercase">{file.date}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                        </div>
                     </div>
                 </div>
             )}

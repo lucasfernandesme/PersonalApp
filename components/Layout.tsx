@@ -52,9 +52,7 @@ const Layout: React.FC<LayoutProps> = ({ children, role, onSwitchRole, onNavigat
       {/* Desktop Sidebar */}
       <aside className="w-64 bg-zinc-900 dark:bg-zinc-900 text-white flex-shrink-0 flex-col hidden md:flex h-screen sticky top-0 border-r border-transparent dark:border-zinc-800">
         <div className="p-6 flex items-center gap-3">
-          <div className="p-2 bg-indigo-600 rounded-lg">
-            <Dumbbell className="w-6 h-6" />
-          </div>
+          <img src="/logo.jpg" alt="PersonalFlow" className="w-10 h-10 rounded-full shadow-lg shadow-black/20" />
           <span className="text-xl font-bold tracking-tight">PersonalFlow</span>
         </div>
 
@@ -115,11 +113,9 @@ const Layout: React.FC<LayoutProps> = ({ children, role, onSwitchRole, onNavigat
       </aside>
 
       {/* Mobile Top Header */}
-      <header className="md:hidden bg-white dark:bg-zinc-900 border-b border-slate-200 dark:border-zinc-800 min-h-14 flex items-center justify-between px-4 sticky top-0 z-40 transition-colors duration-300 safe-top pt-2">
+      <header className="md:hidden bg-white dark:bg-zinc-900 border-b border-slate-200 dark:border-zinc-800 min-h-[5rem] flex items-end justify-between px-4 sticky top-0 z-40 transition-colors duration-300 pt-14 pb-3">
         <div className="flex items-center gap-2">
-          <div className="p-1.5 bg-indigo-600 rounded-md">
-            <Dumbbell className="w-4 h-4 text-white" />
-          </div>
+          <img src="/logo.jpg" alt="PersonalFlow" className="w-8 h-8 rounded-full shadow-sm" />
           <span className="font-extrabold text-slate-900 dark:text-white tracking-tight">PersonalFlow</span>
         </div>
         <button onClick={onSwitchRole} className="text-slate-400 p-2">

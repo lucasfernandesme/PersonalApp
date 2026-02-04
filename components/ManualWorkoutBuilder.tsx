@@ -174,16 +174,16 @@ const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-[70] bg-slate-50 dark:bg-slate-950 flex flex-col animate-in slide-in-from-right duration-300">
-      <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 p-4 sticky top-0 z-10 flex items-center justify-between">
-        <button onClick={onCancel} className="p-2 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
-          <ArrowLeft size={24} />
+    <div className="fixed inset-0 z-[70] bg-zinc-50 dark:bg-zinc-950 flex flex-col animate-in slide-in-from-right duration-300">
+      <header className="bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 p-4 pt-14 md:pt-4 sticky top-0 z-[100] flex items-center justify-between shadow-sm">
+        <button onClick={onCancel} className="relative p-3 -ml-2 text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors active:bg-zinc-100 dark:active:bg-zinc-800 rounded-full z-50">
+          <ArrowLeft size={28} />
         </button>
         <div className="text-center">
-          <h2 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-widest">
+          <h2 className="text-sm font-black text-zinc-900 dark:text-white uppercase tracking-widest">
             {isTemplateMode ? 'Criar Rotina' : 'Montar Treino'}
           </h2>
-          <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500">{isTemplateMode ? 'Biblioteca de Treinos' : studentName}</p>
+          <p className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500">{isTemplateMode ? 'Biblioteca de Treinos' : studentName}</p>
         </div>
         <button
           onClick={handleSave}
@@ -193,7 +193,7 @@ const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
         </button>
       </header>
 
-      <div className="flex-1 overflow-y-auto p-4 space-y-6 pb-24 scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-slate-800">
+      <div className="flex-1 overflow-y-auto p-4 space-y-6 pb-24 scrollbar-thin scrollbar-thumb-zinc-200 dark:scrollbar-thumb-zinc-800">
         {error && (
           <div className="bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-900/30 p-4 rounded-2xl flex items-center gap-3 text-red-600 dark:text-red-400">
             <AlertCircle size={20} />
@@ -201,39 +201,39 @@ const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
           </div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white dark:bg-slate-900 p-6 rounded-[32px] border border-slate-200 dark:border-slate-800 shadow-sm transition-colors">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white dark:bg-zinc-900 p-6 rounded-[32px] border border-zinc-200 dark:border-zinc-800 shadow-sm transition-colors">
           <div className="space-y-4">
             <div className="space-y-1.5">
-              <label className="text-[10px] font-black uppercase text-slate-400 dark:text-slate-500 ml-1 tracking-widest">Nome da Rotina</label>
+              <label className="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 ml-1 tracking-widest">Nome da Rotina</label>
               <input
                 type="text"
                 value={programName}
                 onChange={(e) => setProgramName(e.target.value)}
-                className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-2xl px-5 py-4 font-bold text-slate-800 dark:text-white focus:ring-2 focus:ring-indigo-500 transition-all placeholder:text-slate-400 dark:placeholder:text-slate-600"
+                className="w-full bg-zinc-50 dark:bg-zinc-800 border-none rounded-2xl px-5 py-4 font-bold text-zinc-800 dark:text-white focus:ring-2 focus:ring-indigo-500 transition-all placeholder:text-zinc-400 dark:placeholder:text-zinc-600"
                 placeholder={isTemplateMode ? "Ex: Hipertrofia Masculina A/B" : ""}
               />
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-[10px] font-black uppercase text-slate-400 dark:text-slate-500 ml-1 tracking-widest">Objetivo do Treino</label>
+              <label className="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 ml-1 tracking-widest">Objetivo do Treino</label>
               <select
                 value={goal}
                 onChange={(e) => setGoal(e.target.value)}
-                className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-2xl px-5 py-4 font-bold text-slate-800 dark:text-white focus:ring-2 focus:ring-indigo-500 transition-all appearance-none"
+                className="w-full bg-zinc-50 dark:bg-zinc-800 border-none rounded-2xl px-5 py-4 font-bold text-zinc-800 dark:text-white focus:ring-2 focus:ring-indigo-500 transition-all appearance-none"
               >
-                <option value="Hipertrofia" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">Hipertrofia</option>
-                <option value="Emagrecimento" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">Emagrecimento / Redução de Gordura</option>
-                <option value="Condicionamento" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">Condicionamento Físico</option>
-                <option value="Força" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">Força Máxima</option>
-                <option value="Qualidade de Vida" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">Qualidade de Vida</option>
-                <option value="Reabilitação" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">Reabilitação / Fortalecimento</option>
+                <option value="Hipertrofia" className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white">Hipertrofia</option>
+                <option value="Emagrecimento" className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white">Emagrecimento / Redução de Gordura</option>
+                <option value="Condicionamento" className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white">Condicionamento Físico</option>
+                <option value="Força" className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white">Força Máxima</option>
+                <option value="Qualidade de Vida" className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white">Qualidade de Vida</option>
+                <option value="Reabilitação" className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white">Reabilitação / Fortalecimento</option>
               </select>
             </div>
           </div>
 
           <div className="space-y-4">
             <div className="space-y-1.5">
-              <label className="text-[10px] font-black uppercase text-slate-400 dark:text-slate-500 ml-1 tracking-widest">Dificuldade / Nível</label>
+              <label className="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 ml-1 tracking-widest">Dificuldade / Nível</label>
               <div className="grid grid-cols-2 gap-2">
                 {[
                   { id: 'adaptation', label: 'Adaptação' },
@@ -246,7 +246,7 @@ const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
                     onClick={() => setDifficulty(level.id as any)}
                     className={`py-3 rounded-xl text-[10px] font-black uppercase tracking-tighter transition-all ${difficulty === level.id
                       ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20'
-                      : 'bg-slate-50 dark:bg-slate-800 text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700'
+                      : 'bg-zinc-50 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-700'
                       }`}
                   >
                     {level.label}
@@ -258,21 +258,21 @@ const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
             {!isTemplateMode && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-black uppercase text-slate-400 dark:text-slate-500 ml-1 tracking-widest">Data de Início</label>
+                  <label className="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 ml-1 tracking-widest">Data de Início</label>
                   <input
                     type="date"
                     value={startDate}
                     onChange={(e) => setStartDate(e.target.value)}
-                    className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-2xl px-5 py-4 font-bold text-slate-800 dark:text-white focus:ring-2 focus:ring-indigo-500 transition-all font-sans"
+                    className="w-full bg-zinc-50 dark:bg-zinc-800 border-none rounded-2xl px-5 py-4 font-bold text-zinc-800 dark:text-white focus:ring-2 focus:ring-indigo-500 transition-all font-sans"
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-black uppercase text-slate-400 dark:text-slate-500 ml-1 tracking-widest">Data Final (Opcional)</label>
+                  <label className="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 ml-1 tracking-widest">Data Final (Opcional)</label>
                   <input
                     type="date"
                     value={endDate}
                     onChange={(e) => setEndDate(e.target.value)}
-                    className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-2xl px-5 py-4 font-bold text-slate-800 dark:text-white focus:ring-2 focus:ring-indigo-500 transition-all font-sans"
+                    className="w-full bg-zinc-50 dark:bg-zinc-800 border-none rounded-2xl px-5 py-4 font-bold text-zinc-800 dark:text-white focus:ring-2 focus:ring-indigo-500 transition-all font-sans"
                   />
                 </div>
               </div>
@@ -280,20 +280,20 @@ const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
           </div>
         </div>
 
-        <div className="bg-white dark:bg-slate-900 p-6 rounded-[32px] border border-slate-200 dark:border-slate-800 shadow-sm space-y-2 transition-colors">
-          <label className="text-[10px] font-black uppercase text-slate-400 dark:text-slate-500 ml-1 tracking-widest">Observações Gerais</label>
+        <div className="bg-white dark:bg-zinc-900 p-6 rounded-[32px] border border-zinc-200 dark:border-zinc-800 shadow-sm space-y-2 transition-colors">
+          <label className="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 ml-1 tracking-widest">Observações Gerais</label>
           <textarea
             value={observations}
             onChange={(e) => setObservations(e.target.value)}
             placeholder="Observações sobre o treino, restrições, orientações gerais..."
-            className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-2xl px-5 py-4 font-medium text-slate-700 dark:text-white focus:ring-2 focus:ring-indigo-500 transition-all min-h-[100px] resize-none placeholder:text-slate-400 dark:placeholder:text-slate-600"
+            className="w-full bg-zinc-50 dark:bg-zinc-800 border-none rounded-2xl px-5 py-4 font-medium text-zinc-700 dark:text-white focus:ring-2 focus:ring-indigo-500 transition-all min-h-[100px] resize-none placeholder:text-zinc-400 dark:placeholder:text-zinc-600"
           />
         </div>
 
         <div className="space-y-4">
           {days.map((day, dIdx) => (
-            <div key={dIdx} className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden transition-colors">
-              <div className="p-4 bg-slate-50 dark:bg-slate-800 flex items-center justify-between border-b border-slate-100 dark:border-slate-700">
+            <div key={dIdx} className="bg-white dark:bg-zinc-900 rounded-3xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden transition-colors">
+              <div className="p-4 bg-zinc-50 dark:bg-zinc-800 flex items-center justify-between border-b border-zinc-100 dark:border-zinc-700">
                 <div className="flex items-center gap-3">
                   <span className="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-black text-xs">
                     {day.day.split(' ')[1]}
@@ -306,12 +306,12 @@ const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
                       newDays[dIdx].label = e.target.value;
                       setDays(newDays);
                     }}
-                    className="bg-transparent font-bold text-slate-800 dark:text-white border-none p-0 focus:ring-0 w-40 placeholder:text-slate-400 dark:placeholder:text-slate-500"
+                    className="bg-transparent font-bold text-zinc-800 dark:text-white border-none p-0 focus:ring-0 w-40 placeholder:text-zinc-400 dark:placeholder:text-zinc-500"
                     placeholder="Foco do dia..."
                   />
                 </div>
                 {days.length > 1 && (
-                  <button onClick={() => removeDay(dIdx)} className="text-slate-300 dark:text-slate-600 hover:text-red-500 dark:hover:text-red-400 p-2 transition-colors">
+                  <button onClick={() => removeDay(dIdx)} className="text-zinc-300 dark:text-zinc-600 hover:text-red-500 dark:hover:text-red-400 p-2 transition-colors">
                     <Trash2 size={18} />
                   </button>
                 )}
@@ -319,10 +319,10 @@ const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
 
               <div className="p-4 space-y-4">
                 {day.exercises.map((ex, eIdx) => (
-                  <div key={ex.id} className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-800 space-y-4 relative transition-colors">
+                  <div key={ex.id} className="p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border border-zinc-100 dark:border-zinc-800 space-y-4 relative transition-colors">
                     <button
                       onClick={() => removeExercise(dIdx, eIdx)}
-                      className="absolute top-2 right-2 p-1 text-slate-300 dark:text-slate-600 hover:text-red-500 dark:hover:text-red-400 transition-colors"
+                      className="absolute top-2 right-2 p-1 text-zinc-300 dark:text-zinc-600 hover:text-red-500 dark:hover:text-red-400 transition-colors"
                     >
                       <XIcon size={14} />
                     </button>
@@ -333,11 +333,11 @@ const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
                         placeholder="Nome do exercício"
                         value={ex.name}
                         onChange={(e) => updateExercise(dIdx, eIdx, 'name', e.target.value)}
-                        className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl pl-4 pr-10 py-2.5 text-sm font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 shadow-sm placeholder:text-slate-400 dark:placeholder:text-slate-600 transition-colors"
+                        className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl pl-4 pr-10 py-2.5 text-sm font-bold text-zinc-900 dark:text-white focus:ring-2 focus:ring-indigo-500 shadow-sm placeholder:text-zinc-400 dark:placeholder:text-zinc-600 transition-colors"
                       />
                       <button
                         onClick={() => openLibraryForEdit(dIdx, eIdx)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                        className="absolute right-3 top-1/2 -tranzinc-y-1/2 text-zinc-400 dark:text-zinc-500 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
                       >
                         <Search size={16} />
                       </button>
@@ -345,22 +345,22 @@ const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
 
                     <div className="grid grid-cols-3 gap-2">
                       <div className="space-y-1">
-                        <label className="text-[9px] font-black uppercase text-slate-400 dark:text-slate-500 block ml-1">Séries</label>
-                        <input type="number" value={ex.sets} onChange={(e) => updateExercise(dIdx, eIdx, 'sets', parseInt(e.target.value) || 0)} className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm font-bold text-slate-900 dark:text-white transition-colors" />
+                        <label className="text-[9px] font-black uppercase text-zinc-400 dark:text-zinc-500 block ml-1">Séries</label>
+                        <input type="number" value={ex.sets} onChange={(e) => updateExercise(dIdx, eIdx, 'sets', parseInt(e.target.value) || 0)} className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl px-3 py-2 text-sm font-bold text-zinc-900 dark:text-white transition-colors" />
                       </div>
                       <div className="space-y-1">
-                        <label className="text-[9px] font-black uppercase text-slate-400 dark:text-slate-500 block ml-1">Reps</label>
-                        <input type="text" value={ex.reps} onChange={(e) => updateExercise(dIdx, eIdx, 'reps', e.target.value)} className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm font-bold text-slate-900 dark:text-white transition-colors" />
+                        <label className="text-[9px] font-black uppercase text-zinc-400 dark:text-zinc-500 block ml-1">Reps</label>
+                        <input type="text" value={ex.reps} onChange={(e) => updateExercise(dIdx, eIdx, 'reps', e.target.value)} className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl px-3 py-2 text-sm font-bold text-zinc-900 dark:text-white transition-colors" />
                       </div>
                       <div className="space-y-1">
-                        <label className="text-[9px] font-black uppercase text-slate-400 dark:text-slate-500 block ml-1">Desc.</label>
-                        <input type="text" value={ex.rest} onChange={(e) => updateExercise(dIdx, eIdx, 'rest', e.target.value)} className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm font-bold text-slate-900 dark:text-white transition-colors" />
+                        <label className="text-[9px] font-black uppercase text-zinc-400 dark:text-zinc-500 block ml-1">Desc.</label>
+                        <input type="text" value={ex.rest} onChange={(e) => updateExercise(dIdx, eIdx, 'rest', e.target.value)} className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl px-3 py-2 text-sm font-bold text-zinc-900 dark:text-white transition-colors" />
                       </div>
                     </div>
 
                     <div className="space-y-2">
                       <div className="flex items-center justify-between px-1">
-                        <label className="text-[9px] font-black uppercase text-slate-400 dark:text-slate-500 flex items-center gap-1">
+                        <label className="text-[9px] font-black uppercase text-zinc-400 dark:text-zinc-500 flex items-center gap-1">
                           <MessageSquareQuote size={10} />
                           Dica do Personal
                         </label>
@@ -382,7 +382,7 @@ const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
                         placeholder="Dica de biomecânica ou segurança..."
                         value={ex.notes || ''}
                         onChange={(e) => updateExercise(dIdx, eIdx, 'notes', e.target.value)}
-                        className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-xs font-medium text-slate-700 dark:text-white min-h-[60px] focus:ring-2 focus:ring-indigo-500 shadow-sm transition-colors placeholder:text-slate-400 dark:placeholder:text-slate-600"
+                        className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs font-medium text-zinc-700 dark:text-white min-h-[60px] focus:ring-2 focus:ring-indigo-500 shadow-sm transition-colors placeholder:text-zinc-400 dark:placeholder:text-zinc-600"
                       />
                     </div>
                   </div>
@@ -390,7 +390,7 @@ const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
 
                 <button
                   onClick={() => openLibraryForAdd(dIdx)}
-                  className="w-full py-4 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-2xl text-slate-400 dark:text-slate-500 text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:border-indigo-300 dark:hover:border-indigo-700 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all"
+                  className="w-full py-4 border-2 border-dashed border-zinc-200 dark:border-zinc-700 rounded-2xl text-zinc-400 dark:text-zinc-500 text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:border-indigo-300 dark:hover:border-indigo-700 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all"
                 >
                   <Plus size={16} />
                   Adicionar Exercício
@@ -401,7 +401,7 @@ const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
 
           <button
             onClick={addDay}
-            className="w-full py-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl text-indigo-600 dark:text-indigo-400 font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2 shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition-all"
+            className="w-full py-5 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl text-indigo-600 dark:text-indigo-400 font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2 shadow-sm hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all"
           >
             <Plus size={20} />
             Adicionar Novo Dia

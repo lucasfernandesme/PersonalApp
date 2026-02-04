@@ -61,8 +61,17 @@ export interface WorkoutTemplate extends Omit<TrainingProgram, 'startDate'> {
   trainerId?: string;
 }
 
+export interface StudentFile {
+  id: string;
+  name: string;
+  type: 'pdf' | 'image' | 'doc';
+  url: string;
+  date: string;
+}
+
 export interface Student {
   id: string;
+  files?: StudentFile[];
   name: string;
   email: string;
   password?: string;
@@ -79,6 +88,7 @@ export interface Student {
   program?: TrainingProgram;
   programs?: TrainingProgram[];
   isActive?: boolean;
+  notes?: string;
   trainerId?: string;
   trainerName?: string;
   trainerAvatar?: string;
@@ -100,6 +110,7 @@ export interface OnboardingData {
   frequency: number;
   equipment: string;
   observations?: string;
+  files?: StudentFile[];
 }
 
 export interface ScheduleEvent {
@@ -113,5 +124,7 @@ export interface ScheduleEvent {
   end: string; // ISO string
   location?: string;
   isRecurring?: boolean;
+  recurringDays?: number[]; // 0=Sunday, 1=Monday...
+  recurringMonths?: number[]; // 0=January...
   status: 'planned' | 'completed' | 'cancelled';
 }

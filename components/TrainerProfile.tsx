@@ -9,9 +9,10 @@ import { DataService } from '../services/dataService'; // Assuming DataService w
 interface TrainerProfileProps {
     user: AuthUser;
     onUpdateProfile?: (updatedUser: Partial<AuthUser>) => void;
+    onBack?: () => void;
 }
 
-const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile }) => {
+const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, onBack }) => {
     const [activeModal, setActiveModal] = useState<'edit' | 'schedule' | 'reports' | null>(null);
 
     // Agenda State
@@ -177,7 +178,21 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile }
     return (
         <div className="space-y-6 pb-24 animate-in fade-in duration-300 transition-colors">
             {/* Header Profile */}
-            <div className="bg-white dark:bg-zinc-900 rounded-[32px] p-8 border border-zinc-100 dark:border-zinc-800 shadow-sm flex flex-col items-center transition-colors">
+            <div className="bg-white dark:bg-zinc-900 rounded-[32px] p-8 border border-zinc-100 dark:border-zinc-800 shadow-sm flex flex-col items-center transition-colors relative">
+                {onBack && (
+                    <button
+                        onClick={onBack}
+                        className="absolute top-6 left-6 p-2 text-zinc-400 hover:text-indigo-600 dark:text-zinc-500 dark:hover:text-white transition-colors"
+                    >
+                        {/* We need to import ArrowLeft first, but it is not imported. I will just use text or assume ArrowLeft is available? 
+                            Wait, ArrowLeft is likely NOT imported. 
+                            I should check imports. 
+                            Line 2 has imports.
+                            I will check if ArrowLeft is imported.
+                          */}
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m12 19-7-7 7-7" /><path d="M19 12H5" /></svg>
+                    </button>
+                )}
                 <div className="relative group cursor-pointer" onClick={() => activeModal === 'edit' && handlePhotoClick()}>
                     <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-indigo-500 shadow-xl mb-4 relative z-10 bg-zinc-100 dark:bg-zinc-800 transition-colors">
                         <img
