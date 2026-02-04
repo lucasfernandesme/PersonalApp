@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { User, Calendar, Edit2, CheckCircle2, ChevronRight, X, Camera, Eye, EyeOff, BarChart2 } from 'lucide-react';
+import { User, Calendar, Edit2, CheckCircle2, ChevronRight, X, Camera, Eye, EyeOff, BarChart2, Loader2, ArrowLeft } from 'lucide-react';
 import { AuthUser, ScheduleEvent } from '../types'; // Import ScheduleEvent
 import AgendaScreen from './AgendaScreen';
 import ScheduleEventModal from './ScheduleEventModal';
@@ -133,6 +133,21 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, 
         confirmPassword: ''
     });
 
+    // Keep formData in sync with user prop
+    useEffect(() => {
+        setFormData({
+            name: user.name || '',
+            surname: user.surname || '',
+            email: user.email || '',
+            instagram: user.instagram || '',
+            whatsapp: user.whatsapp || '',
+            cref: user.cref || '',
+            password: '',
+            confirmPassword: ''
+        });
+    }, [user]);
+
+    const [isSavingLocal, setIsSavingLocal] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -148,31 +163,51 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, 
     const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
             const file = e.target.files[0];
-            const imageUrl = URL.createObjectURL(file);
-            if (onUpdateProfile) {
-                onUpdateProfile({ avatar: imageUrl });
+
+            // Verificar tamanho (limitar a 2MB para base64)
+            if (file.size > 2 * 1024 * 1024) {
+                alert('A imagem é muito grande. Escolha uma imagem de até 2MB.');
+                return;
             }
-            alert('Foto de perfil atualizada!');
+
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                const base64String = reader.result as string;
+                if (onUpdateProfile) {
+                    onUpdateProfile({ avatar: base64String });
+                }
+                alert('Foto de perfil atualizada!');
+            };
+            reader.readAsDataURL(file);
         }
     };
 
-    const handleSaveProfile = () => {
+    const handleSaveProfile = async () => {
         if (formData.password && formData.password !== formData.confirmPassword) {
             alert("As senhas não coincidem!");
             return;
         }
 
         if (onUpdateProfile) {
-            onUpdateProfile({
-                name: formData.name,
-                surname: formData.surname,
-                email: formData.email,
-                instagram: formData.instagram,
-                whatsapp: formData.whatsapp,
-                cref: formData.cref
-            });
+            setIsSavingLocal(true);
+            try {
+                await onUpdateProfile({
+                    name: formData.name,
+                    surname: formData.surname,
+                    email: formData.email,
+                    instagram: formData.instagram,
+                    whatsapp: formData.whatsapp,
+                    cref: formData.cref,
+                    ...(formData.password ? { password: formData.password } : {})
+                });
+                setActiveModal(null);
+            } catch (error) {
+                console.error("Erro ao salvar perfil:", error);
+                alert("Ocorreu um erro ao salvar as alterações. Tente novamente.");
+            } finally {
+                setIsSavingLocal(false);
+            }
         }
-        setActiveModal(null);
     };
 
     return (
@@ -182,15 +217,9 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, 
                 {onBack && (
                     <button
                         onClick={onBack}
-                        className="absolute top-6 left-6 p-2 text-zinc-400 hover:text-indigo-600 dark:text-zinc-500 dark:hover:text-white transition-colors"
+                        className="absolute top-6 left-6 p-2 text-zinc-400 hover:text-indigo-600 dark:text-zinc-500 dark:hover:text-white transition-colors bg-zinc-50 dark:bg-zinc-800 rounded-xl"
                     >
-                        {/* We need to import ArrowLeft first, but it is not imported. I will just use text or assume ArrowLeft is available? 
-                            Wait, ArrowLeft is likely NOT imported. 
-                            I should check imports. 
-                            Line 2 has imports.
-                            I will check if ArrowLeft is imported.
-                          */}
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m12 19-7-7 7-7" /><path d="M19 12H5" /></svg>
+                        <ArrowLeft size={20} />
                     </button>
                 )}
                 <div className="relative group cursor-pointer" onClick={() => activeModal === 'edit' && handlePhotoClick()}>
@@ -268,8 +297,16 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, 
             {activeModal === 'edit' && (
                 <div className="fixed inset-0 z-50 bg-black/60 dark:bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200 overflow-y-auto">
                     <div className="bg-white dark:bg-zinc-900 rounded-[32px] w-full max-w-lg shadow-2xl p-6 relative max-h-[90vh] overflow-y-auto border dark:border-zinc-800 transition-colors">
-                        <button onClick={() => setActiveModal(null)} className="absolute top-4 right-4 p-2 text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"><X size={24} /></button>
-                        <h3 className="text-xl font-black text-zinc-900 dark:text-white mb-6 sticky top-0 bg-white dark:bg-zinc-900 z-10 pb-2 border-b border-transparent transition-colors">Editar Perfil</h3>
+                        <div className="flex items-center justify-between mb-6 sticky top-0 bg-white dark:bg-zinc-900 z-10 pb-4 border-b border-zinc-50 dark:border-zinc-800 transition-colors">
+                            <button onClick={() => setActiveModal(null)} className="flex items-center gap-2 text-zinc-400 dark:text-zinc-500 hover:text-indigo-600 dark:hover:text-indigo-400 font-bold text-xs uppercase tracking-widest transition-colors">
+                                <ArrowLeft size={18} />
+                                Voltar
+                            </button>
+                            <h3 className="text-xl font-black text-zinc-900 dark:text-white">Editar Perfil</h3>
+                            <button onClick={() => setActiveModal(null)} className="p-2 text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors">
+                                <X size={24} />
+                            </button>
+                        </div>
 
                         <div className="space-y-4">
                             {/* Foto Upload */}
@@ -384,7 +421,7 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, 
                                         <button
                                             type="button"
                                             onClick={() => setShowPassword(!showPassword)}
-                                            className="absolute right-3 top-1/2 -tranzinc-y-1/2 text-zinc-400 dark:text-zinc-500 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-zinc-500 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
                                         >
                                             {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                                         </button>
@@ -406,9 +443,17 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, 
                             <div className="pt-4">
                                 <button
                                     onClick={handleSaveProfile}
-                                    className="w-full py-4 bg-indigo-600 dark:bg-indigo-500 text-white font-black rounded-2xl shadow-lg shadow-indigo-600/20 hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-all active:scale-95"
+                                    disabled={isSavingLocal}
+                                    className="w-full py-4 bg-indigo-600 dark:bg-indigo-500 text-white font-black rounded-2xl shadow-lg shadow-indigo-600/20 hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
                                 >
-                                    Salvar Alterações
+                                    {isSavingLocal ? (
+                                        <>
+                                            <Loader2 className="animate-spin" size={20} />
+                                            Salvando...
+                                        </>
+                                    ) : (
+                                        'Salvar Alterações'
+                                    )}
                                 </button>
                             </div>
                         </div>

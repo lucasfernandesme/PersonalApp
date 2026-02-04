@@ -38,12 +38,19 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin }) => {
           return;
         }
 
+        // Busca dados extras na tabela de trainers
+        const trainerData = await DataService.findTrainer(email.toLowerCase());
+
         onLogin({
           id: data.user.id,
-          name: data.user.user_metadata.name || 'Personal Trainer',
+          name: trainerData?.name || data.user.user_metadata.name || 'Personal Trainer',
           email: data.user.email!,
           role: UserRole.TRAINER,
-          avatar: data.user.user_metadata.avatar || `https://picsum.photos/seed/${data.user.email}/100`
+          avatar: trainerData?.avatar || data.user.user_metadata.avatar || `https://picsum.photos/seed/${data.user.email}/100`,
+          surname: trainerData?.surname || '',
+          instagram: trainerData?.instagram || '',
+          whatsapp: trainerData?.whatsapp || '',
+          cref: trainerData?.cref || ''
         });
 
       } else {
@@ -92,15 +99,18 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin }) => {
       }
 
       if (data.user) {
-        // Opcional: Salvar no banco customizado 'trainers' também, se necessário
-        // Mas por enquanto vamos confiar só no Auth
-        onLogin({
+        const initialProfile = {
           id: data.user.id,
           name: name,
-          email: data.user.email!,
+          email: email.toLowerCase(),
           role: UserRole.TRAINER,
           avatar: `https://picsum.photos/seed/${email.toLowerCase()}/100`
-        });
+        };
+
+        // Salvar no banco customizado 'trainers' também
+        await DataService.updateTrainer(initialProfile);
+
+        onLogin(initialProfile);
       }
 
     } catch (err) {
