@@ -302,7 +302,7 @@ const StudentApp: React.FC<StudentAppProps> = ({
 
       <div className="bg-white dark:bg-zinc-900 rounded-[32px] p-6 border border-zinc-100 dark:border-zinc-800 shadow-sm mb-6 transition-colors">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-8">
             {onBack && (
               <button
                 onClick={onBack}

@@ -504,44 +504,39 @@ const App: React.FC = () => {
 
               <button
                 onClick={() => setSelectedStudentView('workouts')}
-                className="group bg-white dark:bg-zinc-900 p-5 rounded-[24px] transition-all active:scale-[0.98] shadow-sm hover:shadow-md hover:border-indigo-200 dark:hover:border-indigo-800 text-left border border-slate-200 dark:border-zinc-800 flex items-center justify-between w-full"
+                className="group bg-white dark:bg-zinc-900 p-5 rounded-[28px] transition-all active:scale-[0.98] shadow-sm hover:shadow-md border border-slate-200 dark:border-zinc-800 flex items-center justify-between w-full"
               >
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform">
+                <div className="flex items-center gap-4 flex-1">
+                  <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-600/20 dark:shadow-emerald-900/10 group-hover:scale-105 transition-transform flex-shrink-0">
                     <Dumbbell size={24} />
                   </div>
-                  <div>
-                    <h3 className="text-lg font-black text-slate-900 dark:text-white leading-tight group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">Treinos</h3>
+                  <div className="text-left">
+                    <h3 className="text-lg font-black text-slate-900 dark:text-white leading-tight">Treinos</h3>
                     <p className="text-slate-500 dark:text-zinc-400 text-[10px] font-bold uppercase tracking-wider">Gerenciar todas as rotinas</p>
                   </div>
                 </div>
-                <div className="w-10 h-10 bg-slate-50 dark:bg-zinc-800 rounded-xl flex items-center justify-center text-slate-300 dark:text-zinc-600 group-hover:bg-indigo-600 group-hover:text-white transition-all">
+                <div className="w-10 h-10 bg-slate-50 dark:bg-zinc-800 rounded-xl flex items-center justify-center text-slate-300 dark:text-zinc-600 group-hover:bg-emerald-600 group-hover:text-white transition-all flex-shrink-0">
                   <ArrowRight size={20} />
                 </div>
               </button>
 
               <button
                 onClick={() => setSelectedStudentView('files')}
-                className="group bg-white dark:bg-zinc-900 p-5 rounded-[24px] transition-all active:scale-[0.98] shadow-sm hover:shadow-md hover:border-indigo-200 dark:hover:border-indigo-800 text-left border border-slate-200 dark:border-zinc-800 flex items-center justify-between w-full"
+                className="group bg-white dark:bg-zinc-900 p-5 rounded-[28px] transition-all active:scale-[0.98] shadow-sm hover:shadow-md border border-slate-200 dark:border-zinc-800 flex items-center justify-between w-full"
               >
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform">
+                <div className="flex items-center gap-4 flex-1">
+                  <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-600/20 dark:shadow-indigo-900/10 group-hover:scale-105 transition-transform flex-shrink-0">
                     <FileText size={24} />
                   </div>
-                  <div>
-                    <h3 className="text-lg font-black text-slate-900 dark:text-white leading-tight group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">Arquivos</h3>
+                  <div className="text-left">
+                    <h3 className="text-lg font-black text-slate-900 dark:text-white leading-tight">Arquivos</h3>
                     <p className="text-slate-500 dark:text-zinc-400 text-[10px] font-bold uppercase tracking-wider">Documentos e Anexos</p>
                   </div>
                 </div>
-
-                <div className="w-10 h-10 bg-slate-50 dark:bg-zinc-800 rounded-xl flex items-center justify-center text-slate-300 dark:text-zinc-600 group-hover:bg-indigo-600 group-hover:text-white transition-all">
+                <div className="w-10 h-10 bg-slate-50 dark:bg-zinc-800 rounded-xl flex items-center justify-center text-slate-300 dark:text-zinc-600 group-hover:bg-indigo-600 group-hover:text-white transition-all flex-shrink-0">
                   <ArrowRight size={20} />
                 </div>
               </button>
-
-              {/* Inline File List & Add Button */}
-
-
 
             </div>
           ) : selectedStudentView === 'files' ? (
@@ -605,12 +600,12 @@ const App: React.FC = () => {
                   selectedStudent.files.map(file => (
                     <div key={file.id} className="flex items-center justify-between p-4 bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-100 dark:border-zinc-800 shadow-sm">
                       <div className="flex items-center gap-4">
-                        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${file.type === 'pdf' ? 'bg-red-50 text-red-500' : 'bg-blue-50 text-blue-500'} dark:bg-zinc-800`}>
-                          <FileText size={24} />
+                        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${file.type === 'pdf' ? 'bg-red-100 text-red-500' : 'bg-blue-100 text-blue-500'}`}>
+                          <FileText size={22} />
                         </div>
                         <div>
-                          <h4 className="font-bold text-zinc-900 dark:text-white">{file.name}</h4>
-                          <p className="text-xs text-zinc-400 uppercase font-bold">{file.date} • {file.type.toUpperCase()}</p>
+                          <h4 className="font-bold text-sm text-zinc-900 dark:text-zinc-100 mb-0.5">{file.name}</h4>
+                          <p className="text-[10px] text-zinc-400 font-black uppercase tracking-wider">{file.date} • {file.type.toUpperCase()}</p>
                         </div>
                       </div>
                       <button className="p-2 text-zinc-400 hover:text-red-500 transition-colors">

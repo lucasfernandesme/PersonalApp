@@ -97,55 +97,67 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
                 {/* Treinos */}
                 <button
                     onClick={onNavigateToWorkout}
-                    className="bg-white dark:bg-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-[28px] p-6 flex flex-col items-center justify-center gap-3 transition-all active:scale-95 border border-zinc-100 dark:border-zinc-800 shadow-sm col-span-2 group"
+                    className="bg-white dark:bg-zinc-900 p-6 rounded-[32px] border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col items-center justify-center gap-3 transition-all active:scale-95 col-span-2 group hover:border-emerald-200 dark:hover:border-emerald-800"
                 >
-                    <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/30 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-600/20 dark:shadow-emerald-900/10">
-                        <Dumbbell size={24} className="text-emerald-600 dark:text-emerald-400" />
+                    <div className="w-14 h-14 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-2xl flex items-center justify-center group-hover:bg-emerald-600 group-hover:text-white transition-all">
+                        <Dumbbell size={28} />
                     </div>
-                    <span className="text-zinc-900 dark:text-white font-black text-base">Treinos</span>
+                    <span className="text-zinc-900 dark:text-white font-black text-lg">Meus Treinos</span>
                 </button>
 
                 {/* Avaliações */}
                 <button
                     onClick={() => setActiveModal('assessments')}
-                    className="bg-white dark:bg-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-[28px] p-6 flex flex-col items-start gap-3 transition-all active:scale-95 border border-zinc-100 dark:border-zinc-800 shadow-sm group"
+                    className="bg-white dark:bg-zinc-900 p-6 rounded-[32px] border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col items-start gap-4 hover:border-amber-200 dark:hover:border-amber-800 transition-all active:scale-95 group"
                 >
-                    <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/30 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-600/20 dark:shadow-emerald-900/10">
-                        <Calendar size={24} className="text-emerald-600 dark:text-emerald-400" />
+                    <div className="w-12 h-12 bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 rounded-2xl flex items-center justify-center group-hover:bg-amber-600 group-hover:text-white transition-all">
+                        <Calendar size={24} />
                     </div>
-                    <span className="text-zinc-900 dark:text-white font-black text-base">Avaliações</span>
+                    <div className="text-left">
+                        <p className="font-black text-zinc-800 dark:text-white text-sm">Avaliações</p>
+                        <p className="text-[10px] text-zinc-400 dark:text-zinc-500 font-bold uppercase mt-1">Histórico</p>
+                    </div>
                 </button>
 
                 {/* Meu Progresso */}
                 <button
                     onClick={onNavigateToProgress}
-                    className="bg-white dark:bg-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-[28px] p-6 flex flex-col items-start gap-3 transition-all active:scale-95 border border-zinc-100 dark:border-zinc-800 shadow-sm group"
+                    className="bg-white dark:bg-zinc-900 p-6 rounded-[32px] border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col items-start gap-4 hover:border-indigo-200 dark:hover:border-indigo-800 transition-all active:scale-95 group"
                 >
-                    <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/30 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-600/20 dark:shadow-emerald-900/10">
-                        <TrendingUp size={24} className="text-emerald-600 dark:text-emerald-400" />
+                    <div className="w-12 h-12 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-2xl flex items-center justify-center group-hover:bg-indigo-600 group-hover:text-white transition-all">
+                        <TrendingUp size={24} />
                     </div>
-                    <span className="text-zinc-900 dark:text-white font-black text-base">Meu Progresso</span>
+                    <div className="text-left">
+                        <p className="font-black text-zinc-800 dark:text-white text-sm">Evolução</p>
+                        <p className="text-[10px] text-zinc-400 dark:text-zinc-500 font-bold uppercase mt-1">Gráficos</p>
+                    </div>
                 </button>
 
                 {/* Faturas */}
                 <button
-                    className="bg-white dark:bg-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-[28px] p-6 flex flex-col items-start gap-3 transition-all active:scale-95 border border-zinc-100 dark:border-zinc-800 shadow-sm group"
+                    className="bg-white dark:bg-zinc-900 p-6 rounded-[32px] border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col items-start gap-4 hover:border-amber-200 dark:hover:border-amber-800 transition-all active:scale-95 group"
                 >
-                    <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/30 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-600/20 dark:shadow-emerald-900/10">
-                        <DollarSign size={24} className="text-emerald-600 dark:text-emerald-400" />
+                    <div className="w-12 h-12 bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 rounded-2xl flex items-center justify-center group-hover:bg-amber-600 group-hover:text-white transition-all">
+                        <DollarSign size={24} />
                     </div>
-                    <span className="text-zinc-900 dark:text-white font-black text-base">Faturas</span>
+                    <div className="text-left">
+                        <p className="font-black text-zinc-800 dark:text-white text-sm">Pagamentos</p>
+                        <p className="text-[10px] text-zinc-400 dark:text-zinc-500 font-bold uppercase mt-1">Faturas</p>
+                    </div>
                 </button>
 
                 {/* Arquivos */}
                 <button
                     onClick={() => setActiveModal('files')}
-                    className="bg-white dark:bg-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-[28px] p-6 flex flex-col items-start gap-3 transition-all active:scale-95 border border-zinc-100 dark:border-zinc-800 shadow-sm group"
+                    className="bg-white dark:bg-zinc-900 p-6 rounded-[32px] border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col items-start gap-4 hover:border-indigo-200 dark:hover:border-indigo-800 transition-all active:scale-95 group"
                 >
-                    <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/30 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-600/20 dark:shadow-emerald-900/10">
-                        <Archive size={24} className="text-emerald-600 dark:text-emerald-400" />
+                    <div className="w-12 h-12 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-2xl flex items-center justify-center group-hover:bg-indigo-600 group-hover:text-white transition-all">
+                        <FileText size={24} />
                     </div>
-                    <span className="text-zinc-900 dark:text-white font-black text-base">Arquivos</span>
+                    <div className="text-left">
+                        <p className="font-black text-zinc-800 dark:text-white text-sm">Arquivos</p>
+                        <p className="text-[10px] text-zinc-400 dark:text-zinc-500 font-bold uppercase mt-1">Documentos</p>
+                    </div>
                 </button>
             </div>
 
@@ -172,14 +184,16 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
                                 <p className="text-xs text-zinc-400 text-center py-4">Nenhum arquivo enviado.</p>
                             ) : (
                                 student.files.map((file) => (
-                                    <div key={file.id} className="flex items-center justify-between p-3 bg-zinc-50 dark:bg-zinc-800 rounded-xl border border-zinc-100 dark:border-zinc-700">
-                                        <div className="flex items-center gap-3">
-                                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${file.type === 'pdf' ? 'bg-red-50 text-red-500' : 'bg-blue-50 text-blue-500'} dark:bg-zinc-800`}>
-                                                <FileText size={16} />
+                                    <div key={file.id} className="flex items-center justify-between p-4 bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-100 dark:border-zinc-800 shadow-sm">
+                                        <div className="flex items-center gap-4">
+                                            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${file.type === 'pdf' ? 'bg-red-100 text-red-500' : 'bg-blue-100 text-blue-500'}`}>
+                                                <FileText size={22} />
                                             </div>
                                             <div>
-                                                <p className="font-bold text-xs text-zinc-800 dark:text-zinc-200">{file.name}</p>
-                                                <p className="text-[10px] text-zinc-400 uppercase">{file.date}</p>
+                                                <p className="font-bold text-sm text-zinc-900 dark:text-zinc-100 mb-0.5">{file.name}</p>
+                                                <p className="text-[10px] text-zinc-400 font-black uppercase tracking-wider">
+                                                    {file.date} • {file.type.toUpperCase()}
+                                                </p>
                                             </div>
                                         </div>
                                     </div>
