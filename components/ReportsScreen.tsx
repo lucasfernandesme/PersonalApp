@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { ScheduleEvent, Student } from '../types';
 import { format, isWithinInterval, parseISO, startOfMonth, endOfMonth } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { Download, Filter, Search, Calendar, User, CheckCircle2, XCircle, Clock, ChevronDown, ChevronUp } from 'lucide-react';
+import { Download, Filter, Search, Calendar, User, CheckCircle2, XCircle, Clock, ChevronDown, ChevronUp, X, ArrowLeft } from 'lucide-react';
 
 interface ReportsScreenProps {
     events: ScheduleEvent[];
@@ -64,12 +64,23 @@ const ReportsScreen: React.FC<ReportsScreenProps> = ({ events, students, onClose
 
     return (
         <div className="h-full flex flex-col">
-            {/* Header */}
-            <div className="flex items-center justify-between mb-6">
-                <div>
-                    <h2 className="text-2xl font-black text-zinc-900 dark:text-white">Relatórios de Aulas</h2>
-                    <p className="text-sm font-medium text-zinc-400 dark:text-zinc-500">Analise o histórico de atendimentos.</p>
+            {/* Standardized Brand Header */}
+            <header className="bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between px-4 pt-4 pb-4 transition-all duration-300 relative flex-shrink-0 -mx-6 -mt-6 mb-6">
+                <div className="w-10"></div> {/* Placeholder for symmetry */}
+
+                <div className="flex items-center gap-2">
+                    <img src="/logo.jpg" alt="PersonalFlow" className="w-8 h-8 rounded-full shadow-sm" />
+                    <span className="font-extrabold text-slate-900 dark:text-white tracking-tight">PersonalFlow</span>
                 </div>
+
+                <button onClick={onClose} className="p-2 text-zinc-400 dark:text-zinc-500 hover:text-red-500 transition-colors z-10 w-10 flex justify-end">
+                    <X size={24} />
+                </button>
+            </header>
+
+            <div className="px-1 mb-6">
+                <h2 className="text-2xl font-black text-zinc-900 dark:text-white">Relatórios de Aulas</h2>
+                <p className="text-sm font-medium text-zinc-400 dark:text-zinc-500">Analise o histórico de atendimentos.</p>
             </div>
 
             {/* Filters */}
@@ -77,76 +88,88 @@ const ReportsScreen: React.FC<ReportsScreenProps> = ({ events, students, onClose
 
 
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {/* Date Range */}
-                    <div className="flex gap-2 items-center bg-white dark:bg-zinc-900 p-2 rounded-xl border border-zinc-100 dark:border-zinc-800">
-                        <Calendar size={18} className="text-indigo-500 ml-2" />
-                        <input
-                            type="date"
-                            value={startDate}
-                            onChange={e => setStartDate(e.target.value)}
-                            className="bg-transparent border-none text-sm font-bold text-zinc-700 dark:text-zinc-300 focus:ring-0 w-full"
-                        />
-                        <span className="text-zinc-400">-</span>
-                        <input
-                            type="date"
-                            value={endDate}
-                            onChange={e => setEndDate(e.target.value)}
-                            className="bg-transparent border-none text-sm font-bold text-zinc-700 dark:text-zinc-300 focus:ring-0 w-full"
-                        />
+                <div className="space-y-3">
+                    {/* Date Range - Stacked on mobile, side-by-side on desktop */}
+                    <div className="grid grid-cols-2 gap-2">
+                        <div className="bg-white dark:bg-zinc-900 p-3 rounded-2xl border border-zinc-100 dark:border-zinc-800 flex flex-col gap-1">
+                            <label className="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 ml-1">Início</label>
+                            <div className="flex items-center gap-2">
+                                <Calendar size={14} className="text-indigo-500" />
+                                <input
+                                    type="date"
+                                    value={startDate}
+                                    onChange={e => setStartDate(e.target.value)}
+                                    className="bg-transparent border-none text-xs font-black text-zinc-800 dark:text-zinc-200 focus:ring-0 p-0 w-full"
+                                />
+                            </div>
+                        </div>
+                        <div className="bg-white dark:bg-zinc-900 p-3 rounded-2xl border border-zinc-100 dark:border-zinc-800 flex flex-col gap-1">
+                            <label className="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 ml-1">Fim</label>
+                            <div className="flex items-center gap-2">
+                                <Calendar size={14} className="text-indigo-500" />
+                                <input
+                                    type="date"
+                                    value={endDate}
+                                    onChange={e => setEndDate(e.target.value)}
+                                    className="bg-transparent border-none text-xs font-black text-zinc-800 dark:text-zinc-200 focus:ring-0 p-0 w-full"
+                                />
+                            </div>
+                        </div>
                     </div>
 
                     {/* Student Filter */}
                     <div className="relative">
-                        <User size={18} className="absolute left-3 top-1/2 -tranzinc-y-1/2 text-zinc-400" />
+                        <div className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center gap-2 pointer-events-none">
+                            <User size={16} className="text-zinc-400" />
+                        </div>
                         <select
                             value={selectedStudentId}
                             onChange={e => setSelectedStudentId(e.target.value)}
-                            className="w-full pl-10 pr-4 py-3 bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-xl text-sm font-bold text-zinc-700 dark:text-zinc-300 focus:ring-2 focus:ring-indigo-500 appearance-none"
+                            className="w-full pl-12 pr-10 py-4 bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-2xl text-sm font-bold text-zinc-700 dark:text-zinc-200 focus:ring-2 focus:ring-indigo-500 appearance-none transition-all shadow-sm"
                         >
                             <option value="all">Todos os Alunos</option>
                             {students.map(s => (
                                 <option key={s.id} value={s.id}>{s.name}</option>
                             ))}
                         </select>
-                        <ChevronDown size={14} className="absolute right-3 top-1/2 -tranzinc-y-1/2 text-zinc-400 pointer-events-none" />
+                        <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-400 pointer-events-none" />
                     </div>
                 </div>
 
                 {/* Status Tabs */}
-                <div className="flex bg-white dark:bg-zinc-900 p-1 rounded-xl border border-zinc-100 dark:border-zinc-800">
+                <div className="flex bg-white dark:bg-zinc-900 p-1.5 rounded-2xl border border-zinc-100 dark:border-zinc-800 gap-1">
                     {(['all', 'planned', 'completed', 'cancelled'] as const).map(status => (
                         <button
                             key={status}
                             onClick={() => setStatusFilter(status)}
-                            className={`flex-1 py-2 text-xs font-bold uppercase rounded-lg transition-all ${statusFilter === status
-                                ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300'
-                                : 'text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800'
+                            className={`flex-1 py-2.5 text-[10px] sm:text-xs font-black uppercase rounded-xl transition-all tracking-tighter sm:tracking-normal ${statusFilter === status
+                                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20'
+                                : 'text-zinc-400 dark:text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-800'
                                 }`}
                         >
-                            {status === 'all' ? 'Todas' : status === 'planned' ? 'Planejadas' : status === 'completed' ? 'Executadas' : 'Canceladas'}
+                            {status === 'all' ? 'Todas' : status === 'planned' ? 'Plan.' : status === 'completed' ? 'Exec.' : 'Canc.'}
                         </button>
                     ))}
                 </div>
             </div>
 
             {/* Stats Cards */}
-            <div className="grid grid-cols-4 gap-2 mb-6">
-                <div className="bg-indigo-50 dark:bg-indigo-900/20 p-3 rounded-xl text-center">
-                    <p className="text-[10px] font-black uppercase text-indigo-400 mb-1">Total</p>
-                    <p className="text-xl font-black text-indigo-700 dark:text-indigo-300">{stats.total}</p>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+                <div className="bg-indigo-50 dark:bg-indigo-900/20 p-4 rounded-2xl border border-indigo-100/50 dark:border-indigo-500/10">
+                    <p className="text-[10px] font-black uppercase text-indigo-400 dark:text-indigo-500 mb-1 tracking-wider">Total</p>
+                    <p className="text-2xl font-black text-indigo-700 dark:text-indigo-300">{stats.total}</p>
                 </div>
-                <div className="bg-green-50 dark:bg-green-900/20 p-3 rounded-xl text-center">
-                    <p className="text-[10px] font-black uppercase text-green-400 mb-1">Feitas</p>
-                    <p className="text-xl font-black text-green-700 dark:text-green-300">{stats.completed}</p>
+                <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-2xl border border-green-100/50 dark:border-green-500/10">
+                    <p className="text-[10px] font-black uppercase text-green-400 dark:text-green-500 mb-1 tracking-wider">Feitas</p>
+                    <p className="text-2xl font-black text-green-700 dark:text-green-300">{stats.completed}</p>
                 </div>
-                <div className="bg-zinc-50 dark:bg-zinc-800/50 p-3 rounded-xl text-center">
-                    <p className="text-[10px] font-black uppercase text-zinc-400 mb-1">Futuras</p>
-                    <p className="text-xl font-black text-zinc-700 dark:text-zinc-300">{stats.planned}</p>
+                <div className="bg-zinc-50 dark:bg-zinc-800/50 p-4 rounded-2xl border border-zinc-100 dark:border-zinc-700/50">
+                    <p className="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 mb-1 tracking-wider">Futuras</p>
+                    <p className="text-2xl font-black text-zinc-700 dark:text-zinc-300">{stats.planned}</p>
                 </div>
-                <div className="bg-red-50 dark:bg-red-900/20 p-3 rounded-xl text-center">
-                    <p className="text-[10px] font-black uppercase text-red-400 mb-1">Canc.</p>
-                    <p className="text-xl font-black text-red-700 dark:text-red-300">{stats.cancelled}</p>
+                <div className="bg-red-50 dark:bg-red-900/20 p-4 rounded-2xl border border-red-100/50 dark:border-red-500/10">
+                    <p className="text-[10px] font-black uppercase text-red-400 dark:text-red-500 mb-1 tracking-wider">Canc.</p>
+                    <p className="text-2xl font-black text-red-700 dark:text-red-300">{stats.cancelled}</p>
                 </div>
             </div>
 
@@ -159,29 +182,44 @@ const ReportsScreen: React.FC<ReportsScreenProps> = ({ events, students, onClose
                     </div>
                 ) : (
                     filteredEvents.map(event => (
-                        <div key={event.id} className="bg-white dark:bg-zinc-900 p-4 rounded-2xl border border-zinc-100 dark:border-zinc-800 flex items-center justify-between group hover:border-indigo-200 dark:hover:border-indigo-800 transition-colors">
+                        <div
+                            key={event.id}
+                            className="bg-white dark:bg-zinc-900 p-4 rounded-3xl border border-zinc-100 dark:border-zinc-800/60 flex items-center justify-between group hover:shadow-lg hover:shadow-indigo-500/5 transition-all duration-300 active:scale-[0.98]"
+                        >
                             <div className="flex items-center gap-4">
-                                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${getStatusColor(event.status)}`}>
-                                    {event.status === 'completed' ? <CheckCircle2 size={18} /> :
-                                        event.status === 'cancelled' ? <XCircle size={18} /> :
-                                            <Clock size={18} />}
+                                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shadow-sm transition-transform group-hover:scale-110 ${getStatusColor(event.status)}`}>
+                                    {event.status === 'completed' ? <CheckCircle2 size={22} /> :
+                                        event.status === 'cancelled' ? <XCircle size={22} /> :
+                                            <Clock size={22} />}
                                 </div>
                                 <div>
-                                    <h4 className="font-bold text-zinc-900 dark:text-white text-sm">{event.title}</h4>
-                                    <div className="flex items-center gap-2 mt-0.5">
-                                        <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400 flex items-center gap-1">
-                                            <Calendar size={12} /> {format(parseISO(event.start), "dd/MM 'às' HH:mm", { locale: ptBR })}
-                                        </span>
-                                        {event.studentName && (
-                                            <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20 px-1.5 py-0.5 rounded-md">
+                                    <h4 className="font-black text-zinc-900 dark:text-white text-base leading-tight">
+                                        {event.title}
+                                    </h4>
+                                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1.5">
+                                        <div className="flex items-center gap-1.5 text-[11px] font-bold text-zinc-500 dark:text-zinc-400">
+                                            <Calendar size={13} className="text-zinc-400 opacity-70" />
+                                            <span className="capitalize">{format(parseISO(event.start), "eeee, dd 'de' MMM", { locale: ptBR })}</span>
+                                        </div>
+                                        <div className="flex items-center gap-1.5 text-[11px] font-black text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/40 px-2 py-0.5 rounded-lg">
+                                            <Clock size={11} />
+                                            <span>{format(parseISO(event.start), "HH:mm")}</span>
+                                        </div>
+                                        {event.studentName && event.title !== event.studentName && (
+                                            <span className="text-[10px] font-black text-zinc-400 dark:text-zinc-500 border border-zinc-100 dark:border-zinc-800 px-2 py-0.5 rounded-lg uppercase tracking-wider">
                                                 {event.studentName}
                                             </span>
                                         )}
                                     </div>
                                 </div>
                             </div>
-                            <div className={`px-2 py-1 rounded-lg text-xs font-bold uppercase ${getStatusColor(event.status)}`}>
-                                {getStatusLabel(event.status)}
+                            <div className="flex flex-col items-end gap-2">
+                                <div className={`px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-wider shadow-sm border ${event.status === 'completed' ? 'border-green-200 dark:border-green-800/50' :
+                                        event.status === 'cancelled' ? 'border-red-200 dark:border-red-800/50' :
+                                            'border-zinc-200 dark:border-zinc-700/50'
+                                    } ${getStatusColor(event.status)}`}>
+                                    {getStatusLabel(event.status)}
+                                </div>
                             </div>
                         </div>
                     ))

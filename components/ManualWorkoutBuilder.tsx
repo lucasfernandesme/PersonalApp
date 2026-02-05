@@ -51,6 +51,7 @@ const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [observations, setObservations] = useState(initialProgram?.observations || '');
   const [generatingTips, setGeneratingTips] = useState<Record<string, boolean>>({});
+  const [isSaving, setIsSaving] = useState(false);
 
   const [isLibraryOpen, setIsLibraryOpen] = useState(false);
   const [activeDayIdx, setActiveDayIdx] = useState<number | null>(null);
@@ -142,9 +143,10 @@ const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
     setDays(newDays);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    setError(null);
     if (!programName.trim()) {
-      setError("Dê um nome ao programa de treino.");
+      setError("Dê um nome ao programa.");
       return;
     }
 
@@ -160,37 +162,47 @@ const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
       return;
     }
 
-    onSave({
-      id: initialProgram?.id || Math.random().toString(36).substring(2, 11),
-      name: programName,
-      startDate: isTemplateMode ? undefined : startDate,
-      endDate: isTemplateMode ? undefined : endDate,
-      split: filledDays,
-      frequency: filledDays.length,
-      goal: goal,
-      difficulty: difficulty,
-      observations: observations
-    });
+    setIsSaving(true);
+    try {
+      await onSave({
+        id: initialProgram?.id || Math.random().toString(36).substring(2, 11),
+        name: programName,
+        startDate: isTemplateMode ? undefined : startDate,
+        endDate: isTemplateMode ? undefined : endDate,
+        split: filledDays,
+        frequency: filledDays.length,
+        goal: goal,
+        difficulty: difficulty,
+        observations: observations
+      });
+    } catch (error) {
+      console.error("Failed to save program:", error);
+      setError("Erro ao salvar o programa. Tente novamente.");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
     <div className="fixed inset-0 z-[70] bg-zinc-50 dark:bg-zinc-950 flex flex-col animate-in slide-in-from-right duration-300 overflow-hidden">
       {/* Dynamic Header Standardized */}
-      <header className="bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 min-h-[5rem] flex items-end justify-between px-4 sticky top-0 z-[100] transition-all duration-300 pt-14 pb-3 relative flex-shrink-0 shadow-sm">
-        <button onClick={onCancel} className="p-2 text-zinc-400 dark:text-zinc-500 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors z-10 w-10">
-          <ArrowLeft size={20} />
+      <header className="bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between px-4 pt-4 pb-4 transition-all duration-300 relative flex-shrink-0 -mx-4 -mt-4 mb-6">
+        <button onClick={onCancel} className="p-2 text-zinc-400 dark:text-zinc-500 hover:text-red-500 transition-colors z-10 w-10">
+          <ArrowLeft size={24} />
         </button>
 
-        <div className="absolute left-1/2 -translate-x-1/2 bottom-3 flex items-center gap-2">
+        <div className="flex items-center gap-2">
           <img src="/logo.jpg" alt="PersonalFlow" className="w-8 h-8 rounded-full shadow-sm" />
           <span className="font-extrabold text-slate-900 dark:text-white tracking-tight">PersonalFlow</span>
         </div>
 
         <button
           onClick={handleSave}
-          className="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-indigo-600/20 active:scale-95 transition-all z-10"
+          disabled={isSaving}
+          className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-black uppercase tracking-widest transition-all shadow-lg shadow-indigo-600/20 disabled:opacity-50 z-10"
         >
-          Salvar
+          {isSaving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
+          <span>Salvar</span>
         </button>
       </header>
 

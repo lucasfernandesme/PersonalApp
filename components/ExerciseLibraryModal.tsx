@@ -23,15 +23,22 @@ const ExerciseLibraryModal: React.FC<ExerciseLibraryModalProps> = ({ onSelect, o
 
   return (
     <div className="fixed inset-0 z-[80] bg-white dark:bg-slate-900 flex flex-col animate-in slide-in-from-bottom duration-300 transition-colors">
-      {/* Header */}
-      <div className="p-6 pt-14 md:pt-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between sticky top-0 bg-white dark:bg-slate-900 z-30 transition-colors">
-        <div>
-          <h2 className="text-xl font-black text-slate-900 dark:text-white transition-colors">Biblioteca</h2>
-          <p className="text-xs text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider transition-colors">Escolha um exercício</p>
+      <header className="bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between px-4 pt-4 pb-4 transition-all duration-300 relative flex-shrink-0 mb-6">
+        <div className="w-10"></div> {/* Placeholder for symmetry */}
+
+        <div className="flex items-center gap-2">
+          <img src="/logo.jpg" alt="PersonalFlow" className="w-8 h-8 rounded-full shadow-sm" />
+          <span className="font-extrabold text-slate-900 dark:text-white tracking-tight">PersonalFlow</span>
         </div>
-        <button onClick={onClose} className="p-2 bg-slate-100 dark:bg-slate-800 rounded-full text-slate-500 dark:text-slate-400 transition-colors">
-          <X size={20} />
+
+        <button onClick={onClose} className="p-2 text-zinc-400 dark:text-zinc-500 hover:text-red-500 transition-colors z-10 w-10 flex justify-end">
+          <X size={24} />
         </button>
+      </header>
+
+      <div className="px-6 mb-4">
+        <h2 className="text-xl font-black text-zinc-900 dark:text-white transition-colors">Biblioteca</h2>
+        <p className="text-xs text-zinc-400 dark:text-zinc-500 font-bold uppercase tracking-wider transition-colors">Escolha um exercício</p>
       </div>
 
       {/* Search and Filters */}

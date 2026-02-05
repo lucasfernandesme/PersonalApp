@@ -33,10 +33,10 @@ const AgendaScreen: React.FC<AgendaScreenProps> = ({ events, students, onAddEven
         return (
             <div className="flex flex-col mb-8">
                 {/* Standardized Brand Header */}
-                <header className="bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 min-h-[5rem] flex items-end justify-between px-4 sticky top-0 z-40 transition-all duration-300 pt-14 pb-3 relative flex-shrink-0 -mx-6 -mt-6 mb-6">
+                <header className="bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between px-4 transition-all duration-300 pt-4 pb-4 relative flex-shrink-0 -mx-6 -mt-6 mb-6">
                     <div className="w-10"></div> {/* Placeholder for symmetry */}
 
-                    <div className="absolute left-1/2 -translate-x-1/2 bottom-3 flex items-center gap-2">
+                    <div className="flex items-center gap-2">
                         <img src="/logo.jpg" alt="PersonalFlow" className="w-8 h-8 rounded-full shadow-sm" />
                         <span className="font-extrabold text-slate-900 dark:text-white tracking-tight">PersonalFlow</span>
                     </div>

@@ -64,12 +64,12 @@ const ExerciseManagerScreen: React.FC<ExerciseManagerScreenProps> = ({ exercises
   return (
     <div className="fixed inset-0 z-[100] bg-zinc-50 dark:bg-zinc-950 flex flex-col animate-in slide-in-from-right duration-300 overflow-hidden">
       {/* Dynamic Header Standardized */}
-      <header className="bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 min-h-[5rem] flex items-end justify-between px-4 sticky top-0 z-40 transition-all duration-300 pt-14 pb-3 relative flex-shrink-0">
-        <button onClick={onBack} className="p-2 text-zinc-400 dark:text-zinc-500 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors z-10 w-10">
-          <ArrowLeft size={20} />
+      <header className="bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between px-4 pt-4 pb-4 transition-all duration-300 relative flex-shrink-0 -mx-4 -mt-4 mb-6">
+        <button onClick={onBack} className="p-2 text-zinc-400 dark:text-zinc-500 hover:text-indigo-600 dark:hover:text-white transition-colors z-10 w-10">
+          <ArrowLeft size={24} />
         </button>
 
-        <div className="absolute left-1/2 -translate-x-1/2 bottom-3 flex items-center gap-2">
+        <div className="flex items-center gap-2">
           <img src="/logo.jpg" alt="PersonalFlow" className="w-8 h-8 rounded-full shadow-sm" />
           <span className="font-extrabold text-slate-900 dark:text-white tracking-tight">PersonalFlow</span>
         </div>
@@ -80,9 +80,9 @@ const ExerciseManagerScreen: React.FC<ExerciseManagerScreenProps> = ({ exercises
             setIsPlayingPreview(false);
             setIsAdding(true);
           }}
-          className="p-2 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-xl transition-all z-10 w-10 flex items-center justify-center"
+          className="bg-indigo-600 hover:bg-indigo-500 text-white p-2 rounded-xl transition-all shadow-lg shadow-indigo-600/20 z-10 w-10 flex justify-center"
         >
-          <Plus size={24} />
+          <Plus size={20} />
         </button>
       </header>
 
