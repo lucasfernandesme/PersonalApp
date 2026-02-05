@@ -100,10 +100,33 @@ const App: React.FC = () => {
     }
   }, []);
 
+  const refreshProfile = useCallback(async () => {
+    if (authUser && authUser.role === UserRole.TRAINER && DataService.isCloudActive()) {
+      try {
+        const trainerData = await DataService.findTrainer(authUser.email);
+        if (trainerData) {
+          const updatedUser: AuthUser = {
+            ...authUser,
+            name: trainerData.name || authUser.name,
+            surname: trainerData.surname || authUser.surname,
+            avatar: trainerData.avatar || authUser.avatar,
+            instagram: trainerData.instagram || authUser.instagram,
+            whatsapp: trainerData.whatsapp || authUser.whatsapp,
+            cref: trainerData.cref || authUser.cref,
+          };
+          setAuthUser(updatedUser);
+        }
+      } catch (err) {
+        console.error("Erro ao atualizar perfil do trainer:", err);
+      }
+    }
+  }, [authUser]);
+
   useEffect(() => {
     const loadData = async () => {
       setIsLoading(true);
       try {
+        await refreshProfile();
         await reloadStudents();
         await reloadExercises();
         await reloadTemplates();
