@@ -885,7 +885,7 @@ const App: React.FC = () => {
     );
   }
 
-  if (authUser?.role === UserRole.TRAINER && subscriptionStatus && subscriptionStatus !== 'active') {
+  if (authUser?.role === UserRole.TRAINER && !authLoading && subscriptionStatus !== 'active') {
     return <SubscriptionScreen />;
   }
 

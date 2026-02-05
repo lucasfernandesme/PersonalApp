@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { User, Calendar, Edit2, CheckCircle2, ChevronRight, X, Camera, Eye, EyeOff, BarChart2, Loader2, ArrowLeft } from 'lucide-react';
+import { User, Calendar, Edit2, CheckCircle2, ChevronRight, X, Camera, Eye, EyeOff, BarChart2, Loader2, ArrowLeft, CreditCard } from 'lucide-react';
 import { AuthUser, ScheduleEvent } from '../types'; // Import ScheduleEvent
 import AgendaScreen from './AgendaScreen';
 import ScheduleEventModal from './ScheduleEventModal';
@@ -13,7 +13,7 @@ interface TrainerProfileProps {
 }
 
 const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, onBack }) => {
-    const [activeModal, setActiveModal] = useState<'edit' | 'schedule' | 'reports' | null>(null);
+    const [activeModal, setActiveModal] = useState<'edit' | 'schedule' | 'reports' | 'subscription' | null>(null);
 
     // Agenda State
     const [events, setEvents] = useState<ScheduleEvent[]>([]);
@@ -503,6 +503,38 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, 
                                 onClose={() => setIsEventModalOpen(false)}
                             />
                         )}
+                    </div>
+                </div>
+            )}
+
+            {/* Modal Assinatura */}
+            {activeModal === 'subscription' && (
+                <div className="fixed inset-0 z-50 bg-black/60 dark:bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
+                    <div className="bg-white dark:bg-zinc-900 rounded-[32px] w-full max-w-lg shadow-2xl relative overflow-hidden border dark:border-zinc-800 transition-colors">
+                        <button onClick={() => setActiveModal(null)} className="absolute top-4 right-4 p-2 text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors z-10"><X size={24} /></button>
+                        <div className="p-8">
+                            <div className="w-16 h-16 bg-zinc-100 dark:bg-zinc-800 rounded-2xl flex items-center justify-center text-zinc-900 dark:text-zinc-100 mb-6 mx-auto">
+                                <CreditCard size={32} />
+                            </div>
+                            <h3 className="text-2xl font-black text-zinc-900 dark:text-white text-center mb-2">Sua Assinatura</h3>
+                            <p className="text-zinc-500 dark:text-zinc-400 text-center mb-8">Gerencie seus detalhes de pagamento e plano.</p>
+
+                            <div className="bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl p-6 border border-zinc-100 dark:border-zinc-800 mb-8">
+                                <div className="flex items-center justify-between mb-2">
+                                    <span className="text-xs font-black text-zinc-400 dark:text-zinc-500 uppercase">Status do Plano</span>
+                                    <span className="px-3 py-1 bg-emerald-500/10 text-emerald-500 rounded-full text-[10px] font-black uppercase tracking-wider border border-emerald-500/20">Ativo</span>
+                                </div>
+                                <div className="text-lg font-black text-zinc-900 dark:text-white">Plano Personal Pro</div>
+                                <p className="text-xs text-zinc-500 dark:text-zinc-400">Assinatura Mensal (R$ 10,90/mês)</p>
+                            </div>
+
+                            <button
+                                onClick={() => setActiveModal(null)}
+                                className="w-full py-4 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 font-black rounded-2xl shadow-lg hover:opacity-90 transition-all active:scale-95"
+                            >
+                                OK, Entendi
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}
