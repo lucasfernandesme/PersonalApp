@@ -21,7 +21,7 @@ import StudentProfile from './components/StudentProfile';
 import StudentSelectorModal from './components/StudentSelectorModal';
 import StudentDashboard from './components/StudentDashboard';
 import { WorkoutFolder, WorkoutTemplate, Student, StudentFile } from './types';
-import { ArrowLeft, Settings, Loader2, RefreshCw, CheckCircle2, X, Dumbbell, ArrowRight, Zap, Award, ChevronRight, Plus, Edit2, Trash2, User, Calendar, FileText } from 'lucide-react';
+import { ArrowLeft, Settings, Loader2, RefreshCw, CheckCircle2, X, Dumbbell, ArrowRight, Zap, Award, ChevronRight, Plus, Edit2, Trash2, User, Calendar, FileText, MessageCircle } from 'lucide-react';
 import { TrainingFrequencyCard } from './components/TrainingFrequencyCard';
 import { ThemeProvider } from './contexts/ThemeContext';
 
@@ -56,6 +56,7 @@ const App: React.FC = () => {
   const [pendingStudentData, setPendingStudentData] = useState<OnboardingData | null>(null);
   const [isStudentSelectorOpen, setIsStudentSelectorOpen] = useState(false);
   const [pendingTemplate, setPendingTemplate] = useState<WorkoutTemplate | null>(null);
+  const [showLoginInfo, setShowLoginInfo] = useState(false);
   const [studentView, setStudentView] = useState<'dashboard' | 'workout'>('dashboard');
   const [expandedWorkoutId, setExpandedWorkoutId] = useState<string | null>(null);
 
@@ -561,6 +562,62 @@ const App: React.FC = () => {
                 </div>
               </button>
 
+              <div className="space-y-2">
+                <button
+                  onClick={() => setShowLoginInfo(!showLoginInfo)}
+                  className="group bg-white dark:bg-zinc-900 p-5 rounded-[28px] transition-all active:scale-[0.98] shadow-sm hover:shadow-md border border-slate-200 dark:border-zinc-800 flex items-center justify-between w-full"
+                >
+                  <div className="flex items-center gap-4 flex-1">
+                    <div className="w-12 h-12 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 rounded-2xl flex items-center justify-center shadow-lg shadow-zinc-900/10 dark:shadow-zinc-100/5 group-hover:scale-105 transition-transform flex-shrink-0">
+                      <Zap size={24} />
+                    </div>
+                    <div className="text-left">
+                      <h3 className="text-lg font-black text-slate-900 dark:text-white leading-tight">Informações de Login</h3>
+                      <p className="text-slate-500 dark:text-zinc-400 text-[10px] font-bold uppercase tracking-wider">Credenciais de Acesso</p>
+                    </div>
+                  </div>
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all flex-shrink-0 ${showLoginInfo ? 'bg-zinc-900 text-white' : 'bg-slate-50 dark:bg-zinc-800 text-slate-300 dark:text-zinc-600'}`}>
+                    <ArrowRight size={20} className={`transition-transform duration-300 ${showLoginInfo ? 'rotate-90' : ''}`} />
+                  </div>
+                </button>
+
+                {showLoginInfo && (
+                  <div className="bg-zinc-50 dark:bg-zinc-800/30 p-6 rounded-[32px] border border-dashed border-zinc-200 dark:border-zinc-700 animate-in slide-in-from-top duration-300">
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center pb-2 border-b border-zinc-100 dark:border-zinc-800">
+                        <span className="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500">Dados de Acesso</span>
+                        <div className="flex items-center gap-1.5">
+                          <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
+                          <span className="text-[10px] font-black uppercase text-emerald-600 dark:text-emerald-400">Pronto para envio</span>
+                        </div>
+                      </div>
+
+                      <div className="grid gap-3">
+                        <div className="bg-white dark:bg-zinc-900 p-4 rounded-2xl border border-zinc-100 dark:border-zinc-800">
+                          <p className="text-[9px] font-black uppercase text-zinc-400 dark:text-zinc-500 mb-1">E-mail</p>
+                          <p className="font-bold text-zinc-900 dark:text-white select-all">{selectedStudent.email}</p>
+                        </div>
+                        <div className="bg-white dark:bg-zinc-900 p-4 rounded-2xl border border-zinc-100 dark:border-zinc-800">
+                          <p className="text-[9px] font-black uppercase text-zinc-400 dark:text-zinc-500 mb-1">Senha (Padrão CPF)</p>
+                          <p className="font-mono font-bold text-zinc-900 dark:text-white select-all">{selectedStudent.password || '******'}</p>
+                        </div>
+                      </div>
+
+                      <button
+                        onClick={() => {
+                          const msg = `Olá ${selectedStudent.name.split(' ')[0]}! Aqui estão seus dados de acesso ao PersonalFlow:%0A%0A📧 E-mail: ${selectedStudent.email}%0A🔑 Senha: ${selectedStudent.password || 'sua senha'}%0A%0AAbra o app e comece seus treinos!`;
+                          const phone = selectedStudent.phone?.replace(/\D/g, '') || '';
+                          window.open(`https://wa.me/55${phone}?text=${msg}`, '_blank');
+                        }}
+                        className="w-full flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white font-black py-4 rounded-2xl shadow-lg shadow-emerald-500/20 transition-all active:scale-95"
+                      >
+                        <MessageCircle size={18} />
+                        ENVIAR POR WHATSAPP
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           ) : selectedStudentView === 'files' ? (
             <div className="space-y-6">

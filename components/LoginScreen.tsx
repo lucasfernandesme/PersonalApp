@@ -134,9 +134,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin }) => {
             <img src="/logo.jpg" alt="PersonalFlow" className="w-24 h-24 rounded-full shadow-2xl shadow-zinc-900/20 dark:shadow-white/10 mx-auto" />
           </div>
           <h1 className="text-4xl font-black text-slate-900 dark:text-white tracking-tighter transition-colors">PersonalFlow</h1>
-          <p className="text-slate-400 dark:text-zinc-500 font-bold uppercase text-[10px] tracking-[0.3em] transition-colors">
-            {isCloud ? 'Cloud Database Connected' : 'High Performance Management'}
-          </p>
+
         </div>
 
         {!isRegistering ? (

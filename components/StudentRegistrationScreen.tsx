@@ -25,12 +25,25 @@ const StudentRegistrationScreen: React.FC<StudentRegistrationScreenProps> = ({ o
     return value.slice(0, 15); // Limita o tamanho visual
   };
 
+  const formatCPF = (value: string) => {
+    const numbers = value.replace(/\D/g, '');
+    if (numbers.length <= 11) {
+      let formatted = numbers;
+      if (numbers.length > 3) formatted = `${numbers.slice(0, 3)}.${numbers.slice(3)}`;
+      if (numbers.length > 6) formatted = `${numbers.slice(0, 3)}.${numbers.slice(3, 6)}.${numbers.slice(6)}`;
+      if (numbers.length > 9) formatted = `${numbers.slice(0, 3)}.${numbers.slice(3, 6)}.${numbers.slice(6, 9)}-${numbers.slice(9, 11)}`;
+      return formatted;
+    }
+    return value.slice(0, 14);
+  };
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    cpf: '',
     phone: '',
     birthDate: '',
-    gender: '' as 'male' | 'female' | 'other',
+    gender: 'male' as 'male' | 'female' | 'other',
     goal: 'Hipertrofia',
     experience: 'beginner',
     isActive: true
@@ -49,9 +62,10 @@ const StudentRegistrationScreen: React.FC<StudentRegistrationScreenProps> = ({ o
       setFormData({
         name: initialData.name || '',
         email: initialData.email || '',
+        cpf: initialData.cpf || '',
         phone: initialData.phone || '',
         birthDate: initialData.birthDate || '',
-        gender: initialData.gender || '',
+        gender: initialData.gender || 'male',
         goal: initialData.goal || 'Hipertrofia',
         experience: initialData.experience || 'beginner',
         isActive: initialData.isActive !== false
@@ -64,8 +78,15 @@ const StudentRegistrationScreen: React.FC<StudentRegistrationScreenProps> = ({ o
 
     // Validação de campos obrigatórios
     const phoneDigits = formData.phone.replace(/\D/g, '');
-    if (!formData.name.trim() || !formData.email.trim() || !formData.birthDate || !formData.gender || !phoneDigits) {
-      alert('Por favor, preencha todos os campos obrigatórios (Nome, E-mail, WhatsApp, Data de Nascimento e Gênero)');
+    const cpfDigits = (formData.cpf || '').replace(/\D/g, '');
+
+    if (!formData.name.trim() || !formData.email.trim() || !cpfDigits || !formData.birthDate || !formData.gender || !phoneDigits) {
+      alert('Por favor, preencha todos os campos obrigatórios (Nome, E-mail, CPF, WhatsApp, Data de Nascimento e Gênero)');
+      return;
+    }
+
+    if (cpfDigits.length < 11) {
+      alert('Por favor, insira um CPF válido (11 dígitos)');
       return;
     }
 
@@ -74,7 +95,12 @@ const StudentRegistrationScreen: React.FC<StudentRegistrationScreenProps> = ({ o
       return;
     }
 
-    onSave(initialData ? { ...formData, id: initialData.id } : formData);
+    const studentData = initialData ? { ...formData, id: initialData.id } : {
+      ...formData,
+      password: cpfDigits.slice(-6)
+    };
+
+    onSave(studentData);
   };
 
   return (
@@ -133,6 +159,20 @@ const StudentRegistrationScreen: React.FC<StudentRegistrationScreenProps> = ({ o
                   className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl pl-12 pr-6 py-4 font-bold text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:ring-2 focus:ring-zinc-900 dark:focus:ring-white transition-colors"
                   value={formData.email}
                   onChange={e => setFormData({ ...formData, email: e.target.value })}
+                />
+              </div>
+            </div>
+
+            <div className="space-y-1">
+              <div className="relative">
+                <CheckCircle2 className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-300 dark:text-zinc-600" size={20} />
+                <input
+                  required
+                  type="text"
+                  placeholder="CPF"
+                  className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl pl-12 pr-6 py-4 font-bold text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:ring-2 focus:ring-zinc-900 dark:focus:ring-white transition-colors"
+                  value={formData.cpf}
+                  onChange={e => setFormData({ ...formData, cpf: formatCPF(e.target.value) })}
                 />
               </div>
             </div>

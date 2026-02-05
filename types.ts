@@ -74,6 +74,7 @@ export interface Student {
   files?: StudentFile[];
   name: string;
   email: string;
+  cpf?: string;
   password?: string;
   phone?: string;
   birthDate?: string;
