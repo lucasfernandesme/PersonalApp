@@ -318,5 +318,78 @@ export const DataService = {
       return;
     }
     await supabase.from('workout_templates').delete().eq('id', id);
+  },
+
+  // --- AGENDA ---
+  async getScheduleEvents(trainerId: string): Promise<any[]> {
+    if (!supabase) {
+      const data = localStorage.getItem('fitai_pro_events');
+      return data ? JSON.parse(data) : [];
+    }
+
+    const { data, error } = await supabase
+      .from('schedule_events')
+      .select('*')
+      .eq('trainer_id', trainerId);
+
+    if (error) {
+      console.error("Erro Supabase (agenda):", error);
+      return [];
+    }
+
+    return (data || []).map(e => ({
+      id: e.id,
+      trainerId: e.trainer_id,
+      studentId: e.student_id,
+      studentName: e.student_name,
+      title: e.title,
+      description: e.description,
+      start: e.start_time,
+      end: e.end_time,
+      location: e.location,
+      isRecurring: e.is_recurring,
+      recurringDays: e.recurring_days,
+      status: e.status
+    }));
+  },
+
+  async saveScheduleEvent(event: any): Promise<void> {
+    if (!supabase) {
+      const data = localStorage.getItem('fitai_pro_events');
+      const events = data ? JSON.parse(data) : [];
+      const index = events.findIndex((e: any) => e.id === event.id);
+      let updated = index >= 0 ? [...events] : [event, ...events];
+      if (index >= 0) updated[index] = event;
+      localStorage.setItem('fitai_pro_events', JSON.stringify(updated));
+      return;
+    }
+
+    const payload = {
+      id: event.id,
+      trainer_id: event.trainerId,
+      student_id: event.studentId,
+      student_name: event.studentName,
+      title: event.title,
+      description: event.description,
+      start_time: event.start,
+      end_time: event.end,
+      location: event.location,
+      is_recurring: !!event.isRecurring,
+      recurring_days: event.recurringDays || [],
+      status: event.status || 'planned'
+    };
+
+    const { error } = await supabase.from('schedule_events').upsert(payload);
+    if (error) throw error;
+  },
+
+  async deleteScheduleEvent(id: string): Promise<void> {
+    if (!supabase) {
+      const data = localStorage.getItem('fitai_pro_events');
+      const events = data ? JSON.parse(data) : [];
+      localStorage.setItem('fitai_pro_events', JSON.stringify(events.filter((e: any) => e.id !== id)));
+      return;
+    }
+    await supabase.from('schedule_events').delete().eq('id', id);
   }
 };

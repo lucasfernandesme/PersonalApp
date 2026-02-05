@@ -78,188 +78,209 @@ const StudentRegistrationScreen: React.FC<StudentRegistrationScreenProps> = ({ o
   };
 
   return (
-    <div className="fixed inset-0 z-[100] bg-zinc-50 dark:bg-zinc-950 flex flex-col animate-in slide-in-from-right duration-300">
-      <header className="bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 p-4 sticky top-0 z-10 flex items-center gap-4">
-        <button onClick={onBack} className="p-2 text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors">
-          <ArrowLeft size={24} />
+    <div className="fixed inset-0 z-[100] bg-zinc-50 dark:bg-zinc-950 flex flex-col animate-in slide-in-from-right duration-300 overflow-hidden">
+      {/* Dynamic Header Standardized */}
+      <header className="bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 min-h-[5rem] flex items-end justify-between px-4 sticky top-0 z-40 transition-all duration-300 pt-14 pb-3 relative flex-shrink-0">
+        <button onClick={onBack} className="p-2 text-zinc-400 dark:text-zinc-500 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors z-10 w-10">
+          <ArrowLeft size={20} />
         </button>
-        <h2 className="text-lg font-black text-zinc-900 dark:text-white">{initialData ? 'Editar Aluno' : 'Cadastrar Novo Aluno'}</h2>
+
+        <div className="absolute left-1/2 -translate-x-1/2 bottom-3 flex items-center gap-2">
+          <img src="/logo.jpg" alt="PersonalFlow" className="w-8 h-8 rounded-full shadow-sm" />
+          <span className="font-extrabold text-slate-900 dark:text-white tracking-tight">PersonalFlow</span>
+        </div>
+
+        {/* Empty placeholder to maintain centering */}
+        <div className="w-10"></div>
       </header>
 
-      <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-8 pb-32">
-        <div className="space-y-4">
-          <label className="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 ml-1">Informações Pessoais <span className="text-red-500">*</span></label>
-
-          <div className="space-y-1">
-            <div className="relative">
-              <User className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-300 dark:text-zinc-600" size={20} />
-              <input
-                required
-                type="text"
-                placeholder="Nome completo"
-                className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl pl-12 pr-6 py-4 font-bold text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:ring-2 focus:ring-indigo-500 transition-colors"
-                value={formData.name}
-                onChange={e => setFormData({ ...formData, name: e.target.value })}
-              />
-            </div>
-          </div>
-
-          <div className="space-y-1">
-            <div className="relative">
-              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-300 dark:text-zinc-600" size={20} />
-              <input
-                required
-                type="email"
-                placeholder="E-mail"
-                className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl pl-12 pr-6 py-4 font-bold text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:ring-2 focus:ring-indigo-500 transition-colors"
-                value={formData.email}
-                onChange={e => setFormData({ ...formData, email: e.target.value })}
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-1">
-              <label className="text-[9px] font-black uppercase text-zinc-400 dark:text-zinc-500 ml-1">WhatsApp <span className="text-red-500">*</span></label>
-              <div className="relative">
-                <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-300 dark:text-zinc-600" size={20} />
-                <input
-                  type="tel"
-                  placeholder="(00) 00000-0000"
-                  className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl pl-12 pr-6 py-4 font-bold text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:ring-2 focus:ring-indigo-500 text-sm transition-colors"
-                  value={formData.phone}
-                  onChange={e => setFormData({ ...formData, phone: formatPhone(e.target.value) })}
-                />
-              </div>
-            </div>
-            <div className="space-y-1">
-              <label className="text-[9px] font-black uppercase text-zinc-400 dark:text-zinc-500 ml-1">Nascimento <span className="text-red-500">*</span></label>
-              <div className="relative">
-                <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-300 dark:text-zinc-600" size={20} />
-                <input
-                  type="date"
-                  required
-                  className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl pl-12 pr-4 py-4 font-bold text-zinc-900 dark:text-white focus:ring-2 focus:ring-indigo-500 text-sm transition-colors"
-                  value={formData.birthDate}
-                  onChange={e => setFormData({ ...formData, birthDate: e.target.value })}
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-3">
-            <label className="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 ml-1">Gênero <span className="text-red-500">*</span></label>
-            <div className="grid grid-cols-3 gap-2">
-              {[
-                { id: 'male', label: 'Masculino' },
-                { id: 'female', label: 'Feminino' },
-                { id: 'other', label: 'Outro' }
-              ].map(g => (
-                <button
-                  type="button"
-                  key={g.id}
-                  onClick={() => setFormData({ ...formData, gender: g.id as any })}
-                  className={`p-3 rounded-2xl border-2 font-bold text-[10px] uppercase tracking-tighter transition-all ${formData.gender === g.id
-                    ? 'bg-indigo-600 text-white border-indigo-600 shadow-lg shadow-indigo-600/20'
-                    : 'bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-400 dark:text-zinc-500 hover:border-zinc-300 dark:hover:border-zinc-700'
-                    }`}
-                >
-                  {g.label}
-                </button>
-              ))}
-            </div>
+      <div className="flex-1 overflow-y-auto overflow-x-hidden">
+        <div className="p-6 pb-2">
+          <div className="flex flex-col gap-2 mb-6">
+            <h2 className="text-3xl font-black text-zinc-900 dark:text-white tracking-tight">
+              {initialData ? 'Editar Aluno' : 'Novo Aluno'}
+            </h2>
+            <p className="text-zinc-400 dark:text-zinc-500 font-medium">
+              {initialData ? 'Atualize os dados e as configurações do aluno.' : 'Cadastre um novo aluno para começar a prescrever treinos.'}
+            </p>
           </div>
         </div>
 
-        <div className="space-y-6">
-          <div className="space-y-3">
-            <label className="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 ml-1">Objetivo principal</label>
-            <div className="grid grid-cols-2 gap-3">
-              {goals.map(g => (
-                <button
-                  type="button"
-                  key={g}
-                  onClick={() => setFormData({ ...formData, goal: g })}
-                  className={`p-4 rounded-2xl border-2 font-bold text-xs transition-all ${formData.goal === g
-                    ? 'bg-indigo-600 text-white border-indigo-600 shadow-lg shadow-indigo-600/20'
-                    : 'bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-400 dark:text-zinc-500 hover:border-zinc-300 dark:hover:border-zinc-700'
-                    }`}
-                >
-                  {g}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div className="space-y-3">
-            <label className="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 ml-1">Nível de Experiência</label>
-            <div className="grid grid-cols-3 gap-2">
-              {levels.map(l => (
-                <button
-                  type="button"
-                  key={l.id}
-                  onClick={() => setFormData({ ...formData, experience: l.id })}
-                  className={`p-3 rounded-2xl border-2 font-bold text-[10px] uppercase tracking-tighter transition-all ${formData.experience === l.id
-                    ? 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 border-zinc-900 dark:border-zinc-100 shadow-lg shadow-zinc-900/20 dark:shadow-zinc-100/10'
-                    : 'bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-400 dark:text-zinc-500 hover:border-zinc-300 dark:hover:border-zinc-700'
-                    }`}
-                >
-                  {l.label}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {initialData && (
+        <form onSubmit={handleSubmit} className="p-6 space-y-8 pb-32">
           <div className="space-y-4">
-            <label className="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 ml-1">Status do Aluno</label>
+            <label className="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 ml-1">Informações Pessoais <span className="text-red-500">*</span></label>
+
+            <div className="space-y-1">
+              <div className="relative">
+                <User className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-300 dark:text-zinc-600" size={20} />
+                <input
+                  required
+                  type="text"
+                  placeholder="Nome completo"
+                  className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl pl-12 pr-6 py-4 font-bold text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:ring-2 focus:ring-indigo-500 transition-colors"
+                  value={formData.name}
+                  onChange={e => setFormData({ ...formData, name: e.target.value })}
+                />
+              </div>
+            </div>
+
+            <div className="space-y-1">
+              <div className="relative">
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-300 dark:text-zinc-600" size={20} />
+                <input
+                  required
+                  type="email"
+                  placeholder="E-mail"
+                  className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl pl-12 pr-6 py-4 font-bold text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:ring-2 focus:ring-indigo-500 transition-colors"
+                  value={formData.email}
+                  onChange={e => setFormData({ ...formData, email: e.target.value })}
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1">
+                <label className="text-[9px] font-black uppercase text-zinc-400 dark:text-zinc-500 ml-1">WhatsApp <span className="text-red-500">*</span></label>
+                <div className="relative">
+                  <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-300 dark:text-zinc-600" size={20} />
+                  <input
+                    type="tel"
+                    placeholder="(00) 00000-0000"
+                    className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl pl-12 pr-6 py-4 font-bold text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:ring-2 focus:ring-indigo-500 text-sm transition-colors"
+                    value={formData.phone}
+                    onChange={e => setFormData({ ...formData, phone: formatPhone(e.target.value) })}
+                  />
+                </div>
+              </div>
+              <div className="space-y-1">
+                <label className="text-[9px] font-black uppercase text-zinc-400 dark:text-zinc-500 ml-1">Nascimento <span className="text-red-500">*</span></label>
+                <div className="relative">
+                  <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-300 dark:text-zinc-600" size={20} />
+                  <input
+                    type="date"
+                    required
+                    className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl pl-12 pr-4 py-4 font-bold text-zinc-900 dark:text-white focus:ring-2 focus:ring-indigo-500 text-sm transition-colors"
+                    value={formData.birthDate}
+                    onChange={e => setFormData({ ...formData, birthDate: e.target.value })}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <label className="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 ml-1">Gênero <span className="text-red-500">*</span></label>
+              <div className="grid grid-cols-3 gap-2">
+                {[
+                  { id: 'male', label: 'Masculino' },
+                  { id: 'female', label: 'Feminino' },
+                  { id: 'other', label: 'Outro' }
+                ].map(g => (
+                  <button
+                    type="button"
+                    key={g.id}
+                    onClick={() => setFormData({ ...formData, gender: g.id as any })}
+                    className={`p-3 rounded-2xl border-2 font-bold text-[10px] uppercase tracking-tighter transition-all ${formData.gender === g.id
+                      ? 'bg-indigo-600 text-white border-indigo-600 shadow-lg shadow-indigo-600/20'
+                      : 'bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-400 dark:text-zinc-500 hover:border-zinc-300 dark:hover:border-zinc-700'
+                      }`}
+                  >
+                    {g.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-6">
+            <div className="space-y-3">
+              <label className="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 ml-1">Objetivo principal</label>
+              <div className="grid grid-cols-2 gap-3">
+                {goals.map(g => (
+                  <button
+                    type="button"
+                    key={g}
+                    onClick={() => setFormData({ ...formData, goal: g })}
+                    className={`p-4 rounded-2xl border-2 font-bold text-xs transition-all ${formData.goal === g
+                      ? 'bg-indigo-600 text-white border-indigo-600 shadow-lg shadow-indigo-600/20'
+                      : 'bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-400 dark:text-zinc-500 hover:border-zinc-300 dark:hover:border-zinc-700'
+                      }`}
+                  >
+                    {g}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="space-y-3">
+              <label className="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 ml-1">Nível de Experiência</label>
+              <div className="grid grid-cols-3 gap-2">
+                {levels.map(l => (
+                  <button
+                    type="button"
+                    key={l.id}
+                    onClick={() => setFormData({ ...formData, experience: l.id })}
+                    className={`p-3 rounded-2xl border-2 font-bold text-[10px] uppercase tracking-tighter transition-all ${formData.experience === l.id
+                      ? 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 border-zinc-900 dark:border-zinc-100 shadow-lg shadow-zinc-900/20 dark:shadow-zinc-100/10'
+                      : 'bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-400 dark:text-zinc-500 hover:border-zinc-300 dark:hover:border-zinc-700'
+                      }`}
+                  >
+                    {l.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {initialData && (
+            <div className="space-y-4">
+              <label className="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 ml-1">Status do Aluno</label>
+              <button
+                type="button"
+                onClick={() => setFormData({ ...formData, isActive: !formData.isActive })}
+                className={`w-full p-5 rounded-3xl border-2 flex items-center justify-between transition-all ${formData.isActive
+                  ? 'bg-emerald-50 dark:bg-emerald-900/10 border-emerald-200 dark:border-emerald-800/50 text-emerald-700 dark:text-emerald-400'
+                  : 'bg-zinc-100 dark:bg-zinc-800/50 border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400'
+                  }`}
+              >
+                <div className="flex flex-col items-start gap-1">
+                  <span className="font-black text-sm uppercase tracking-wider">
+                    {formData.isActive ? 'Aluno Ativo' : 'Aluno Inativo'}
+                  </span>
+                  <span className="text-[10px] font-bold opacity-70 text-left">
+                    {formData.isActive ? 'Recebe notificações e acessa treinos' : 'Acesso suspenso temporariamente'}
+                  </span>
+                </div>
+                <div className={`w-12 h-6 rounded-full relative transition-colors ${formData.isActive ? 'bg-emerald-500' : 'bg-zinc-300 dark:bg-zinc-700'}`}>
+                  <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${formData.isActive ? 'right-1' : 'left-1'}`}></div>
+                </div>
+              </button>
+            </div>
+          )}
+        </form>
+
+        <div className="fixed bottom-0 left-0 right-0 p-6 bg-white dark:bg-zinc-900 border-t border-zinc-100 dark:border-zinc-800 flex gap-4 transition-colors">
+          {initialData && onDelete && (
             <button
               type="button"
-              onClick={() => setFormData({ ...formData, isActive: !formData.isActive })}
-              className={`w-full p-5 rounded-3xl border-2 flex items-center justify-between transition-all ${formData.isActive
-                ? 'bg-emerald-50 dark:bg-emerald-900/10 border-emerald-200 dark:border-emerald-800/50 text-emerald-700 dark:text-emerald-400'
-                : 'bg-zinc-100 dark:bg-zinc-800/50 border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400'
-                }`}
+              onClick={() => {
+                if (window.confirm('Tem certeza que deseja excluir este aluno? Esta ação não pode ser desfeita.')) {
+                  onDelete(initialData.id);
+                }
+              }}
+              className="flex-1 bg-red-50 dark:bg-red-900/10 text-red-600 dark:text-red-400 font-black uppercase text-xs tracking-widest py-5 rounded-2xl border border-red-100 dark:border-red-900/30 hover:bg-red-100 dark:hover:bg-red-900/20 transition-colors"
             >
-              <div className="flex flex-col items-start gap-1">
-                <span className="font-black text-sm uppercase tracking-wider">
-                  {formData.isActive ? 'Aluno Ativo' : 'Aluno Inativo'}
-                </span>
-                <span className="text-[10px] font-bold opacity-70 text-left">
-                  {formData.isActive ? 'Recebe notificações e acessa treinos' : 'Acesso suspenso temporariamente'}
-                </span>
-              </div>
-              <div className={`w-12 h-6 rounded-full relative transition-colors ${formData.isActive ? 'bg-emerald-500' : 'bg-zinc-300 dark:bg-zinc-700'}`}>
-                <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${formData.isActive ? 'right-1' : 'left-1'}`}></div>
-              </div>
+              Excluir
             </button>
-          </div>
-        )}
-      </form>
-
-      <div className="fixed bottom-0 left-0 right-0 p-6 bg-white dark:bg-zinc-900 border-t border-zinc-100 dark:border-zinc-800 flex gap-4 transition-colors">
-        {initialData && onDelete && (
+          )}
           <button
-            type="button"
-            onClick={() => {
-              if (window.confirm('Tem certeza que deseja excluir este aluno? Esta ação não pode ser desfeita.')) {
-                onDelete(initialData.id);
-              }
-            }}
-            className="flex-1 bg-red-50 dark:bg-red-900/10 text-red-600 dark:text-red-400 font-black uppercase text-xs tracking-widest py-5 rounded-2xl border border-red-100 dark:border-red-900/30 hover:bg-red-100 dark:hover:bg-red-900/20 transition-colors"
+            onClick={handleSubmit}
+            className="flex-[2] bg-indigo-600 hover:bg-indigo-500 text-white font-black uppercase text-xs tracking-widest py-5 rounded-2xl shadow-xl shadow-indigo-600/30 flex items-center justify-center gap-2 transition-all"
           >
-            Excluir
+            {initialData ? 'Atualizar Aluno' : 'Salvar Aluno'}
+            <CheckCircle2 size={18} />
           </button>
-        )}
-        <button
-          onClick={handleSubmit}
-          className="flex-[2] bg-indigo-600 hover:bg-indigo-500 text-white font-black uppercase text-xs tracking-widest py-5 rounded-2xl shadow-xl shadow-indigo-600/30 flex items-center justify-center gap-2 transition-all"
-        >
-          {initialData ? 'Atualizar Aluno' : 'Salvar Aluno'}
-          <CheckCircle2 size={18} />
-        </button>
+        </div>
       </div>
-    </div >
+    </div>
   );
 };
 

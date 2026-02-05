@@ -14,7 +14,7 @@ import {
     isWithinInterval
 } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Clock, MapPin, User, Plus } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Clock, MapPin, User, Plus, X } from 'lucide-react';
 import { ScheduleEvent, Student } from '../types';
 
 interface AgendaScreenProps {
@@ -31,31 +31,47 @@ const AgendaScreen: React.FC<AgendaScreenProps> = ({ events, students, onAddEven
 
     const renderHeader = () => {
         return (
-            <div className="flex items-center justify-between mb-8">
-                <div className="flex items-center gap-4">
-                    <div className="p-3 bg-indigo-100 dark:bg-indigo-900/30 rounded-2xl text-indigo-600 dark:text-indigo-400">
-                        <CalendarIcon size={24} />
+            <div className="flex flex-col mb-8">
+                {/* Standardized Brand Header */}
+                <header className="bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 min-h-[5rem] flex items-end justify-between px-4 sticky top-0 z-40 transition-all duration-300 pt-14 pb-3 relative flex-shrink-0 -mx-6 -mt-6 mb-6">
+                    <div className="w-10"></div> {/* Placeholder for symmetry */}
+
+                    <div className="absolute left-1/2 -translate-x-1/2 bottom-3 flex items-center gap-2">
+                        <img src="/logo.jpg" alt="PersonalFlow" className="w-8 h-8 rounded-full shadow-sm" />
+                        <span className="font-extrabold text-slate-900 dark:text-white tracking-tight">PersonalFlow</span>
                     </div>
-                    <div>
-                        <h2 className="text-2xl font-black text-zinc-800 dark:text-white capitalize">
-                            {format(currentMonth, 'MMMM yyyy', { locale: ptBR })}
-                        </h2>
-                        <p className="text-sm font-medium text-zinc-400 dark:text-zinc-500">Gerencie seus horários</p>
+
+                    <button onClick={onClose} className="p-2 text-zinc-400 dark:text-zinc-500 hover:text-red-500 transition-colors z-10 w-10 flex justify-end">
+                        <X size={20} />
+                    </button>
+                </header>
+
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                        <div className="p-3 bg-indigo-100 dark:bg-indigo-900/30 rounded-2xl text-indigo-600 dark:text-indigo-400">
+                            <CalendarIcon size={24} />
+                        </div>
+                        <div>
+                            <h2 className="text-2xl font-black text-zinc-800 dark:text-white capitalize">
+                                {format(currentMonth, 'MMMM yyyy', { locale: ptBR })}
+                            </h2>
+                            <p className="text-sm font-medium text-zinc-400 dark:text-zinc-500">Gerencie seus horários</p>
+                        </div>
                     </div>
-                </div>
-                <div className="flex gap-2">
-                    <button
-                        onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
-                        className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl transition-colors text-zinc-600 dark:text-zinc-400"
-                    >
-                        <ChevronLeft size={20} />
-                    </button>
-                    <button
-                        onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
-                        className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl transition-colors text-zinc-600 dark:text-zinc-400"
-                    >
-                        <ChevronRight size={20} />
-                    </button>
+                    <div className="flex gap-2">
+                        <button
+                            onClick={(e) => { e.stopPropagation(); setCurrentMonth(subMonths(currentMonth, 1)); }}
+                            className="p-2 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-colors text-zinc-400 dark:text-zinc-500 border border-zinc-100 dark:border-zinc-800"
+                        >
+                            <ChevronLeft size={20} />
+                        </button>
+                        <button
+                            onClick={(e) => { e.stopPropagation(); setCurrentMonth(addMonths(currentMonth, 1)); }}
+                            className="p-2 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-colors text-zinc-400 dark:text-zinc-500 border border-zinc-100 dark:border-zinc-800"
+                        >
+                            <ChevronRight size={20} />
+                        </button>
+                    </div>
                 </div>
             </div>
         );

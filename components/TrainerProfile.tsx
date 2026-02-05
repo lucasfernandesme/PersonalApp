@@ -16,29 +16,23 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, 
     const [activeModal, setActiveModal] = useState<'edit' | 'schedule' | 'reports' | null>(null);
 
     // Agenda State
-    const [events, setEvents] = useState<ScheduleEvent[]>(() => {
-        if (typeof window !== 'undefined') {
-            const saved = localStorage.getItem('fitai_pro_events');
-            return saved ? JSON.parse(saved) : [];
-        }
-        return [];
-    });
+    const [events, setEvents] = useState<ScheduleEvent[]>([]);
 
     const [students, setStudents] = useState<any[]>([]); // Need to fetch students for the dropdown
     const [isEventModalOpen, setIsEventModalOpen] = useState(false);
     const [selectedDateForEvent, setSelectedDateForEvent] = useState<Date>(new Date());
     const [eventToEdit, setEventToEdit] = useState<ScheduleEvent | undefined>(undefined);
 
-    // Load initial data for students
+    // Load initial data for students and agenda
     useEffect(() => {
         // Load Students for selector
         DataService.getStudents().then(setStudents);
-    }, []);
 
-    // Save events to local storage whenever they change
-    useEffect(() => {
-        localStorage.setItem('fitai_pro_events', JSON.stringify(events));
-    }, [events]);
+        // Load Agenda Events from Cloud
+        if (user?.id) {
+            DataService.getScheduleEvents(user.id).then(setEvents);
+        }
+    }, [user?.id]);
 
     const handleAddEvent = (eventData: Partial<ScheduleEvent> & { recurringDays?: number[], recurrenceDuration?: number }) => {
         let newEvents: ScheduleEvent[] = [];
@@ -69,25 +63,25 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, 
                     const originalEnd = new Date(eventData.end!);
                     eventEnd.setHours(originalEnd.getHours(), originalEnd.getMinutes(), 0);
 
-                    newEvents.push({
+                    const newEvent: ScheduleEvent = {
                         ...eventData,
                         id: Math.random().toString(36).substr(2, 9),
                         trainerId: user.id,
                         start: eventStart.toISOString(),
                         end: eventEnd.toISOString(),
                         status: 'planned'
-                    } as ScheduleEvent);
+                    } as ScheduleEvent;
+
+                    newEvents.push(newEvent);
+                    // Non-blocking background save to cloud
+                    DataService.saveScheduleEvent(newEvent).catch(err => console.error("Erro ao salvar evento recorrente:", err));
                 }
                 currentDate.setDate(currentDate.getDate() + 1);
             }
 
             if (eventData.id) {
-                // If editing and converting to recurring, we might want to keep the original ID for the first one, 
-                // but for simplicity, allow generating new set. 
-                // NOTE: This simple logic creates NEW events. Updating a series is complex.
-                // We will update the state by adding these new ones.
                 setEvents(prev => {
-                    const filtered = prev.filter(e => e.id !== eventData.id); // Remove the one being edited if exists
+                    const filtered = prev.filter(e => e.id !== eventData.id);
                     return [...filtered, ...newEvents];
                 });
             } else {
@@ -95,18 +89,22 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, 
             }
 
         } else {
-            // Single event logic (existing)
+            // Single event logic
             if (eventData.id) {
                 // Edit existing
-                setEvents(prev => prev.map(e => e.id === eventData.id ? { ...e, ...eventData } as ScheduleEvent : e));
+                const updatedEvent = { ...eventData, trainerId: user.id } as ScheduleEvent;
+                setEvents(prev => prev.map(e => e.id === eventData.id ? { ...e, ...updatedEvent } : e));
+                DataService.saveScheduleEvent(updatedEvent).catch(err => console.error("Erro ao atualizar evento:", err));
             } else {
                 // Add new
                 const newEvent: ScheduleEvent = {
                     id: Math.random().toString(36).substr(2, 9),
                     trainerId: user.id,
-                    ...eventData
+                    ...eventData,
+                    status: eventData.status || 'planned'
                 } as ScheduleEvent;
                 setEvents(prev => [...prev, newEvent]);
+                DataService.saveScheduleEvent(newEvent).catch(err => console.error("Erro ao salvar novo evento:", err));
             }
         }
 
@@ -116,6 +114,7 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, 
 
     const handleDeleteEvent = (eventId: string) => {
         setEvents(prev => prev.filter(e => e.id !== eventId));
+        DataService.deleteScheduleEvent(eventId).catch(err => console.error("Erro ao deletar evento:", err));
         setIsEventModalOpen(false);
         setEventToEdit(undefined);
     };
@@ -479,9 +478,6 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, 
             {activeModal === 'schedule' && (
                 <div className="fixed inset-0 z-50 bg-black/60 dark:bg-black/80 backdrop-blur-sm flex items-center justify-center p-0 md:p-4 animate-in fade-in duration-200">
                     <div className="bg-white dark:bg-zinc-900 md:rounded-[32px] w-full h-full md:max-w-4xl shadow-2xl p-6 relative flex flex-col border dark:border-zinc-800 transition-colors">
-
-                        <button onClick={() => setActiveModal(null)} className="absolute top-4 right-4 p-2 text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors z-10"><X size={24} /></button>
-
                         <AgendaScreen
                             events={events}
                             students={students}
@@ -507,7 +503,6 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, 
                                 onClose={() => setIsEventModalOpen(false)}
                             />
                         )}
-
                     </div>
                 </div>
             )}
