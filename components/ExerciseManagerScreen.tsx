@@ -64,8 +64,8 @@ const ExerciseManagerScreen: React.FC<ExerciseManagerScreenProps> = ({ exercises
   return (
     <div className="fixed inset-0 z-[100] bg-zinc-50 dark:bg-zinc-950 flex flex-col animate-in slide-in-from-right duration-300 overflow-hidden">
       {/* Dynamic Header Standardized */}
-      <header className="bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between px-4 pt-4 pb-4 transition-all duration-300 relative flex-shrink-0 -mx-4 -mt-4 mb-6">
-        <button onClick={onBack} className="p-2 text-zinc-400 dark:text-zinc-500 hover:text-indigo-600 dark:hover:text-white transition-colors z-10 w-10">
+      <header className="bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between px-4 pt-[calc(1rem+env(safe-area-inset-top))] pb-4 transition-all duration-300 relative flex-shrink-0 mb-6">
+        <button onClick={onBack} className="p-2 text-zinc-400 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors z-10 w-10">
           <ArrowLeft size={24} />
         </button>
 
@@ -80,7 +80,7 @@ const ExerciseManagerScreen: React.FC<ExerciseManagerScreenProps> = ({ exercises
             setIsPlayingPreview(false);
             setIsAdding(true);
           }}
-          className="bg-indigo-600 hover:bg-indigo-500 text-white p-2 rounded-xl transition-all shadow-lg shadow-indigo-600/20 z-10 w-10 flex justify-center"
+          className="bg-zinc-900 dark:bg-zinc-100 hover:bg-zinc-800 dark:hover:bg-white text-white dark:text-zinc-900 p-2 rounded-xl transition-all shadow-lg shadow-zinc-900/20 dark:shadow-zinc-100/10 z-10 w-10 flex justify-center"
         >
           <Plus size={20} />
         </button>
@@ -101,13 +101,13 @@ const ExerciseManagerScreen: React.FC<ExerciseManagerScreenProps> = ({ exercises
               <label className="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 ml-1 mb-2 block">Filtrar por Categoria</label>
               <button
                 onClick={() => setIsComboOpen(!isComboOpen)}
-                className="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-100 dark:border-zinc-700/50 rounded-2xl px-5 py-4 flex items-center justify-between group hover:border-indigo-200 dark:hover:border-indigo-800 transition-all active:scale-[0.99]"
+                className="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-100 dark:border-zinc-700/50 rounded-2xl px-5 py-4 flex items-center justify-between group hover:border-zinc-300 dark:hover:border-zinc-700 transition-all active:scale-[0.99]"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-2 h-2 rounded-full bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.5)]"></div>
+                  <div className="w-2 h-2 rounded-full bg-zinc-400 shadow-[0_0_8px_rgba(161,161,170,0.5)]"></div>
                   <span className="font-bold text-zinc-700 dark:text-white">{selectedCategory}</span>
                 </div>
-                <ChevronDown className={`text-zinc-400 dark:text-zinc-500 transition-transform duration-300 ${isComboOpen ? 'rotate-180 text-indigo-500 dark:text-indigo-400' : ''}`} size={20} />
+                <ChevronDown className={`text-zinc-400 dark:text-zinc-500 transition-transform duration-300 ${isComboOpen ? 'rotate-180 text-zinc-900 dark:text-zinc-100' : ''}`} size={20} />
               </button>
 
               {isComboOpen && (
@@ -126,7 +126,7 @@ const ExerciseManagerScreen: React.FC<ExerciseManagerScreenProps> = ({ exercises
                             setIsComboOpen(false);
                           }}
                           className={`w-full text-left px-4 py-3 rounded-xl text-xs font-black uppercase tracking-wide transition-all flex items-center justify-between ${selectedCategory === cat
-                            ? 'bg-indigo-600 dark:bg-indigo-500 text-white'
+                            ? 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900'
                             : 'text-zinc-500 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-700/50'
                             }`}
                         >
@@ -145,7 +145,7 @@ const ExerciseManagerScreen: React.FC<ExerciseManagerScreenProps> = ({ exercises
               <input
                 type="text"
                 placeholder="Buscar na biblioteca..."
-                className="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-100 dark:border-zinc-800 rounded-[20px] pl-12 pr-6 py-4 font-bold text-sm text-zinc-900 dark:text-white placeholder:text-zinc-300 dark:placeholder:text-zinc-600 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-500 focus:bg-white dark:focus:bg-zinc-900 transition-all shadow-sm"
+                className="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-100 dark:border-zinc-800 rounded-[20px] pl-12 pr-6 py-4 font-bold text-sm text-zinc-900 dark:text-white placeholder:text-zinc-300 dark:placeholder:text-zinc-600 focus:ring-2 focus:ring-zinc-900 dark:focus:ring-white focus:bg-white dark:focus:bg-zinc-900 transition-all shadow-sm"
                 value={searchTerm}
                 onChange={e => setSearchTerm(e.target.value)}
               />
@@ -164,18 +164,18 @@ const ExerciseManagerScreen: React.FC<ExerciseManagerScreenProps> = ({ exercises
               }}
               className={`p-4 rounded-2xl border flex items-center justify-between transition-all ${ex.isStandard
                 ? 'bg-zinc-50 dark:bg-zinc-900 border-zinc-100 dark:border-zinc-800 cursor-pointer'
-                : 'bg-white dark:bg-zinc-900/50 border-zinc-100 dark:border-zinc-800 cursor-pointer hover:border-indigo-200 dark:hover:border-indigo-800 active:scale-[0.98]'
+                : 'bg-white dark:bg-zinc-900/50 border-zinc-100 dark:border-zinc-800 cursor-pointer hover:border-zinc-300 dark:hover:border-zinc-700 active:scale-[0.98]'
                 }`}
             >
               <div className="flex items-center gap-4">
-                <div className="w-10 h-10 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-xl flex items-center justify-center">
+                <div className="w-10 h-10 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 rounded-xl flex items-center justify-center">
                   <Dumbbell size={20} />
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
                     <p className="font-bold text-zinc-800 dark:text-white text-sm">{ex.name}</p>
                     {ex.isStandard && (
-                      <div className="bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 px-1.5 py-0.5 rounded-md flex items-center gap-1">
+                      <div className="bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 px-1.5 py-0.5 rounded-md flex items-center gap-1">
                         <span className="text-[8px] font-black uppercase tracking-tighter">Oficial</span>
                       </div>
                     )}
@@ -232,7 +232,7 @@ const ExerciseManagerScreen: React.FC<ExerciseManagerScreenProps> = ({ exercises
                     autoFocus
                     type="text"
                     placeholder="Ex: Supino Inclinado Articulado"
-                    className={`w-full bg-zinc-50 dark:bg-zinc-800 border-none rounded-2xl px-5 py-4 font-bold focus:ring-2 focus:ring-indigo-500 text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 ${newExercise.isStandard ? 'opacity-70 cursor-not-allowed' : ''}`}
+                    className={`w-full bg-zinc-50 dark:bg-zinc-800 border-none rounded-2xl px-5 py-4 font-bold focus:ring-2 focus:ring-zinc-900 dark:focus:ring-white text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 ${newExercise.isStandard ? 'opacity-70 cursor-not-allowed' : ''}`}
                     value={newExercise.name}
                     onChange={e => !newExercise.isStandard && setNewExercise({ ...newExercise, name: e.target.value })}
                     disabled={newExercise.isStandard}
@@ -307,7 +307,7 @@ const ExerciseManagerScreen: React.FC<ExerciseManagerScreenProps> = ({ exercises
               {!newExercise.isStandard && (
                 <button
                   onClick={handleSave}
-                  className="w-full bg-indigo-600 text-white font-black uppercase text-xs tracking-widest py-5 rounded-2xl shadow-xl shadow-indigo-600/30 hover:bg-indigo-500 active:scale-[0.98] transition-all"
+                  className="w-full bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 font-black uppercase text-xs tracking-widest py-5 rounded-2xl shadow-xl shadow-zinc-900/30 dark:shadow-zinc-100/10 hover:bg-zinc-800 dark:hover:bg-white active:scale-[0.98] transition-all"
                 >
                   {newExercise.id ? 'Salvar Alterações' : 'Adicionar à Biblioteca'}
                 </button>

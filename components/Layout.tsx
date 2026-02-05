@@ -113,7 +113,7 @@ const Layout: React.FC<LayoutProps> = ({ children, role, onSwitchRole, onNavigat
       </aside>
 
       {/* Mobile Top Header */}
-      <header className="md:hidden bg-white dark:bg-zinc-900 border-b border-slate-200 dark:border-zinc-800 min-h-[5rem] flex items-end justify-between px-4 sticky top-0 z-40 transition-colors duration-300 pt-14 pb-3 relative">
+      <header className="md:hidden bg-white dark:bg-zinc-900 border-b border-slate-200 dark:border-zinc-800 min-h-[5rem] flex items-end justify-between px-4 sticky top-0 z-40 transition-colors duration-300 pt-[calc(3.5rem+env(safe-area-inset-top))] pb-3 relative">
         <button onClick={toggleTheme} className="text-slate-400 p-2 z-10">
           {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
         </button>
@@ -167,7 +167,7 @@ const Layout: React.FC<LayoutProps> = ({ children, role, onSwitchRole, onNavigat
 
 const NavItem = ({ icon, label, active = false, onClick }: { icon: React.ReactNode, label: string, active?: boolean, onClick?: () => void }) => (
   <button onClick={onClick} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${active
-    ? 'bg-indigo-600 dark:bg-indigo-500 text-white shadow-lg shadow-indigo-600/20'
+    ? 'bg-white text-zinc-900 shadow-lg shadow-black/20'
     : 'text-slate-400 dark:text-zinc-500 hover:bg-zinc-800 dark:hover:bg-zinc-800/50 hover:text-white dark:hover:text-zinc-200'
     }`}>
     {icon}
@@ -177,12 +177,12 @@ const NavItem = ({ icon, label, active = false, onClick }: { icon: React.ReactNo
 
 const BottomNavItem = ({ icon, active = false, onClick }: { icon: React.ReactNode, active?: boolean, onClick?: () => void }) => (
   <button onClick={onClick} className={`flex flex-col items-center justify-center p-2 transition-colors ${active
-    ? 'text-indigo-600 dark:text-indigo-400'
+    ? 'text-zinc-900 dark:text-white'
     : 'text-slate-400 dark:text-zinc-600 hover:text-slate-600 dark:hover:text-slate-400'
     }`}>
     {icon}
     <div className={`w-1 h-1 mt-1 rounded-full transition-all ${active
-      ? 'bg-indigo-600 dark:bg-indigo-400 opacity-100 scale-100'
+      ? 'bg-zinc-900 dark:bg-white opacity-100 scale-100'
       : 'bg-transparent opacity-0 scale-0'
       }`}></div>
   </button>

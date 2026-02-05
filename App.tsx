@@ -513,7 +513,7 @@ const App: React.FC = () => {
               <div>
                 <h2 className="text-2xl md:text-3xl font-black text-slate-900 dark:text-white tracking-tight">{selectedStudent.name}</h2>
                 <div className="flex flex-wrap gap-2 mt-2">
-                  <span className="px-3 py-1 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 text-[10px] font-black uppercase rounded-full border border-indigo-100 dark:border-indigo-800">{selectedStudent.goal}</span>
+                  <span className="px-3 py-1 bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 text-[10px] font-black uppercase rounded-full border border-zinc-200 dark:border-zinc-700">{selectedStudent.goal}</span>
                   <span className="px-3 py-1 bg-slate-50 dark:bg-zinc-800 text-slate-500 dark:text-zinc-400 text-[10px] font-black uppercase rounded-full border border-slate-100 dark:border-zinc-700">{selectedStudent.experience}</span>
                 </div>
               </div>
@@ -548,7 +548,7 @@ const App: React.FC = () => {
                 className="group bg-white dark:bg-zinc-900 p-5 rounded-[28px] transition-all active:scale-[0.98] shadow-sm hover:shadow-md border border-slate-200 dark:border-zinc-800 flex items-center justify-between w-full"
               >
                 <div className="flex items-center gap-4 flex-1">
-                  <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-600/20 dark:shadow-indigo-900/10 group-hover:scale-105 transition-transform flex-shrink-0">
+                  <div className="w-12 h-12 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 rounded-2xl flex items-center justify-center shadow-lg shadow-zinc-900/10 dark:shadow-zinc-100/5 group-hover:scale-105 transition-transform flex-shrink-0">
                     <FileText size={24} />
                   </div>
                   <div className="text-left">
@@ -556,7 +556,7 @@ const App: React.FC = () => {
                     <p className="text-slate-500 dark:text-zinc-400 text-[10px] font-bold uppercase tracking-wider">Documentos e Anexos</p>
                   </div>
                 </div>
-                <div className="w-10 h-10 bg-slate-50 dark:bg-zinc-800 rounded-xl flex items-center justify-center text-slate-300 dark:text-zinc-600 group-hover:bg-indigo-600 group-hover:text-white transition-all flex-shrink-0">
+                <div className="w-10 h-10 bg-slate-50 dark:bg-zinc-800 rounded-xl flex items-center justify-center text-slate-300 dark:text-zinc-600 group-hover:bg-zinc-900 dark:group-hover:bg-zinc-100 group-hover:text-white dark:group-hover:text-zinc-900 transition-all flex-shrink-0">
                   <ArrowRight size={20} />
                 </div>
               </button>
@@ -606,9 +606,9 @@ const App: React.FC = () => {
                     };
                     input.click();
                   }}
-                  className="w-full py-8 border-2 border-dashed border-zinc-200 dark:border-zinc-800 rounded-3xl flex flex-col items-center justify-center gap-2 hover:border-indigo-400 hover:bg-indigo-50/50 dark:hover:bg-indigo-900/10 transition-all group"
+                  className="w-full py-8 border-2 border-dashed border-zinc-200 dark:border-zinc-800 rounded-3xl flex flex-col items-center justify-center gap-2 hover:border-zinc-400 hover:bg-zinc-100/50 dark:hover:bg-zinc-800/10 transition-all group"
                 >
-                  <div className="w-12 h-12 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <div className="w-12 h-12 bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
                     <Plus size={24} />
                   </div>
                   <p className="font-bold text-zinc-600 dark:text-zinc-400 text-sm">Adicionar Novo Arquivo</p>
@@ -651,7 +651,7 @@ const App: React.FC = () => {
                   setWorkoutToEdit(null);
                   setIsManualBuilderOpen(true);
                 }}
-                className="w-full py-6 border-2 border-dashed border-slate-200 rounded-[32px] text-slate-400 font-black uppercase text-xs tracking-widest flex items-center justify-center gap-3 hover:border-indigo-300 hover:text-indigo-600 transition-all font-sans"
+                className="w-full py-6 border-2 border-dashed border-zinc-200 dark:border-zinc-700 rounded-[32px] text-zinc-400 dark:text-zinc-500 font-black uppercase text-xs tracking-widest flex items-center justify-center gap-3 hover:border-zinc-300 dark:hover:border-zinc-600 hover:text-zinc-900 dark:hover:text-zinc-100 transition-all font-sans"
               >
                 <Plus size={20} />
                 Criar Novo Treino
@@ -663,7 +663,7 @@ const App: React.FC = () => {
                   (selectedStudent.programs || [selectedStudent.program]).map((prog, pIdx) => (
                     <div
                       key={prog.id || pIdx}
-                      className="bg-white dark:bg-zinc-900 p-6 rounded-[32px] border border-slate-100 dark:border-zinc-800 shadow-sm relative overflow-hidden group hover:border-indigo-200 dark:hover:border-indigo-800 transition-all"
+                      className="bg-white dark:bg-zinc-900 p-6 rounded-[32px] border border-zinc-100 dark:border-zinc-800 shadow-sm relative overflow-hidden group hover:border-zinc-300 dark:hover:border-zinc-700 transition-all"
                     >
                       <div className="flex items-center justify-between">
                         <div
@@ -696,7 +696,7 @@ const App: React.FC = () => {
                               setWorkoutToEdit(prog);
                               setIsManualBuilderOpen(true);
                             }}
-                            className="p-2 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-xl transition-all"
+                            className="p-2 text-zinc-900 dark:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl transition-all"
                           >
                             <Edit2 size={18} />
                           </button>
@@ -753,7 +753,7 @@ const App: React.FC = () => {
                           setWorkoutToEdit(selectedStudent.program);
                           setIsManualBuilderOpen(true);
                         }}
-                        className="flex items-center gap-2 px-4 py-2 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-xl font-bold text-xs uppercase tracking-wider hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors"
+                        className="flex items-center gap-2 px-4 py-2 bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 rounded-xl font-bold text-xs uppercase tracking-wider hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
                       >
                         <Edit2 size={16} /> Editar
                       </button>
@@ -776,7 +776,7 @@ const App: React.FC = () => {
                                     <p className="font-bold text-slate-800 dark:text-zinc-200 text-xs">{ex.name}</p>
                                     <p className="text-[10px] text-slate-400 dark:text-zinc-500 font-bold uppercase">{ex.sets}x{ex.reps}</p>
                                   </div>
-                                  <div className="w-8 h-8 rounded-lg bg-slate-50 dark:bg-zinc-800 flex items-center justify-center text-slate-400 dark:text-zinc-500 group-hover:bg-indigo-50 dark:group-hover:bg-indigo-900/30 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-all">
+                                  <div className="w-8 h-8 rounded-lg bg-zinc-50 dark:bg-zinc-800 flex items-center justify-center text-zinc-400 dark:text-zinc-500 group-hover:bg-zinc-900 dark:group-hover:bg-zinc-100 group-hover:text-white dark:group-hover:text-zinc-900 transition-all">
                                     <ChevronRight size={14} />
                                   </div>
                                 </div>
@@ -788,7 +788,7 @@ const App: React.FC = () => {
                     ) : (
                       <div className="p-12 text-center bg-white dark:bg-zinc-900 rounded-[32px] border border-slate-100 dark:border-zinc-800 transition-colors duration-300">
                         <p className="text-slate-400 dark:text-zinc-500 font-bold mb-1">Nenhum treino encontrado</p>
-                        <button onClick={() => { setWorkoutToEdit(null); setIsManualBuilderOpen(true); }} className="text-indigo-600 dark:text-indigo-400 font-black text-xs uppercase underline">Criar Treino</button>
+                        <button onClick={() => { setWorkoutToEdit(null); setIsManualBuilderOpen(true); }} className="text-zinc-900 dark:text-zinc-100 font-black text-xs uppercase underline">Criar Treino</button>
                       </div>
                     )}
                   </div>
@@ -817,7 +817,7 @@ const App: React.FC = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 dark:bg-zinc-950">
-        <Loader2 className="w-12 h-12 text-indigo-600 dark:text-indigo-500 animate-spin mb-4" />
+        <Loader2 className="w-12 h-12 text-zinc-900 dark:text-zinc-100 animate-spin mb-4" />
         <p className="text-slate-400 dark:text-zinc-500 font-black uppercase text-[10px] tracking-widest">Carregando PersonalFlow...</p>
       </div>
     );
@@ -828,7 +828,7 @@ const App: React.FC = () => {
       <ThemeProvider>
         <LoginScreen
           onLogin={(user) => handleLogin(user)}
-          isCloud={false}
+          students={students}
         />
         <InstallPrompt />
       </ThemeProvider>

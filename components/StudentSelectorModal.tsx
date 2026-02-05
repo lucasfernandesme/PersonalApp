@@ -46,7 +46,7 @@ const StudentSelectorModal: React.FC<StudentSelectorModalProps> = ({
                             placeholder="Buscar aluno..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full pl-12 pr-4 py-3 bg-zinc-50 dark:bg-zinc-800 border-none rounded-2xl text-sm font-bold text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:ring-2 focus:ring-indigo-500 transition-all outline-none"
+                            className="w-full pl-12 pr-4 py-3 bg-zinc-50 dark:bg-zinc-800 border-none rounded-2xl text-sm font-bold text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:ring-2 focus:ring-zinc-900 dark:focus:ring-white transition-all outline-none"
                             autoFocus
                         />
                     </div>
@@ -60,7 +60,7 @@ const StudentSelectorModal: React.FC<StudentSelectorModalProps> = ({
                                 <button
                                     key={student.id}
                                     onClick={() => onSelect(student)}
-                                    className="w-full p-4 bg-zinc-50 dark:bg-zinc-800/50 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-2xl flex items-center justify-between transition-all group border border-transparent hover:border-indigo-200 dark:hover:border-indigo-800"
+                                    className="w-full p-4 bg-zinc-50 dark:bg-zinc-800/50 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-2xl flex items-center justify-between transition-all group border border-transparent hover:border-zinc-300 dark:hover:border-zinc-700"
                                 >
                                     <div className="flex items-center gap-3">
                                         <img
@@ -69,7 +69,7 @@ const StudentSelectorModal: React.FC<StudentSelectorModalProps> = ({
                                             className="w-12 h-12 rounded-xl object-cover border-2 border-white dark:border-zinc-700 shadow-sm transition-colors"
                                         />
                                         <div className="text-left">
-                                            <p className="font-black text-zinc-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                                            <p className="font-black text-zinc-900 dark:text-white group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition-colors">
                                                 {student.name}
                                             </p>
                                             <div className="flex items-center gap-2 mt-1">
@@ -85,7 +85,7 @@ const StudentSelectorModal: React.FC<StudentSelectorModalProps> = ({
                                             </div>
                                         </div>
                                     </div>
-                                    <ChevronRight className="text-zinc-400 dark:text-zinc-600 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors" size={20} />
+                                    <ChevronRight className="text-zinc-400 dark:text-zinc-600 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition-colors" size={20} />
                                 </button>
                             ))}
                         </div>

@@ -119,7 +119,7 @@ const ScheduleEventModal: React.FC<ScheduleEventModalProps> = ({ initialDate, ex
                             <select
                                 value={selectedStudentId}
                                 onChange={(e) => setSelectedStudentId(e.target.value)}
-                                className="w-full pl-11 pr-4 py-3 bg-zinc-50 dark:bg-zinc-800 border-none rounded-2xl font-bold text-zinc-800 dark:text-white focus:ring-2 focus:ring-indigo-500 dark:focus:ring-white appearance-none cursor-pointer"
+                                className="w-full pl-11 pr-4 py-3 bg-zinc-50 dark:bg-zinc-800 border-none rounded-2xl font-bold text-zinc-800 dark:text-white focus:ring-2 focus:ring-zinc-900 dark:focus:ring-white appearance-none cursor-pointer"
                             >
                                 <option value="">Selecione um aluno...</option>
                                 {students.map(student => (
@@ -137,7 +137,7 @@ const ScheduleEventModal: React.FC<ScheduleEventModalProps> = ({ initialDate, ex
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
                             placeholder={selectedStudentId ? "Preenchido automaticamente" : "Ex: Treino de Pernas"}
-                            className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800 border-none rounded-2xl font-bold text-zinc-800 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-white"
+                            className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800 border-none rounded-2xl font-bold text-zinc-800 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:ring-2 focus:ring-zinc-900 dark:focus:ring-white"
                         />
                     </div>
 
@@ -151,7 +151,7 @@ const ScheduleEventModal: React.FC<ScheduleEventModalProps> = ({ initialDate, ex
                                     type="date"
                                     value={date}
                                     onChange={(e) => setDate(e.target.value)}
-                                    className="w-full pl-11 pr-4 py-3 bg-zinc-50 dark:bg-zinc-800 border-none rounded-2xl font-bold text-zinc-800 dark:text-white focus:ring-2 focus:ring-indigo-500 dark:focus:ring-white"
+                                    className="w-full pl-11 pr-4 py-3 bg-zinc-50 dark:bg-zinc-800 border-none rounded-2xl font-bold text-zinc-800 dark:text-white focus:ring-2 focus:ring-zinc-900 dark:focus:ring-white"
                                 />
                             </div>
                         </div>
@@ -163,7 +163,7 @@ const ScheduleEventModal: React.FC<ScheduleEventModalProps> = ({ initialDate, ex
                                     type="time"
                                     value={startTime}
                                     onChange={(e) => setStartTime(e.target.value)}
-                                    className="w-full px-2 py-3 bg-zinc-50 dark:bg-zinc-800 border-none rounded-2xl font-bold text-zinc-800 dark:text-white text-center focus:ring-2 focus:ring-indigo-500 dark:focus:ring-white"
+                                    className="w-full px-2 py-3 bg-zinc-50 dark:bg-zinc-800 border-none rounded-2xl font-bold text-zinc-800 dark:text-white text-center focus:ring-2 focus:ring-zinc-900 dark:focus:ring-white"
                                 />
                             </div>
                             <div className="flex-1">
@@ -172,7 +172,7 @@ const ScheduleEventModal: React.FC<ScheduleEventModalProps> = ({ initialDate, ex
                                     type="time"
                                     value={endTime}
                                     onChange={(e) => setEndTime(e.target.value)}
-                                    className="w-full px-2 py-3 bg-zinc-50 dark:bg-zinc-800 border-none rounded-2xl font-bold text-zinc-800 dark:text-white text-center focus:ring-2 focus:ring-indigo-500 dark:focus:ring-white"
+                                    className="w-full px-2 py-3 bg-zinc-50 dark:bg-zinc-800 border-none rounded-2xl font-bold text-zinc-800 dark:text-white text-center focus:ring-2 focus:ring-zinc-900 dark:focus:ring-white"
                                 />
                             </div>
                         </div>
@@ -188,7 +188,7 @@ const ScheduleEventModal: React.FC<ScheduleEventModalProps> = ({ initialDate, ex
                                 value={location}
                                 onChange={(e) => setLocation(e.target.value)}
                                 placeholder="Ex: Academia Smart Fit"
-                                className="w-full pl-11 pr-4 py-3 bg-zinc-50 dark:bg-zinc-800 border-none rounded-2xl font-bold text-zinc-800 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-white"
+                                className="w-full pl-11 pr-4 py-3 bg-zinc-50 dark:bg-zinc-800 border-none rounded-2xl font-bold text-zinc-800 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:ring-2 focus:ring-zinc-900 dark:focus:ring-white"
                             />
                         </div>
                     </div>
@@ -201,7 +201,7 @@ const ScheduleEventModal: React.FC<ScheduleEventModalProps> = ({ initialDate, ex
                             onChange={(e) => setDescription(e.target.value)}
                             rows={3}
                             placeholder="Detalhes adicionais..."
-                            className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800 border-none rounded-2xl font-bold text-zinc-800 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-white resize-none"
+                            className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800 border-none rounded-2xl font-bold text-zinc-800 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:ring-2 focus:ring-zinc-900 dark:focus:ring-white resize-none"
                         />
                     </div>
 
@@ -237,7 +237,7 @@ const ScheduleEventModal: React.FC<ScheduleEventModalProps> = ({ initialDate, ex
                                     name="recurrence"
                                     checked={!isRecurring}
                                     onChange={() => setIsRecurring(false)}
-                                    className="w-4 h-4 text-indigo-600 focus:ring-indigo-600 border-zinc-300 dark:border-zinc-600 bg-zinc-100 dark:bg-zinc-800"
+                                    className="w-4 h-4 text-zinc-900 focus:ring-zinc-900 dark:text-zinc-100 dark:focus:ring-white border-zinc-300 dark:border-zinc-600 bg-zinc-100 dark:bg-zinc-800"
                                 />
                                 <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Não replicar</span>
                             </label>
@@ -247,7 +247,7 @@ const ScheduleEventModal: React.FC<ScheduleEventModalProps> = ({ initialDate, ex
                                     name="recurrence"
                                     checked={isRecurring}
                                     onChange={() => setIsRecurring(true)}
-                                    className="w-4 h-4 text-indigo-600 focus:ring-indigo-600 border-zinc-300 dark:border-zinc-600 bg-zinc-100 dark:bg-zinc-800"
+                                    className="w-4 h-4 text-zinc-900 focus:ring-zinc-900 dark:text-zinc-100 dark:focus:ring-white border-zinc-300 dark:border-zinc-600 bg-zinc-100 dark:bg-zinc-800"
                                 />
                                 <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Replicar</span>
                             </label>
@@ -353,7 +353,7 @@ const ScheduleEventModal: React.FC<ScheduleEventModalProps> = ({ initialDate, ex
 
                     <button
                         onClick={handleSave}
-                        className="flex-1 py-4 bg-indigo-600 hover:bg-indigo-500 dark:bg-white dark:hover:bg-zinc-200 text-white dark:text-black rounded-2xl font-black uppercase text-xs tracking-widest shadow-lg shadow-indigo-600/20 dark:shadow-none active:scale-95 transition-all flex items-center justify-center gap-2"
+                        className="flex-1 py-4 bg-zinc-900 hover:bg-zinc-800 dark:bg-white dark:hover:bg-zinc-200 text-white dark:text-zinc-900 rounded-2xl font-black uppercase text-xs tracking-widest shadow-lg shadow-zinc-900/20 dark:shadow-none active:scale-95 transition-all flex items-center justify-center gap-2"
                     >
                         {existingEvent ? 'Salvar Alterações' : 'Agendar Aula'} <CheckCircle2 size={18} />
                     </button>

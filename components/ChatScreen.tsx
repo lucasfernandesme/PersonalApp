@@ -90,7 +90,7 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ role, student }) => {
   return (
     <div className="flex flex-col h-[calc(100vh-140px)] md:h-[calc(100vh-120px)] animate-in fade-in duration-500">
       <div className="flex items-center gap-3 mb-6 px-1 transition-colors">
-        <div className="p-3 bg-indigo-600 dark:bg-indigo-500 rounded-2xl text-white shadow-lg shadow-indigo-600/20 dark:shadow-indigo-500/10">
+        <div className="p-3 bg-zinc-900 dark:bg-zinc-100 rounded-2xl text-white dark:text-zinc-900 shadow-lg shadow-zinc-900/20 dark:shadow-zinc-100/10">
           <MessageSquare size={20} />
         </div>
         <div>
@@ -107,12 +107,12 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ role, student }) => {
             className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-in slide-in-from-bottom-2 duration-300`}
           >
             <div className={`max-w-[85%] flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
-              <div className={`w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors ${msg.role === 'user' ? 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400' : 'bg-zinc-900 dark:bg-zinc-800 text-indigo-400 dark:text-indigo-500'
+              <div className={`w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors ${msg.role === 'user' ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100' : 'bg-zinc-900 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500'
                 }`}>
                 {msg.role === 'user' ? <User size={16} /> : <Bot size={16} />}
               </div>
               <div className={`p-4 rounded-[24px] text-sm leading-relaxed shadow-sm transition-all ${msg.role === 'user'
-                ? 'bg-indigo-600 dark:bg-indigo-500 text-white rounded-tr-none'
+                ? 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-tr-none'
                 : 'bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-200 border border-zinc-100 dark:border-zinc-800 rounded-tl-none'
                 }`}>
                 {msg.content}
@@ -126,7 +126,7 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ role, student }) => {
         {isLoading && (
           <div className="flex justify-start animate-pulse">
             <div className="bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 p-4 rounded-[24px] rounded-tl-none flex items-center gap-2 transition-colors">
-              <Loader2 size={16} className="animate-spin text-indigo-600 dark:text-indigo-400" />
+              <Loader2 size={16} className="animate-spin text-zinc-900 dark:text-zinc-100" />
               <span className="text-xs font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">IA pensando...</span>
             </div>
           </div>
@@ -143,19 +143,19 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ role, student }) => {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-            className="w-full bg-white dark:bg-zinc-900 border-2 border-zinc-100 dark:border-zinc-800 rounded-[28px] pl-6 pr-16 py-5 font-bold text-zinc-700 dark:text-zinc-200 placeholder:text-zinc-300 dark:placeholder:text-zinc-600 focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-0 transition-all shadow-xl shadow-zinc-200/50 dark:shadow-none"
+            className="w-full bg-white dark:bg-zinc-900 border-2 border-zinc-100 dark:border-zinc-800 rounded-[28px] pl-6 pr-16 py-5 font-bold text-zinc-700 dark:text-zinc-200 placeholder:text-zinc-300 dark:placeholder:text-zinc-600 focus:border-zinc-900 dark:focus:border-zinc-100 focus:ring-0 transition-all shadow-xl shadow-zinc-200/50 dark:shadow-none"
           />
           <button
             onClick={handleSend}
             disabled={!input.trim() || isLoading}
-            className={`absolute right-2 top-2 w-12 h-12 rounded-full flex items-center justify-center transition-all ${input.trim() ? 'bg-indigo-600 dark:bg-indigo-500 text-white shadow-lg' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-300 dark:text-zinc-700'
+            className={`absolute right-2 top-2 w-12 h-12 rounded-full flex items-center justify-center transition-all ${input.trim() ? 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 shadow-lg' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-300 dark:text-zinc-700'
               }`}
           >
             <Send size={20} className={input.trim() ? 'tranzinc-x-0.5' : ''} />
           </button>
         </div>
         <div className="flex items-center justify-center gap-2 mt-3 transition-colors">
-          <Sparkles size={12} className="text-indigo-400 dark:text-indigo-500" />
+          <Sparkles size={12} className="text-zinc-400 dark:text-zinc-500" />
           <span className="text-[9px] font-black text-zinc-400 dark:text-zinc-600 uppercase tracking-widest">Powered by Gemini 3 Flash</span>
         </div>
       </div>

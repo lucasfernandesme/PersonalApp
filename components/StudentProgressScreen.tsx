@@ -51,7 +51,7 @@ const StudentProgressScreen: React.FC<StudentProgressScreenProps> = ({ student }
           unit="média"
         />
         <StatCard
-          icon={<TrendingUp className="text-indigo-500" size={20} />}
+          icon={<TrendingUp className="text-zinc-900 dark:text-zinc-100" size={20} />}
           label="Esforço"
           value={stats.avgRpe}
           unit="RPE médio"
@@ -68,7 +68,7 @@ const StudentProgressScreen: React.FC<StudentProgressScreenProps> = ({ student }
       {/* Last Session Weights */}
       <div className="bg-white dark:bg-zinc-900 rounded-[32px] border border-zinc-200 dark:border-zinc-800 p-6 shadow-sm transition-colors">
         <h3 className="font-black text-zinc-800 dark:text-white text-sm uppercase tracking-widest mb-6 flex items-center gap-2">
-          <Dumbbell size={18} className="text-indigo-600 dark:text-indigo-400" />
+          <Dumbbell size={18} className="text-zinc-900 dark:text-zinc-100" />
           Últimas Cargas Registradas
         </h3>
         {stats.lastWeights && Object.keys(stats.lastWeights).length > 0 ? (
@@ -76,7 +76,7 @@ const StudentProgressScreen: React.FC<StudentProgressScreenProps> = ({ student }
             {Object.entries(stats.lastWeights).map(([ex, weight]) => (
               <div key={ex} className="flex justify-between items-center p-4 bg-zinc-50 dark:bg-zinc-800 rounded-2xl border border-zinc-100 dark:border-zinc-800 transition-colors">
                 <span className="font-bold text-zinc-700 dark:text-zinc-300 text-sm">{ex}</span>
-                <span className="font-black text-indigo-600 dark:text-indigo-400">{weight}kg</span>
+                <span className="font-black text-zinc-900 dark:text-zinc-100">{weight}kg</span>
               </div>
             ))}
           </div>
@@ -110,7 +110,7 @@ const StudentProgressScreen: React.FC<StudentProgressScreenProps> = ({ student }
                   <span className="px-3 py-1 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 text-[10px] font-black rounded-full border border-emerald-100 dark:border-emerald-800 transition-colors">
                     {item.completion}%
                   </span>
-                  <span className="px-3 py-1 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 text-[10px] font-black rounded-full border border-indigo-100 dark:border-indigo-800 transition-colors">
+                  <span className="px-3 py-1 bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 text-[10px] font-black rounded-full border border-zinc-200 dark:border-zinc-700 transition-colors">
                     RPE {item.rpe_avg}
                   </span>
                 </div>

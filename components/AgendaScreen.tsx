@@ -33,7 +33,7 @@ const AgendaScreen: React.FC<AgendaScreenProps> = ({ events, students, onAddEven
         return (
             <div className="flex flex-col mb-8">
                 {/* Standardized Brand Header */}
-                <header className="bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between px-4 transition-all duration-300 pt-4 pb-4 relative flex-shrink-0 -mx-6 -mt-6 mb-6">
+                <header className="bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between px-4 transition-all duration-300 pt-[calc(1rem+env(safe-area-inset-top))] pb-4 relative flex-shrink-0 mb-6">
                     <div className="w-10"></div> {/* Placeholder for symmetry */}
 
                     <div className="flex items-center gap-2">
@@ -48,7 +48,7 @@ const AgendaScreen: React.FC<AgendaScreenProps> = ({ events, students, onAddEven
 
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                        <div className="p-3 bg-indigo-100 dark:bg-indigo-900/30 rounded-2xl text-indigo-600 dark:text-indigo-400">
+                        <div className="p-3 bg-zinc-100 dark:bg-zinc-800 rounded-2xl text-zinc-900 dark:text-zinc-100">
                             <CalendarIcon size={24} />
                         </div>
                         <div>
@@ -119,7 +119,7 @@ const AgendaScreen: React.FC<AgendaScreenProps> = ({ events, students, onAddEven
                     <div
                         className={`min-h-[80px] p-2 border border-zinc-100 dark:border-zinc-800 relative transition-colors cursor-pointer group hover:bg-zinc-50 dark:hover:bg-zinc-800/50
               ${!isCurrentMonth ? "bg-zinc-50/50 dark:bg-zinc-900/50 text-zinc-300 dark:text-zinc-700" : "bg-white dark:bg-zinc-900"}
-              ${isSelected ? "ring-2 ring-indigo-500 dark:ring-white ring-inset z-10" : ""}
+              ${isSelected ? "ring-2 ring-zinc-900 dark:ring-white ring-inset z-10" : ""}
               ${i === 0 ? "rounded-l-2xl" : ""} ${i === 6 ? "rounded-r-2xl" : ""}
             `}
                         key={day.toString()}
@@ -131,8 +131,8 @@ const AgendaScreen: React.FC<AgendaScreenProps> = ({ events, students, onAddEven
 
                         <div className="mt-1 space-y-1">
                             {dayEvents.slice(0, 2).map((event, idx) => (
-                                <div key={idx} className="bg-indigo-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded-md truncate border border-transparent dark:border-zinc-700">
-                                    <p className="text-[9px] font-bold text-indigo-700 dark:text-white truncate">
+                                <div key={idx} className="bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded-md truncate border border-transparent dark:border-zinc-700">
+                                    <p className="text-[9px] font-bold text-zinc-900 dark:text-white truncate">
                                         {format(parseISO(event.start), 'HH:mm')} {event.title}
                                     </p>
                                 </div>
@@ -148,7 +148,7 @@ const AgendaScreen: React.FC<AgendaScreenProps> = ({ events, students, onAddEven
                                 e.stopPropagation();
                                 onAddEvent(cloneDay);
                             }}
-                            className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 p-1 bg-indigo-600 dark:bg-white text-white dark:text-black rounded-lg shadow-sm hover:scale-110 transition-all"
+                            className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 p-1 bg-zinc-900 dark:bg-white text-white dark:text-black rounded-lg shadow-sm hover:scale-110 transition-all"
                         >
                             <Plus size={12} />
                         </button>
@@ -181,7 +181,7 @@ const AgendaScreen: React.FC<AgendaScreenProps> = ({ events, students, onAddEven
                     </h3>
                     <button
                         onClick={() => onAddEvent(selectedDate)}
-                        className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 dark:bg-white dark:hover:bg-zinc-200 text-white dark:text-black rounded-xl text-xs font-bold uppercase tracking-wide transition-colors shadow-lg shadow-indigo-600/20 dark:shadow-none"
+                        className="flex items-center gap-2 px-4 py-2 bg-zinc-900 dark:bg-white hover:bg-zinc-800 dark:hover:bg-zinc-200 text-white dark:text-zinc-900 rounded-xl text-xs font-bold uppercase tracking-wide transition-colors shadow-lg shadow-zinc-900/20 dark:shadow-none"
                     >
                         <Plus size={16} /> Nova Aula
                     </button>
@@ -197,16 +197,16 @@ const AgendaScreen: React.FC<AgendaScreenProps> = ({ events, students, onAddEven
                             <div
                                 key={event.id}
                                 onClick={() => onEditEvent(event)}
-                                className="bg-white dark:bg-zinc-900 p-4 rounded-2xl border border-zinc-100 dark:border-zinc-800 shadow-sm hover:border-indigo-200 dark:hover:border-zinc-600 transition-all cursor-pointer group"
+                                className="bg-white dark:bg-zinc-900 p-4 rounded-2xl border border-zinc-100 dark:border-zinc-800 shadow-sm hover:border-zinc-300 dark:hover:border-zinc-700 transition-all cursor-pointer group"
                             >
                                 <div className="flex items-start justify-between">
                                     <div className="flex items-start gap-4">
-                                        <div className="w-12 h-12 rounded-xl bg-indigo-50 dark:bg-zinc-800 flex flex-col items-center justify-center text-indigo-600 dark:text-white border border-indigo-100 dark:border-zinc-700">
+                                        <div className="w-12 h-12 rounded-xl bg-zinc-100 dark:bg-zinc-800 flex flex-col items-center justify-center text-zinc-900 dark:text-white border border-zinc-200 dark:border-zinc-700">
                                             <span className="text-xs font-bold">{format(parseISO(event.start), 'HH')}</span>
                                             <span className="text-[10px] opacity-70">:{format(parseISO(event.start), 'mm')}</span>
                                         </div>
                                         <div>
-                                            <h4 className="font-bold text-zinc-900 dark:text-white text-base group-hover:text-indigo-600 dark:group-hover:text-white transition-colors">
+                                            <h4 className="font-bold text-zinc-900 dark:text-white text-base group-hover:text-zinc-950 dark:group-hover:text-white transition-colors">
                                                 {event.title}
                                             </h4>
                                             <div className="flex flex-col gap-1 mt-1">

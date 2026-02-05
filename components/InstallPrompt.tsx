@@ -36,7 +36,7 @@ const InstallPrompt: React.FC = () => {
         </button>
 
         <div className="flex items-start gap-4 pr-8">
-          <div className="w-12 h-12 bg-indigo-600 dark:bg-indigo-500 rounded-2xl flex items-center justify-center flex-shrink-0 text-white">
+          <div className="w-12 h-12 bg-zinc-900 dark:bg-zinc-100 rounded-2xl flex items-center justify-center flex-shrink-0 text-white dark:text-zinc-900">
             <Download size={24} />
           </div>
           <div>
@@ -50,9 +50,9 @@ const InstallPrompt: React.FC = () => {
         </div>
 
         {isIOS && (
-          <div className="mt-4 flex items-center justify-center gap-2 py-2 bg-indigo-50 dark:bg-indigo-900/30 rounded-xl border border-indigo-100 dark:border-indigo-800 transition-colors">
-            <Share size={14} className="text-indigo-600 dark:text-indigo-400" />
-            <span className="text-[10px] font-black uppercase tracking-widest text-indigo-600 dark:text-indigo-400">Instrução para iPhone</span>
+          <div className="mt-4 flex items-center justify-center gap-2 py-2 bg-zinc-100 dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-700 transition-colors">
+            <Share size={14} className="text-zinc-900 dark:text-zinc-100" />
+            <span className="text-[10px] font-black uppercase tracking-widest text-zinc-900 dark:text-zinc-100">Instrução para iPhone</span>
           </div>
         )}
       </div>

@@ -35,8 +35,8 @@ const FrequencyCalendarModal: React.FC<FrequencyCalendarModalProps> = ({ student
                 const parts = h.date.split('/');
                 d = new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
             } else {
-                // Use new Date() for ISO strings to leverage potential UTC offset behavior if needed
-                d = new Date(h.date);
+                // Use parseISO for strings to avoid timezone shift
+                d = parseISO(h.date);
             }
             // Normalize to noon to ensure consistent day comparison
             d.setHours(12, 0, 0, 0);
@@ -65,7 +65,7 @@ const FrequencyCalendarModal: React.FC<FrequencyCalendarModalProps> = ({ student
                 </button>
 
                 <div className="flex items-center gap-3 mb-6">
-                    <div className="w-12 h-12 rounded-2xl bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
+                    <div className="w-12 h-12 rounded-2xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-900 dark:text-zinc-100">
                         <Calendar size={24} />
                     </div>
                     <div>
@@ -113,7 +113,7 @@ const FrequencyCalendarModal: React.FC<FrequencyCalendarModalProps> = ({ student
                                     ${isHistory
                                         ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30'
                                         : isToday
-                                            ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800'
+                                            ? 'bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-white border border-zinc-200 dark:border-zinc-700'
                                             : 'text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800'
                                     }
                                 `}
@@ -135,7 +135,7 @@ const FrequencyCalendarModal: React.FC<FrequencyCalendarModalProps> = ({ student
                         <span>Treino Realizado</span>
                     </div>
                     <div className="flex items-center gap-1.5">
-                        <div className="w-3 h-3 rounded-full bg-indigo-100 dark:bg-indigo-900/30 border border-indigo-200 dark:border-indigo-800"></div>
+                        <div className="w-3 h-3 rounded-full bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700"></div>
                         <span>Hoje</span>
                     </div>
                 </div>

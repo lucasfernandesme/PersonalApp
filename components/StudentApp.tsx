@@ -280,12 +280,12 @@ const StudentApp: React.FC<StudentAppProps> = ({
         <div className="fixed top-20 left-4 right-4 z-50 animate-in slide-in-from-top-4 duration-300">
           <div className="bg-zinc-900 dark:bg-zinc-950 text-white rounded-[28px] p-3 flex items-center justify-between shadow-2xl border border-zinc-800 dark:border-zinc-800 backdrop-blur-md bg-zinc-900/95 dark:bg-zinc-950/95">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-indigo-600 rounded-2xl flex flex-col items-center justify-center shadow-lg shadow-indigo-600/20">
-                <span className="text-[7px] font-black uppercase text-white/60">Rest</span>
-                <span className="text-lg font-black tabular-nums">{restSeconds}</span>
+              <div className="w-12 h-12 bg-zinc-900 dark:bg-zinc-100 rounded-2xl flex flex-col items-center justify-center shadow-lg shadow-zinc-900/20 dark:shadow-zinc-100/10">
+                <span className="text-[7px] font-black uppercase text-white/60 dark:text-zinc-900/60">Rest</span>
+                <span className="text-lg font-black tabular-nums text-white dark:text-zinc-900">{restSeconds}</span>
               </div>
               <div>
-                <p className="text-[9px] font-black uppercase text-indigo-400">Tempo de Descanso</p>
+                <p className="text-[9px] font-black uppercase text-white dark:text-white/90">Tempo de Descanso</p>
                 <p className="text-[10px] font-bold text-white/80">Recupere-se para a próxima série</p>
               </div>
             </div>
@@ -316,8 +316,8 @@ const StudentApp: React.FC<StudentAppProps> = ({
               <p className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">{program.name}</p>
             </div>
           </div>
-          <div className={`flex items-center gap-1.5 text-xs font-black px-4 py-2 rounded-2xl border transition-all ${isWorkoutActive ? 'bg-indigo-600 text-white border-indigo-600 shadow-lg shadow-indigo-600/20' : 'bg-zinc-50 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 border-zinc-100 dark:border-zinc-800'}`}>
-            <Timer size={16} className={isWorkoutActive ? 'text-white' : 'text-zinc-400 dark:text-zinc-500'} />
+          <div className={`flex items-center gap-1.5 text-xs font-black px-4 py-2 rounded-2xl border transition-all ${isWorkoutActive ? 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 border-zinc-900 dark:border-zinc-100 shadow-lg shadow-zinc-900/20' : 'bg-zinc-50 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 border-zinc-100 dark:border-zinc-800'}`}>
+            <Timer size={16} className={isWorkoutActive ? 'text-white dark:text-zinc-900' : 'text-zinc-400 dark:text-zinc-500'} />
             <span className="tabular-nums">{formatTime(seconds)}</span>
           </div>
         </div>
@@ -335,7 +335,7 @@ const StudentApp: React.FC<StudentAppProps> = ({
                 setCompletedSets({});
               }}
               className={`flex-shrink-0 min-w-[90px] px-4 py-3 rounded-2xl text-xs font-black uppercase transition-all border ${currentDayIndex === i
-                ? 'bg-indigo-600 text-white border-indigo-600 shadow-lg shadow-indigo-600/20'
+                ? 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 border-zinc-900 dark:border-zinc-100 shadow-lg shadow-zinc-900/20'
                 : 'bg-white dark:bg-zinc-900 text-zinc-400 dark:text-zinc-500 border-zinc-200 dark:border-zinc-800'
                 }`}
             >
@@ -345,11 +345,11 @@ const StudentApp: React.FC<StudentAppProps> = ({
         </div>
       )}
 
-      <div className={`bg-white dark:bg-zinc-900 rounded-[32px] p-6 border border-zinc-200 dark:border-zinc-800 flex flex-col gap-4 relative overflow-hidden shadow-sm transition-all ${isWorkoutActive ? 'ring-2 ring-indigo-500' : ''}`}>
+      <div className={`bg-white dark:bg-zinc-900 rounded-[32px] p-6 border border-zinc-200 dark:border-zinc-800 flex flex-col gap-4 relative overflow-hidden shadow-sm transition-all ${isWorkoutActive ? 'ring-2 ring-zinc-900 dark:ring-zinc-100' : ''}`}>
         <div className="relative z-10">
           <div className="flex items-center gap-2 mb-1">
-            <Zap size={14} className="text-indigo-600 dark:text-indigo-400" />
-            <span className="text-[10px] font-black uppercase text-indigo-600 dark:text-indigo-400 tracking-widest">Foco do Dia</span>
+            <Zap size={14} className="text-zinc-900 dark:text-zinc-100" />
+            <span className="text-[10px] font-black uppercase text-zinc-900 dark:text-zinc-100 tracking-widest">Foco do Dia</span>
           </div>
           <h3 className="text-2xl font-black text-zinc-900 dark:text-white leading-tight">{currentDay.label}</h3>
         </div>
@@ -396,7 +396,7 @@ const StudentApp: React.FC<StudentAppProps> = ({
             <div
               key={idx}
               className={`bg-white dark:bg-zinc-900 rounded-[28px] border transition-all ${activeExerciseIndex === idx
-                ? 'border-indigo-500 ring-4 ring-indigo-50 dark:ring-indigo-900/20 shadow-lg'
+                ? 'border-zinc-900 dark:border-zinc-100 ring-4 ring-zinc-100 dark:ring-zinc-800/50 shadow-lg'
                 : 'border-zinc-200 dark:border-zinc-800'
                 } ${isCompleted ? 'bg-zinc-50 dark:bg-zinc-800/40 border-emerald-100 dark:border-emerald-900/40' : ''}`}
             >
@@ -424,7 +424,7 @@ const StudentApp: React.FC<StudentAppProps> = ({
                     <div className="flex items-center gap-2 mt-0.5">
                       <span className={`text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-tighter ${isCompleted
                         ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400'
-                        : 'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400'
+                        : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100'
                         }`}>
                         {doneSetsCount}/{setsCount} Séries
                       </span>
@@ -438,12 +438,12 @@ const StudentApp: React.FC<StudentAppProps> = ({
                 </div>
                 <div className="flex items-center gap-2">
                   {!isCompleted && ex.videoUrl && (
-                    <div className="w-8 h-8 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-400 dark:text-indigo-500 rounded-lg flex items-center justify-center">
+                    <div className="w-8 h-8 bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 rounded-lg flex items-center justify-center">
                       <Eye size={16} />
                     </div>
                   )}
                   <div className="w-10 h-10 bg-zinc-50 dark:bg-zinc-800 rounded-xl flex items-center justify-center text-zinc-300 dark:text-zinc-600 transition-colors">
-                    <ChevronRight className={`transition-transform duration-300 ${activeExerciseIndex === idx ? 'rotate-90 text-indigo-500' : ''}`} size={18} />
+                    <ChevronRight className={`transition-transform duration-300 ${activeExerciseIndex === idx ? 'rotate-90 text-zinc-900 dark:text-zinc-100' : ''}`} size={18} />
                   </div>
                 </div>
               </div>
@@ -456,7 +456,7 @@ const StudentApp: React.FC<StudentAppProps> = ({
                     <div className="flex items-center justify-between px-1">
                       <p className="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 tracking-wider">Acompanhamento de Séries</p>
                       <div className="flex items-center gap-2">
-                        <p className="text-[10px] font-black text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 px-2 py-0.5 rounded-full transition-colors">{ex.reps} Reps</p>
+                        <p className="text-[10px] font-black text-zinc-900 dark:text-zinc-100 bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 rounded-full transition-colors">{ex.reps} Reps</p>
                         <p className="text-[10px] font-black text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 px-2 py-0.5 rounded-full flex items-center gap-1 transition-colors">
                           <Clock size={10} /> {ex.rest} Descanso
                         </p>
@@ -469,7 +469,7 @@ const StudentApp: React.FC<StudentAppProps> = ({
                           onClick={() => toggleSet(ex.name, sIdx, setsCount, ex.rest)}
                           className={`w-12 h-12 rounded-2xl flex flex-col items-center justify-center border-2 transition-all active:scale-90 ${isSetDone
                             ? 'bg-emerald-500 border-emerald-500 text-white shadow-lg shadow-emerald-500/20'
-                            : 'bg-white dark:bg-zinc-900 border-zinc-100 dark:border-zinc-800 text-zinc-400 dark:text-zinc-500 hover:border-indigo-200 dark:hover:border-indigo-900'
+                            : 'bg-white dark:bg-zinc-900 border-zinc-100 dark:border-zinc-800 text-zinc-400 dark:text-zinc-500 hover:border-zinc-300 dark:hover:border-zinc-700'
                             }`}
                         >
                           <span className="text-[9px] font-black uppercase opacity-60">Série</span>
@@ -503,7 +503,7 @@ const StudentApp: React.FC<StudentAppProps> = ({
                           });
                         }
                       }}
-                      className="w-full flex items-center justify-center gap-2 py-3 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-all border border-indigo-100 dark:border-indigo-800"
+                      className="w-full flex items-center justify-center gap-2 py-3 bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all border border-zinc-200 dark:border-zinc-700"
                     >
                       <Info size={14} />
                       {ex.videoUrl ? 'Ver Guia de Execução' : 'Como Fazer? (Guia Rápido)'}
@@ -519,7 +519,7 @@ const StudentApp: React.FC<StudentAppProps> = ({
                           placeholder={ex.weight?.toString() || "0"}
                           value={exerciseDetails[ex.name]?.weight ?? (ex.weight?.toString() || '')}
                           onChange={(e) => updateDetail(ex.name, 'weight', e.target.value)}
-                          className="w-full bg-zinc-100 dark:bg-zinc-800 border-2 border-transparent focus:border-indigo-500 dark:focus:border-indigo-500 focus:bg-white dark:focus:bg-zinc-900 rounded-2xl py-3.5 px-4 text-sm font-black text-zinc-900 dark:text-white transition-all shadow-inner"
+                          className="w-full bg-zinc-100 dark:bg-zinc-800 border-2 border-transparent focus:border-zinc-900 dark:focus:border-zinc-100 focus:bg-white dark:focus:bg-zinc-900 rounded-2xl py-3.5 px-4 text-sm font-black text-zinc-900 dark:text-white transition-all shadow-inner"
                         />
                       </div>
                     </div>
@@ -528,7 +528,7 @@ const StudentApp: React.FC<StudentAppProps> = ({
                       <select
                         value={exerciseDetails[ex.name]?.rpe || ''}
                         onChange={(e) => updateDetail(ex.name, 'rpe', e.target.value)}
-                        className="w-full bg-zinc-100 dark:bg-zinc-800 border-2 border-transparent focus:border-indigo-500 dark:focus:border-indigo-500 focus:bg-white dark:focus:bg-zinc-900 rounded-2xl py-3.5 px-4 text-sm font-black text-zinc-700 dark:text-zinc-300 transition-all shadow-inner"
+                        className="w-full bg-zinc-100 dark:bg-zinc-800 border-2 border-transparent focus:border-zinc-900 dark:focus:border-zinc-100 focus:bg-white dark:focus:bg-zinc-900 rounded-2xl py-3.5 px-4 text-sm font-black text-zinc-700 dark:text-zinc-300 transition-all shadow-inner"
                       >
                         <option value="">Selecione</option>
                         <option value="1">Muito Leve</option>
@@ -543,9 +543,9 @@ const StudentApp: React.FC<StudentAppProps> = ({
                   </div>
 
                   {ex.notes && (
-                    <div className="p-4 bg-indigo-50/50 dark:bg-indigo-900/10 rounded-2xl border border-indigo-100/50 dark:border-indigo-900/30">
-                      <p className="text-[10px] font-black text-indigo-600 dark:text-indigo-400 uppercase mb-1">Dica do Personal</p>
-                      <p className="text-xs text-indigo-900 dark:text-indigo-200 font-medium leading-relaxed italic">"{ex.notes}"</p>
+                    <div className="p-4 bg-zinc-50 dark:bg-zinc-800/40 rounded-2xl border border-zinc-100 dark:border-zinc-700">
+                      <p className="text-[10px] font-black text-zinc-900 dark:text-zinc-100 uppercase mb-1">Dica do Personal</p>
+                      <p className="text-xs text-zinc-800 dark:text-zinc-300 font-medium leading-relaxed italic">"{ex.notes}"</p>
                     </div>
                   )}
                 </div>
@@ -561,7 +561,7 @@ const StudentApp: React.FC<StudentAppProps> = ({
           <div className="bg-white dark:bg-zinc-900 w-full max-w-lg rounded-[40px] overflow-hidden relative shadow-2xl flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-300 border dark:border-zinc-800">
             <div className="p-6 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between bg-white dark:bg-zinc-900 relative z-10">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-2xl flex items-center justify-center">
+                <div className="w-10 h-10 bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 rounded-2xl flex items-center justify-center">
                   <Play size={20} fill="currentColor" />
                 </div>
                 <div>
@@ -580,7 +580,7 @@ const StudentApp: React.FC<StudentAppProps> = ({
             <div className="w-full bg-zinc-950 relative aspect-video">
               {isImageLoading && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center z-10 bg-zinc-950">
-                  <Loader2 size={32} className="text-indigo-400 animate-spin mb-2" />
+                  <Loader2 size={32} className="text-zinc-900 dark:text-zinc-100 animate-spin mb-2" />
                   <span className="text-[10px] font-black text-zinc-500 dark:text-zinc-600 uppercase tracking-widest">Carregando Guia...</span>
                 </div>
               )}
@@ -626,10 +626,10 @@ const StudentApp: React.FC<StudentAppProps> = ({
       {/* Botão Encerrar Treino */}
       {isWorkoutActive && (
         <div className="fixed bottom-24 left-4 right-4 z-[40] animate-in slide-in-from-bottom-8 duration-500">
-          <div className="bg-indigo-600 p-1 rounded-[32px] shadow-2xl shadow-indigo-600/40">
+          <div className="bg-zinc-900 dark:bg-zinc-100 p-1 rounded-[32px] shadow-2xl shadow-zinc-900/20 dark:shadow-zinc-100/10">
             <button
               onClick={handleFinish}
-              className="w-full bg-white dark:bg-zinc-900 text-indigo-600 dark:text-indigo-400 font-black uppercase text-[11px] tracking-[0.2em] py-4 rounded-[28px] flex items-center justify-center gap-3 active:scale-[0.98] transition-all hover:bg-zinc-50 dark:hover:bg-zinc-800"
+              className="w-full bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 font-black uppercase text-[11px] tracking-[0.2em] py-4 rounded-[28px] flex items-center justify-center gap-3 active:scale-[0.98] transition-all hover:bg-zinc-800 dark:hover:bg-zinc-100"
             >
               Encerrar Treino
               <ArrowRight size={18} />

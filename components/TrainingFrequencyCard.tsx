@@ -54,8 +54,8 @@ export const TrainingFrequencyCard: React.FC<TrainingFrequencyCardProps> = ({ st
                 const dateParts = h.date.split('/');
                 entryDate = new Date(parseInt(dateParts[2]), parseInt(dateParts[1]) - 1, parseInt(dateParts[0]));
             } else {
-                // Tentar ISO com new Date
-                entryDate = new Date(h.date);
+                // Tentar ISO com parseISO (evita shift de fuso horário)
+                entryDate = parseISO(h.date);
             }
 
             // Normalize time to avoid timezone edge cases when comparing
@@ -71,11 +71,11 @@ export const TrainingFrequencyCard: React.FC<TrainingFrequencyCardProps> = ({ st
         <>
             <div
                 onClick={() => setIsCalendarOpen(true)}
-                className="bg-white dark:bg-zinc-900 rounded-[32px] p-6 border border-zinc-100 dark:border-zinc-800 shadow-sm w-full transition-colors duration-300 cursor-pointer hover:border-indigo-200 dark:hover:border-indigo-800 group relative"
+                className="bg-white dark:bg-zinc-900 rounded-[32px] p-6 border border-zinc-100 dark:border-zinc-800 shadow-sm w-full transition-colors duration-300 cursor-pointer hover:border-zinc-300 dark:hover:border-zinc-700 group relative"
             >
                 <div className="flex justify-between items-center mb-4">
                     <h3 className="text-zinc-800 dark:text-white font-black text-sm uppercase tracking-tight">Frequência de Treinos</h3>
-                    <span className="text-[10px] uppercase font-bold text-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity">Ver Histórico</span>
+                    <span className="text-[10px] uppercase font-bold text-zinc-900 dark:text-zinc-100 opacity-0 group-hover:opacity-100 transition-opacity">Ver Histórico</span>
                 </div>
 
                 <div className="flex justify-between items-center">

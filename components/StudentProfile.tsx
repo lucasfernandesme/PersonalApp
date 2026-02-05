@@ -78,7 +78,7 @@ const StudentProfile: React.FC<StudentProfileProps> = ({ student, onUpdateProfil
                     </div>
                 </div>
                 <div className="bg-white dark:bg-zinc-900 p-4 rounded-[28px] border border-zinc-100 dark:border-zinc-800 shadow-sm flex flex-col items-center justify-center gap-2 transition-colors">
-                    <div className="w-10 h-10 bg-indigo-50 dark:bg-indigo-900/20 rounded-full flex items-center justify-center text-indigo-600 dark:text-indigo-400 transition-colors">
+                    <div className="w-10 h-10 bg-zinc-100 dark:bg-zinc-800 rounded-full flex items-center justify-center text-zinc-900 dark:text-zinc-100 transition-colors">
                         <GraduationCap size={20} />
                     </div>
                     <div className="text-center">

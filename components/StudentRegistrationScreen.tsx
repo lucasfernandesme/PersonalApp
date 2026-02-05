@@ -80,8 +80,8 @@ const StudentRegistrationScreen: React.FC<StudentRegistrationScreenProps> = ({ o
   return (
     <div className="fixed inset-0 z-[100] bg-zinc-50 dark:bg-zinc-950 flex flex-col animate-in slide-in-from-right duration-300 overflow-hidden">
       {/* Dynamic Header Standardized */}
-      <header className="bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between px-4 pt-4 pb-4 transition-all duration-300 relative flex-shrink-0 -mx-4 -mt-4 mb-6">
-        <button onClick={onBack} className="p-2 text-zinc-400 dark:text-zinc-500 hover:text-indigo-600 dark:hover:text-white transition-colors z-10 w-10">
+      <header className="bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between px-4 pt-[calc(1rem+env(safe-area-inset-top))] pb-4 transition-all duration-300 relative flex-shrink-0 mb-6">
+        <button onClick={onBack} className="p-2 text-zinc-400 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors z-10 w-10">
           <ArrowLeft size={24} />
         </button>
 
@@ -116,7 +116,7 @@ const StudentRegistrationScreen: React.FC<StudentRegistrationScreenProps> = ({ o
                   required
                   type="text"
                   placeholder="Nome completo"
-                  className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl pl-12 pr-6 py-4 font-bold text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:ring-2 focus:ring-indigo-500 transition-colors"
+                  className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl pl-12 pr-6 py-4 font-bold text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:ring-2 focus:ring-zinc-900 dark:focus:ring-white transition-colors"
                   value={formData.name}
                   onChange={e => setFormData({ ...formData, name: e.target.value })}
                 />
@@ -130,7 +130,7 @@ const StudentRegistrationScreen: React.FC<StudentRegistrationScreenProps> = ({ o
                   required
                   type="email"
                   placeholder="E-mail"
-                  className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl pl-12 pr-6 py-4 font-bold text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:ring-2 focus:ring-indigo-500 transition-colors"
+                  className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl pl-12 pr-6 py-4 font-bold text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:ring-2 focus:ring-zinc-900 dark:focus:ring-white transition-colors"
                   value={formData.email}
                   onChange={e => setFormData({ ...formData, email: e.target.value })}
                 />
@@ -145,7 +145,7 @@ const StudentRegistrationScreen: React.FC<StudentRegistrationScreenProps> = ({ o
                   <input
                     type="tel"
                     placeholder="(00) 00000-0000"
-                    className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl pl-12 pr-6 py-4 font-bold text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:ring-2 focus:ring-indigo-500 text-sm transition-colors"
+                    className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl pl-12 pr-6 py-4 font-bold text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:ring-2 focus:ring-zinc-900 dark:focus:ring-white text-sm transition-colors"
                     value={formData.phone}
                     onChange={e => setFormData({ ...formData, phone: formatPhone(e.target.value) })}
                   />
@@ -158,7 +158,7 @@ const StudentRegistrationScreen: React.FC<StudentRegistrationScreenProps> = ({ o
                   <input
                     type="date"
                     required
-                    className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl pl-12 pr-4 py-4 font-bold text-zinc-900 dark:text-white focus:ring-2 focus:ring-indigo-500 text-sm transition-colors"
+                    className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl pl-12 pr-4 py-4 font-bold text-zinc-900 dark:text-white focus:ring-2 focus:ring-zinc-900 dark:focus:ring-white text-sm transition-colors"
                     value={formData.birthDate}
                     onChange={e => setFormData({ ...formData, birthDate: e.target.value })}
                   />
@@ -179,7 +179,7 @@ const StudentRegistrationScreen: React.FC<StudentRegistrationScreenProps> = ({ o
                     key={g.id}
                     onClick={() => setFormData({ ...formData, gender: g.id as any })}
                     className={`p-3 rounded-2xl border-2 font-bold text-[10px] uppercase tracking-tighter transition-all ${formData.gender === g.id
-                      ? 'bg-indigo-600 text-white border-indigo-600 shadow-lg shadow-indigo-600/20'
+                      ? 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 border-zinc-900 dark:border-zinc-100 shadow-lg shadow-zinc-900/20 dark:shadow-zinc-100/10'
                       : 'bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-400 dark:text-zinc-500 hover:border-zinc-300 dark:hover:border-zinc-700'
                       }`}
                   >
@@ -200,7 +200,7 @@ const StudentRegistrationScreen: React.FC<StudentRegistrationScreenProps> = ({ o
                     key={g}
                     onClick={() => setFormData({ ...formData, goal: g })}
                     className={`p-4 rounded-2xl border-2 font-bold text-xs transition-all ${formData.goal === g
-                      ? 'bg-indigo-600 text-white border-indigo-600 shadow-lg shadow-indigo-600/20'
+                      ? 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 border-zinc-900 dark:border-zinc-100 shadow-lg shadow-zinc-900/20 dark:shadow-zinc-100/10'
                       : 'bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-400 dark:text-zinc-500 hover:border-zinc-300 dark:hover:border-zinc-700'
                       }`}
                   >
@@ -272,7 +272,7 @@ const StudentRegistrationScreen: React.FC<StudentRegistrationScreenProps> = ({ o
           )}
           <button
             onClick={handleSubmit}
-            className="flex-[2] bg-indigo-600 hover:bg-indigo-500 text-white font-black uppercase text-xs tracking-widest py-5 rounded-2xl shadow-xl shadow-indigo-600/30 flex items-center justify-center gap-2 transition-all"
+            className="flex-[2] bg-zinc-900 dark:bg-zinc-100 hover:bg-zinc-800 dark:hover:bg-white text-white dark:text-zinc-900 font-black uppercase text-xs tracking-widest py-5 rounded-2xl shadow-xl shadow-zinc-900/30 dark:shadow-zinc-100/10 flex items-center justify-center gap-2 transition-all"
           >
             {initialData ? 'Atualizar Aluno' : 'Salvar Aluno'}
             <CheckCircle2 size={18} />

@@ -216,15 +216,15 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, 
                 {onBack && (
                     <button
                         onClick={onBack}
-                        className="absolute top-6 left-6 p-2 text-zinc-400 hover:text-indigo-600 dark:text-zinc-500 dark:hover:text-white transition-colors bg-zinc-50 dark:bg-zinc-800 rounded-xl"
+                        className="absolute top-6 left-6 p-2 text-zinc-400 hover:text-zinc-900 dark:text-zinc-500 dark:hover:text-white transition-colors bg-zinc-50 dark:bg-zinc-800 rounded-xl"
                     >
                         <ArrowLeft size={20} />
                     </button>
                 )}
                 <div className="relative group cursor-pointer" onClick={() => activeModal === 'edit' && handlePhotoClick()}>
-                    <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-indigo-500 shadow-xl mb-4 relative z-10 bg-zinc-100 dark:bg-zinc-800 transition-colors">
+                    <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-zinc-900 dark:border-zinc-100 shadow-xl mb-4 relative z-10 bg-zinc-100 dark:bg-zinc-800 transition-colors">
                         <img
-                            src={user.avatar || `https://ui-avatars.com/api/?name=${user.name}&background=6366f1&color=fff`}
+                            src={user.avatar || `https://ui-avatars.com/api/?name=${user.name}&background=18181b&color=fff`}
                             alt={user.name}
                             className="w-full h-full object-cover transition-opacity group-hover:opacity-90"
                         />
@@ -232,7 +232,7 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, 
                     {/* Edit Badge for main view */}
                     <button
                         onClick={(e) => { e.stopPropagation(); setActiveModal('edit'); }}
-                        className="absolute bottom-6 right-0 p-2 bg-indigo-600 dark:bg-indigo-500 text-white rounded-xl shadow-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-colors z-20"
+                        className="absolute bottom-6 right-0 p-2 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-xl shadow-lg hover:bg-zinc-800 dark:hover:bg-white transition-colors z-20"
                     >
                         <Edit2 size={16} />
                     </button>
@@ -248,7 +248,7 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, 
                     className="bg-white dark:bg-zinc-900 p-6 rounded-[28px] border border-zinc-100 dark:border-zinc-800 shadow-sm flex items-center justify-between hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all group"
                 >
                     <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/30 rounded-2xl flex items-center justify-center text-indigo-600 dark:text-indigo-400 group-hover:bg-indigo-600 dark:group-hover:bg-indigo-500 group-hover:text-white dark:group-hover:text-white transition-colors">
+                        <div className="w-12 h-12 bg-zinc-100 dark:bg-zinc-800 rounded-2xl flex items-center justify-center text-zinc-600 dark:text-zinc-400 group-hover:bg-zinc-900 dark:group-hover:bg-zinc-100 group-hover:text-white dark:group-hover:text-zinc-900 transition-colors">
                             <User size={24} />
                         </div>
                         <div className="text-left">
@@ -256,7 +256,7 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, 
                             <p className="text-sm font-medium text-zinc-400 dark:text-zinc-500 transition-colors">Alterar dados pessoais</p>
                         </div>
                     </div>
-                    <ChevronRight className="text-zinc-300 dark:text-zinc-700 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors" />
+                    <ChevronRight className="text-zinc-300 dark:text-zinc-700 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition-colors" />
                 </button>
 
                 <button
@@ -264,7 +264,7 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, 
                     className="bg-white dark:bg-zinc-900 p-6 rounded-[28px] border border-zinc-100 dark:border-zinc-800 shadow-sm flex items-center justify-between hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all group"
                 >
                     <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/30 rounded-2xl flex items-center justify-center text-indigo-600 dark:text-indigo-400 group-hover:bg-indigo-600 dark:group-hover:bg-indigo-500 group-hover:text-white dark:group-hover:text-white transition-colors">
+                        <div className="w-12 h-12 bg-zinc-100 dark:bg-zinc-800 rounded-2xl flex items-center justify-center text-zinc-600 dark:text-zinc-400 group-hover:bg-zinc-900 dark:group-hover:bg-zinc-100 group-hover:text-white dark:group-hover:text-zinc-900 transition-colors">
                             <Calendar size={24} />
                         </div>
                         <div className="text-left">
@@ -272,7 +272,7 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, 
                             <p className="text-sm font-medium text-zinc-400 dark:text-zinc-500 transition-colors">Gerenciar horários</p>
                         </div>
                     </div>
-                    <ChevronRight className="text-zinc-300 dark:text-zinc-700 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors" />
+                    <ChevronRight className="text-zinc-300 dark:text-zinc-700 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition-colors" />
                 </button>
 
                 <button
@@ -280,7 +280,7 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, 
                     className="bg-white dark:bg-zinc-900 p-6 rounded-[28px] border border-zinc-100 dark:border-zinc-800 shadow-sm flex items-center justify-between hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all group md:col-span-2"
                 >
                     <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/30 rounded-2xl flex items-center justify-center text-indigo-600 dark:text-indigo-400 group-hover:bg-indigo-600 dark:group-hover:bg-indigo-500 group-hover:text-white dark:group-hover:text-white transition-colors">
+                        <div className="w-12 h-12 bg-zinc-100 dark:bg-zinc-800 rounded-2xl flex items-center justify-center text-zinc-600 dark:text-zinc-400 group-hover:bg-zinc-900 dark:group-hover:bg-zinc-100 group-hover:text-white dark:group-hover:text-zinc-900 transition-colors">
                             <BarChart2 size={24} />
                         </div>
                         <div className="text-left">
@@ -288,7 +288,7 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, 
                             <p className="text-sm font-medium text-zinc-400 dark:text-zinc-500 transition-colors">Filtrar e analisar atendimentos</p>
                         </div>
                     </div>
-                    <ChevronRight className="text-zinc-300 dark:text-zinc-700 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors" />
+                    <ChevronRight className="text-zinc-300 dark:text-zinc-700 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition-colors" />
                 </button>
             </div>
 
@@ -296,8 +296,8 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, 
             {activeModal === 'edit' && (
                 <div className="fixed inset-0 z-50 bg-black/60 dark:bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200 overflow-y-auto">
                     <div className="bg-white dark:bg-zinc-900 rounded-[32px] w-full max-w-lg shadow-2xl p-6 relative max-h-[90vh] overflow-y-auto border dark:border-zinc-800 transition-colors">
-                        <div className="flex items-center justify-between mb-6 sticky top-0 bg-white dark:bg-zinc-900 z-10 pb-4 border-b border-zinc-50 dark:border-zinc-800 transition-colors">
-                            <button onClick={() => setActiveModal(null)} className="flex items-center gap-2 text-zinc-400 dark:text-zinc-500 hover:text-indigo-600 dark:hover:text-indigo-400 font-bold text-xs uppercase tracking-widest transition-colors">
+                        <div className="flex items-center justify-between mb-6 sticky top-0 bg-white dark:bg-zinc-900 z-10 pt-[env(safe-area-inset-top)] pb-4 border-b border-zinc-50 dark:border-zinc-800 transition-colors">
+                            <button onClick={() => setActiveModal(null)} className="flex items-center gap-2 text-zinc-400 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 font-bold text-xs uppercase tracking-widest transition-colors">
                                 <ArrowLeft size={18} />
                                 Voltar
                             </button>
@@ -311,7 +311,7 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, 
                             {/* Foto Upload */}
                             <div className="flex flex-col items-center justify-center mb-6">
                                 <div className="relative group cursor-pointer" onClick={handlePhotoClick}>
-                                    <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-indigo-100 dark:border-indigo-900/50 group-hover:border-indigo-200 dark:group-hover:border-indigo-500 transition-all">
+                                    <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-zinc-100 dark:border-zinc-800 group-hover:border-zinc-900 dark:group-hover:border-zinc-100 transition-all">
                                         <img
                                             src={user.avatar || `https://ui-avatars.com/api/?name=${user.name}&background=6366f1&color=fff`}
                                             className="w-full h-full object-cover"
@@ -321,7 +321,7 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, 
                                         <Camera className="text-white" size={24} />
                                     </div>
                                 </div>
-                                <p className="text-xs font-bold text-indigo-600 dark:text-indigo-400 mt-2 cursor-pointer transition-colors" onClick={handlePhotoClick}>Alterar Foto</p>
+                                <p className="text-zinc-900 dark:text-zinc-100 mt-2 cursor-pointer transition-colors font-bold text-xs uppercase underline" onClick={handlePhotoClick}>Alterar Foto</p>
                                 <input
                                     type="file"
                                     ref={fileInputRef}
@@ -339,7 +339,7 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, 
                                         name="name"
                                         value={formData.name}
                                         onChange={handleInputChange}
-                                        className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800 border-none rounded-2xl font-bold text-zinc-800 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:ring-2 focus:ring-indigo-500 transition-colors"
+                                        className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800 border-none rounded-2xl font-bold text-zinc-800 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 transition-colors"
                                         placeholder="Seu nome"
                                     />
                                 </div>
@@ -350,7 +350,7 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, 
                                         name="surname"
                                         value={formData.surname}
                                         onChange={handleInputChange}
-                                        className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800 border-none rounded-2xl font-bold text-zinc-800 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:ring-2 focus:ring-indigo-500 transition-colors"
+                                        className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800 border-none rounded-2xl font-bold text-zinc-800 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 transition-colors"
                                         placeholder="Sobrenome"
                                     />
                                 </div>
@@ -363,7 +363,7 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, 
                                     name="email"
                                     value={formData.email}
                                     onChange={handleInputChange}
-                                    className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800 border-none rounded-2xl font-bold text-zinc-800 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:ring-2 focus:ring-indigo-500 transition-colors"
+                                    className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800 border-none rounded-2xl font-bold text-zinc-800 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 transition-colors"
                                     placeholder="seu@email.com"
                                 />
                             </div>
@@ -376,7 +376,7 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, 
                                         name="instagram"
                                         value={formData.instagram}
                                         onChange={handleInputChange}
-                                        className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800 border-none rounded-2xl font-bold text-zinc-800 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:ring-2 focus:ring-indigo-500 transition-colors"
+                                        className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800 border-none rounded-2xl font-bold text-zinc-800 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 transition-colors"
                                         placeholder="@usuario"
                                     />
                                 </div>
@@ -387,7 +387,7 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, 
                                         name="cref"
                                         value={formData.cref}
                                         onChange={handleInputChange}
-                                        className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800 border-none rounded-2xl font-bold text-zinc-800 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:ring-2 focus:ring-indigo-500 transition-colors"
+                                        className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800 border-none rounded-2xl font-bold text-zinc-800 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 transition-colors"
                                         placeholder="000000-G/UF"
                                     />
                                 </div>
@@ -400,7 +400,7 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, 
                                     name="whatsapp"
                                     value={formData.whatsapp}
                                     onChange={handleInputChange}
-                                    className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800 border-none rounded-2xl font-bold text-zinc-800 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:ring-2 focus:ring-indigo-500 transition-colors"
+                                    className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800 border-none rounded-2xl font-bold text-zinc-800 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 transition-colors"
                                     placeholder="(00) 00000-0000"
                                 />
                             </div>
@@ -414,13 +414,13 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, 
                                             name="password"
                                             value={formData.password}
                                             onChange={handleInputChange}
-                                            className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800 border-none rounded-2xl font-bold text-zinc-800 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:ring-2 focus:ring-indigo-500 pr-10 transition-colors"
+                                            className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800 border-none rounded-2xl font-bold text-zinc-800 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 pr-10 transition-colors"
                                             placeholder="••••••"
                                         />
                                         <button
                                             type="button"
                                             onClick={() => setShowPassword(!showPassword)}
-                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-zinc-500 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
                                         >
                                             {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                                         </button>
@@ -433,7 +433,7 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, 
                                         name="confirmPassword"
                                         value={formData.confirmPassword}
                                         onChange={handleInputChange}
-                                        className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800 border-none rounded-2xl font-bold text-zinc-800 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:ring-2 focus:ring-indigo-500 transition-colors"
+                                        className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800 border-none rounded-2xl font-bold text-zinc-800 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 transition-colors"
                                         placeholder="••••••"
                                     />
                                 </div>
@@ -443,7 +443,7 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, 
                                 <button
                                     onClick={handleSaveProfile}
                                     disabled={isSavingLocal}
-                                    className="w-full py-4 bg-indigo-600 dark:bg-indigo-500 text-white font-black rounded-2xl shadow-lg shadow-indigo-600/20 hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
+                                    className="w-full py-4 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 font-black rounded-2xl shadow-lg shadow-zinc-900/20 dark:shadow-zinc-100/10 hover:bg-zinc-800 dark:hover:bg-white transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
                                 >
                                     {isSavingLocal ? (
                                         <>

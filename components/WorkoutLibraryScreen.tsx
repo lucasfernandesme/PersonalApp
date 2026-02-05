@@ -97,7 +97,7 @@ const WorkoutLibraryScreen: React.FC<WorkoutLibraryScreenProps> = ({
                 <div className="relative">
                     <button
                         onClick={() => setShowAddMenu(!showAddMenu)}
-                        className="bg-indigo-600 text-white p-4 rounded-2xl shadow-lg shadow-indigo-600/20 active:scale-95 transition-all flex items-center gap-2 hover:bg-indigo-500"
+                        className="bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 p-4 rounded-2xl shadow-lg shadow-zinc-900/20 dark:shadow-zinc-100/10 active:scale-95 transition-all flex items-center gap-2 hover:bg-zinc-800 dark:hover:bg-white"
                     >
                         <Plus size={20} />
                         <span className="font-black uppercase text-xs tracking-widest">Adicionar</span>
@@ -112,7 +112,7 @@ const WorkoutLibraryScreen: React.FC<WorkoutLibraryScreenProps> = ({
                                 }}
                                 className="w-full px-4 py-3 text-left text-sm font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-700 flex items-center gap-3 transition-colors"
                             >
-                                <Dumbbell size={18} className="text-indigo-600 dark:text-indigo-400" />
+                                <Dumbbell size={18} className="text-zinc-900 dark:text-zinc-100" />
                                 Novo Treino
                             </button>
                             {!currentFolderId && (
@@ -182,7 +182,7 @@ const WorkoutLibraryScreen: React.FC<WorkoutLibraryScreenProps> = ({
                 <input
                     type="text"
                     placeholder="Buscar"
-                    className="w-full pl-12 pr-6 py-5 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-[24px] text-sm font-bold shadow-sm text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-500 focus:border-transparent transition-all"
+                    className="w-full pl-12 pr-6 py-5 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-[24px] text-sm font-bold shadow-sm text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 focus:border-transparent transition-all"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -228,15 +228,15 @@ const WorkoutLibraryScreen: React.FC<WorkoutLibraryScreenProps> = ({
                     filteredTemplates.map(template => (
                         <div
                             key={template.id}
-                            className="bg-white dark:bg-zinc-900 p-5 rounded-[32px] border border-zinc-200 dark:border-zinc-800 flex flex-col gap-4 shadow-sm hover:shadow-md hover:border-indigo-100 dark:hover:border-indigo-900 transition-all group"
+                            className="bg-white dark:bg-zinc-900 p-5 rounded-[32px] border border-zinc-200 dark:border-zinc-800 flex flex-col gap-4 shadow-sm hover:shadow-md hover:border-zinc-300 dark:hover:border-zinc-700 transition-all group"
                         >
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-4">
-                                    <div className="w-14 h-14 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-2xl flex items-center justify-center">
+                                    <div className="w-14 h-14 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 rounded-2xl flex items-center justify-center">
                                         <BookOpen size={28} />
                                     </div>
                                     <div>
-                                        <h4 className="font-black text-zinc-800 dark:text-white text-lg group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">{template.name}</h4>
+                                        <h4 className="font-black text-zinc-800 dark:text-white text-lg group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition-colors">{template.name}</h4>
                                         <div className="flex items-center gap-2 mt-1">
                                             <span className="text-[10px] font-black uppercase text-zinc-400 bg-zinc-50 dark:bg-zinc-800 px-2 py-0.5 rounded-md">
                                                 {template.split.length} Dias
@@ -261,7 +261,7 @@ const WorkoutLibraryScreen: React.FC<WorkoutLibraryScreenProps> = ({
                                     )}
                                     <button
                                         onClick={() => setEditingTemplate(template)}
-                                        className="p-3 bg-zinc-50 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 rounded-xl hover:bg-indigo-50 dark:hover:bg-indigo-900/30 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all"
+                                        className="p-3 bg-zinc-50 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-700 hover:text-zinc-900 dark:hover:text-zinc-100 transition-all"
                                         title="Editar Template"
                                     >
                                         <Edit3 size={18} />
@@ -279,7 +279,7 @@ const WorkoutLibraryScreen: React.FC<WorkoutLibraryScreenProps> = ({
                             {onUseInStudent && (
                                 <button
                                     onClick={() => onUseInStudent(template)}
-                                    className="w-full py-3 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200 border border-zinc-100 dark:border-zinc-800 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-indigo-600 dark:hover:bg-indigo-600 hover:text-white dark:hover:text-white hover:border-indigo-600 dark:hover:border-indigo-600 transition-all flex items-center justify-center gap-2"
+                                    className="w-full py-3 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200 border border-zinc-100 dark:border-zinc-800 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-zinc-900 dark:hover:bg-zinc-100 hover:text-white dark:hover:text-zinc-900 hover:border-zinc-900 dark:hover:border-zinc-100 transition-all flex items-center justify-center gap-2"
                                 >
                                     <Copy size={16} />
                                     Usar no Aluno

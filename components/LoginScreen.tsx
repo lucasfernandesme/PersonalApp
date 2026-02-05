@@ -55,7 +55,9 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin }) => {
 
       } else {
         // Login de Aluno
-        const student = students.find(s => s.email.toLowerCase() === email.toLowerCase());
+        const inputEmail = email.trim().toLowerCase();
+        const student = students.find(s => s.email.toLowerCase() === inputEmail);
+
         if (student && password === '123456') {
           onLogin({
             id: student.id,
@@ -65,6 +67,10 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin }) => {
             avatar: student.avatar
           });
         } else {
+          if (!student) {
+            console.log("Aluno não encontrado na lista. Email buscado:", inputEmail);
+            console.log("Lista de alunos disponível:", students.map(s => s.email));
+          }
           setError('Aluno não encontrado ou senha padrão (123456) incorreta.');
         }
       }
@@ -125,7 +131,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin }) => {
       <div className="w-full max-w-md space-y-8 animate-in fade-in duration-500">
         <div className="text-center space-y-2">
           <div className="mb-6 hover:scale-105 transition-transform duration-300">
-            <img src="/logo.jpg" alt="PersonalFlow" className="w-24 h-24 rounded-full shadow-2xl shadow-indigo-500/20 mx-auto" />
+            <img src="/logo.jpg" alt="PersonalFlow" className="w-24 h-24 rounded-full shadow-2xl shadow-zinc-900/20 dark:shadow-white/10 mx-auto" />
           </div>
           <h1 className="text-4xl font-black text-slate-900 dark:text-white tracking-tighter transition-colors">PersonalFlow</h1>
           <p className="text-slate-400 dark:text-zinc-500 font-bold uppercase text-[10px] tracking-[0.3em] transition-colors">
@@ -148,7 +154,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin }) => {
               <button
                 onClick={() => setRole(UserRole.STUDENT)}
                 className={`flex-1 flex items-center justify-center gap-2 py-4 rounded-[24px] text-xs font-black uppercase tracking-widest transition-all ${role === UserRole.STUDENT
-                  ? 'bg-indigo-600 dark:bg-indigo-500 text-white shadow-lg'
+                  ? 'bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 shadow-lg'
                   : 'text-slate-400 dark:text-zinc-500 hover:bg-slate-50 dark:hover:bg-zinc-800'}`}
               >
                 <UserCircle size={16} />
@@ -159,25 +165,25 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin }) => {
             <form onSubmit={handleLogin} className="space-y-4">
               <div className="space-y-2">
                 <div className="relative group">
-                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 dark:text-zinc-600 group-focus-within:text-indigo-600 dark:group-focus-within:text-indigo-400 transition-colors" size={20} />
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 dark:text-zinc-600 group-focus-within:text-zinc-900 dark:group-focus-within:text-zinc-100 transition-colors" size={20} />
                   <input
                     type="email"
                     placeholder="E-mail"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="w-full bg-white dark:bg-zinc-800 border-2 border-slate-50 dark:border-zinc-800 rounded-[24px] pl-12 pr-6 py-5 font-bold text-slate-900 dark:text-white focus:border-indigo-600 dark:focus:border-indigo-500 transition-all outline-none placeholder:text-slate-300 dark:placeholder:text-zinc-600"
+                    className="w-full bg-white dark:bg-zinc-800 border-2 border-slate-50 dark:border-zinc-800 rounded-[24px] pl-12 pr-6 py-5 font-bold text-slate-900 dark:text-white focus:border-zinc-900 dark:focus:border-white transition-all outline-none placeholder:text-slate-300 dark:placeholder:text-zinc-600"
                   />
                 </div>
                 <div className="relative group">
-                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 dark:text-zinc-600 group-focus-within:text-indigo-600 dark:group-focus-within:text-indigo-400 transition-colors" size={20} />
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 dark:text-zinc-600 group-focus-within:text-zinc-900 dark:group-focus-within:text-zinc-100 transition-colors" size={20} />
                   <input
                     type="password"
                     placeholder="Senha"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    className="w-full bg-white dark:bg-zinc-800 border-2 border-slate-50 dark:border-zinc-800 rounded-[24px] pl-12 pr-6 py-5 font-bold text-slate-900 dark:text-white focus:border-indigo-600 dark:focus:border-indigo-500 transition-all outline-none placeholder:text-slate-300 dark:placeholder:text-zinc-600"
+                    className="w-full bg-white dark:bg-zinc-800 border-2 border-slate-50 dark:border-zinc-800 rounded-[24px] pl-12 pr-6 py-5 font-bold text-slate-900 dark:text-white focus:border-zinc-900 dark:focus:border-white transition-all outline-none placeholder:text-slate-300 dark:placeholder:text-zinc-600"
                   />
                 </div>
               </div>
@@ -191,7 +197,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin }) => {
                 disabled={isLoading}
                 className={`w-full py-5 rounded-[24px] font-black uppercase text-xs tracking-[0.2em] flex items-center justify-center gap-3 shadow-2xl transition-all active:scale-95 ${role === UserRole.TRAINER
                   ? 'bg-zinc-900 dark:bg-white shadow-zinc-900/20 dark:shadow-white/10 text-white dark:text-zinc-900'
-                  : 'bg-indigo-600 dark:bg-indigo-500 shadow-indigo-600/20 text-white'
+                  : 'bg-zinc-900 dark:bg-white shadow-zinc-900/20 dark:shadow-white/10 text-white dark:text-zinc-900'
                   } disabled:opacity-50`}
               >
                 {isLoading ? <Loader2 className="animate-spin" size={20} /> : <>Entrar no App <ChevronRight size={18} /></>}
@@ -202,7 +208,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin }) => {
               {role === UserRole.TRAINER ? (
                 <button
                   onClick={() => setIsRegistering(true)}
-                  className="text-[10px] font-black uppercase tracking-widest text-indigo-600 dark:text-indigo-400 hover:underline transition-colors"
+                  className="text-[10px] font-black uppercase tracking-widest text-zinc-900 dark:text-white hover:underline transition-colors"
                 >
                   Criar Conta Personal
                 </button>
@@ -232,7 +238,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin }) => {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   required
-                  className="w-full bg-white dark:bg-zinc-800 border-2 border-slate-50 dark:border-zinc-800 rounded-[24px] px-6 py-4 font-bold text-slate-900 dark:text-white focus:border-indigo-600 dark:focus:border-indigo-500 transition-all outline-none placeholder:text-slate-300 dark:placeholder:text-zinc-600"
+                  className="w-full bg-white dark:bg-zinc-800 border-2 border-slate-50 dark:border-zinc-800 rounded-[24px] px-6 py-4 font-bold text-slate-900 dark:text-white focus:border-zinc-900 dark:focus:border-white transition-all outline-none placeholder:text-slate-300 dark:placeholder:text-zinc-600"
                 />
                 <input
                   type="email"
@@ -240,7 +246,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin }) => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="w-full bg-white dark:bg-zinc-800 border-2 border-slate-50 dark:border-zinc-800 rounded-[24px] px-6 py-4 font-bold text-slate-900 dark:text-white focus:border-indigo-600 dark:focus:border-indigo-500 transition-all outline-none placeholder:text-slate-300 dark:placeholder:text-zinc-600"
+                  className="w-full bg-white dark:bg-zinc-800 border-2 border-slate-50 dark:border-zinc-800 rounded-[24px] px-6 py-4 font-bold text-slate-900 dark:text-white focus:border-zinc-900 dark:focus:border-white transition-all outline-none placeholder:text-slate-300 dark:placeholder:text-zinc-600"
                 />
                 <input
                   type="password"
@@ -248,7 +254,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin }) => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="w-full bg-white dark:bg-zinc-800 border-2 border-slate-50 dark:border-zinc-800 rounded-[24px] px-6 py-4 font-bold text-slate-900 dark:text-white focus:border-indigo-600 dark:focus:border-indigo-500 transition-all outline-none placeholder:text-slate-300 dark:placeholder:text-zinc-600"
+                  className="w-full bg-white dark:bg-zinc-800 border-2 border-slate-50 dark:border-zinc-800 rounded-[24px] px-6 py-4 font-bold text-slate-900 dark:text-white focus:border-zinc-900 dark:focus:border-white transition-all outline-none placeholder:text-slate-300 dark:placeholder:text-zinc-600"
                 />
               </div>
 
@@ -257,7 +263,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin }) => {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-5 bg-indigo-600 dark:bg-indigo-500 text-white rounded-[24px] font-black uppercase text-xs tracking-[0.2em] flex items-center justify-center gap-3 shadow-2xl shadow-indigo-600/20 active:scale-95 disabled:opacity-50"
+                className="w-full py-5 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 shadow-2xl shadow-zinc-900/20 dark:shadow-white/10 active:scale-95 disabled:opacity-50"
               >
                 {isLoading ? <Loader2 className="animate-spin" size={20} /> : <>Criar Conta na Nuvem <Cloud size={18} /></>}
               </button>

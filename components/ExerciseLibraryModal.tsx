@@ -49,13 +49,13 @@ const ExerciseLibraryModal: React.FC<ExerciseLibraryModalProps> = ({ onSelect, o
             <label className="text-[10px] font-black uppercase text-slate-400 dark:text-slate-500 ml-1 mb-2 block transition-colors">Filtrar por Categoria</label>
             <button
               onClick={() => setIsComboOpen(!isComboOpen)}
-              className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-800 rounded-2xl px-5 py-4 flex items-center justify-between group hover:border-indigo-200 dark:hover:border-indigo-500/50 transition-all active:scale-[0.99]"
+              className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-800 rounded-2xl px-5 py-4 flex items-center justify-between group hover:border-zinc-300 dark:hover:border-zinc-700 transition-all active:scale-[0.99]"
             >
               <div className="flex items-center gap-3">
-                <div className="w-2 h-2 rounded-full bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.5)]"></div>
+                <div className="w-2 h-2 rounded-full bg-zinc-400 shadow-[0_0_8px_rgba(161,161,170,0.5)]"></div>
                 <span className="font-bold text-slate-700 dark:text-slate-200">{selectedCategory}</span>
               </div>
-              <ChevronDown className={`text-slate-400 transition-transform duration-300 ${isComboOpen ? 'rotate-180 text-indigo-500' : ''}`} size={20} />
+              <ChevronDown className={`text-slate-400 transition-transform duration-300 ${isComboOpen ? 'rotate-180 text-zinc-900 dark:text-zinc-100' : ''}`} size={20} />
             </button>
 
             {isComboOpen && (
@@ -74,7 +74,7 @@ const ExerciseLibraryModal: React.FC<ExerciseLibraryModalProps> = ({ onSelect, o
                           setIsComboOpen(false);
                         }}
                         className={`w-full text-left px-4 py-3 rounded-xl text-xs font-black uppercase tracking-wide transition-all flex items-center justify-between ${selectedCategory === cat
-                          ? 'bg-indigo-600 dark:bg-indigo-500 text-white'
+                          ? 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900'
                           : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700'
                           }`}
                       >
@@ -95,7 +95,7 @@ const ExerciseLibraryModal: React.FC<ExerciseLibraryModalProps> = ({ onSelect, o
               placeholder="Buscar por nome do exercício..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-800 rounded-[20px] pl-12 pr-6 py-4 font-bold placeholder:text-slate-300 dark:placeholder:text-slate-600 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:bg-white dark:focus:bg-slate-900 transition-all shadow-sm dark:shadow-none dark:text-slate-200"
+              className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-800 rounded-[20px] pl-12 pr-6 py-4 font-bold placeholder:text-slate-300 dark:placeholder:text-slate-600 focus:ring-2 focus:ring-zinc-900 dark:focus:ring-white focus:bg-white dark:focus:bg-zinc-900 transition-all shadow-sm dark:shadow-none dark:text-slate-200"
             />
           </div>
         </div>
@@ -111,14 +111,14 @@ const ExerciseLibraryModal: React.FC<ExerciseLibraryModalProps> = ({ onSelect, o
               className="w-full p-4 bg-white dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800/50 rounded-2xl flex items-center justify-between active:bg-slate-50 dark:active:bg-slate-800 active:scale-[0.98] transition-all group"
             >
               <div className="flex items-center gap-4">
-                <div className="w-10 h-10 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-xl flex items-center justify-center group-hover:bg-indigo-600 dark:group-hover:bg-indigo-500 group-hover:text-white dark:group-hover:text-white transition-colors">
+                <div className="w-10 h-10 bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 rounded-xl flex items-center justify-center group-hover:bg-zinc-900 dark:group-hover:bg-zinc-100 group-hover:text-white dark:group-hover:text-zinc-900 transition-colors">
                   <Dumbbell size={20} />
                 </div>
                 <div className="text-left">
                   <div className="flex items-center gap-2">
                     <p className="font-bold text-slate-800 dark:text-white text-sm transition-colors">{ex.name}</p>
                     {ex.videoUrl && (
-                      <div className="text-indigo-400 dark:text-indigo-500 flex items-center gap-1" title="Possui guia visual">
+                      <div className="text-zinc-400 dark:text-zinc-500 flex items-center gap-1" title="Possui guia visual">
                         <Eye size={12} />
                       </div>
                     )}
