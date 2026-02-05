@@ -131,7 +131,7 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ students, onClose, on
   return (
     <div className="fixed inset-0 z-[60] bg-zinc-50 dark:bg-zinc-950 flex flex-col md:inset-4 md:rounded-[40px] md:shadow-2xl md:max-w-md md:mx-auto md:overflow-hidden animate-in slide-in-from-bottom duration-300 transition-all overflow-hidden">
       {/* Dynamic Header Standardized */}
-      <header className="bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between px-4 pt-4 pb-4 transition-all duration-300 relative flex-shrink-0 -mx-4 -mt-4 mb-6">
+      <header className="bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between px-4 pt-[calc(1rem+env(safe-area-inset-top))] pb-4 transition-all duration-300 relative flex-shrink-0 mb-6">
         <button onClick={step === 1 ? onClose : () => setStep(s => s - 1)} className="p-2 text-zinc-400 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors z-10 w-10">
           <ArrowLeft size={24} />
         </button>

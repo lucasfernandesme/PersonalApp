@@ -113,17 +113,17 @@ const Layout: React.FC<LayoutProps> = ({ children, role, onSwitchRole, onNavigat
       </aside>
 
       {/* Mobile Top Header */}
-      <header className="md:hidden bg-white dark:bg-zinc-900 border-b border-slate-200 dark:border-zinc-800 min-h-[5rem] flex items-end justify-between px-4 sticky top-0 z-40 transition-colors duration-300 pt-[calc(3.5rem+env(safe-area-inset-top))] pb-3 relative">
-        <button onClick={toggleTheme} className="text-slate-400 p-2 z-10">
+      <header className="md:hidden bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between px-4 sticky top-0 z-40 transition-all duration-300 pt-[calc(1rem+env(safe-area-inset-top))] pb-4 relative">
+        <button onClick={toggleTheme} className="text-slate-400 p-2 z-10 w-10">
           {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
         </button>
 
-        <div className="absolute left-1/2 -translate-x-1/2 bottom-3 flex items-center gap-2">
+        <div className="flex items-center gap-2">
           <img src="/logo.jpg" alt="PersonalFlow" className="w-8 h-8 rounded-full shadow-sm" />
           <span className="font-extrabold text-slate-900 dark:text-white tracking-tight">PersonalFlow</span>
         </div>
 
-        <button onClick={onSwitchRole} className="text-slate-400 p-2 z-10">
+        <button onClick={onSwitchRole} className="text-slate-400 p-2 z-10 w-10 flex justify-end">
           <LogoutIcon size={20} />
         </button>
       </header>

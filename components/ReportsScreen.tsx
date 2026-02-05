@@ -66,7 +66,7 @@ const ReportsScreen: React.FC<ReportsScreenProps> = ({ events, students, onClose
         <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
             <div className="flex flex-col min-h-full">
                 {/* Standardized Brand Header */}
-                <header className="bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between px-4 py-3 transition-all duration-300 relative flex-shrink-0 mb-4">
+                <header className="bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between px-4 pt-[calc(1rem+env(safe-area-inset-top))] pb-4 transition-all duration-300 relative flex-shrink-0 mb-4">
                     <div className="w-10"></div> {/* Placeholder for symmetry */}
 
                     <div className="flex items-center gap-2">
