@@ -14,6 +14,9 @@ export interface AuthUser {
   instagram?: string;
   whatsapp?: string;
   cref?: string;
+  // Subscription info
+  subscriptionStatus?: string;
+  subscriptionEndDate?: string;
 }
 
 export interface Exercise {

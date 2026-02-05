@@ -24,10 +24,13 @@ import { WorkoutFolder, WorkoutTemplate, Student, StudentFile } from './types';
 import { ArrowLeft, Settings, Loader2, RefreshCw, CheckCircle2, X, Dumbbell, ArrowRight, Zap, Award, ChevronRight, Plus, Edit2, Trash2, User, Calendar, FileText, MessageCircle } from 'lucide-react';
 import { TrainingFrequencyCard } from './components/TrainingFrequencyCard';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { useAuth } from './contexts/AuthContext';
+import SubscriptionScreen from './components/SubscriptionScreen';
 
 const STORAGE_KEY_AUTH = 'fitai_pro_auth_session';
 
 const App: React.FC = () => {
+  const { subscriptionStatus, loading: authLoading } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
@@ -114,6 +117,8 @@ const App: React.FC = () => {
             instagram: trainerData.instagram || authUser.instagram,
             whatsapp: trainerData.whatsapp || authUser.whatsapp,
             cref: trainerData.cref || authUser.cref,
+            subscriptionStatus: trainerData.subscriptionStatus,
+            subscriptionEndDate: trainerData.subscriptionEndDate,
           };
           setAuthUser(updatedUser);
         }
@@ -878,6 +883,10 @@ const App: React.FC = () => {
         <p className="text-slate-400 dark:text-zinc-500 font-black uppercase text-[10px] tracking-widest">Carregando PersonalFlow...</p>
       </div>
     );
+  }
+
+  if (authUser?.role === UserRole.TRAINER && subscriptionStatus && subscriptionStatus !== 'active') {
+    return <SubscriptionScreen />;
   }
 
   if (!authUser) {

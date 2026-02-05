@@ -6,6 +6,9 @@ interface AuthContextType {
     session: Session | null;
     user: User | null;
     loading: boolean;
+    subscriptionStatus: string | null;
+    subscriptionEndDate: string | null;
+    refreshSubscription: () => Promise<void>;
     signOut: () => Promise<void>;
 }
 
@@ -15,19 +18,46 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [session, setSession] = useState<Session | null>(null);
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
+    const [subscriptionStatus, setSubscriptionStatus] = useState<string | null>(null);
+    const [subscriptionEndDate, setSubscriptionEndDate] = useState<string | null>(null);
+
+    const refreshSubscription = async () => {
+        if (user?.email) {
+            const { data } = await supabase
+                .from('trainers')
+                .select('subscription_status, subscription_end_date')
+                .eq('email', user.email)
+                .single();
+
+            if (data) {
+                setSubscriptionStatus(data.subscription_status);
+                setSubscriptionEndDate(data.subscription_end_date);
+            }
+        }
+    };
 
     useEffect(() => {
         // Check active session
         supabase.auth.getSession().then(({ data: { session } }) => {
             setSession(session);
             setUser(session?.user ?? null);
-            setLoading(false);
+            if (session?.user) {
+                refreshSubscription();
+            } else {
+                setLoading(false);
+            }
         });
 
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
             setSession(session);
             setUser(session?.user ?? null);
-            setLoading(false);
+            if (session?.user) {
+                refreshSubscription();
+            } else {
+                setSubscriptionStatus(null);
+                setSubscriptionEndDate(null);
+                setLoading(false);
+            }
         });
 
         return () => subscription.unsubscribe();
@@ -41,6 +71,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         session,
         user,
         loading,
+        subscriptionStatus,
+        subscriptionEndDate,
+        refreshSubscription,
         signOut,
     };
 

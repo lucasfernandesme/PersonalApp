@@ -196,7 +196,13 @@ export const DataService = {
       .eq('email', email)
       .single();
 
-    return data;
+    if (!data) return null;
+
+    return {
+      ...data,
+      subscriptionStatus: data.subscription_status,
+      subscriptionEndDate: data.subscription_end_date
+    };
   },
 
   async updateTrainer(trainer: Partial<AuthUser>): Promise<void> {
