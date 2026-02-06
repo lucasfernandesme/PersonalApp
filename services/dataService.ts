@@ -18,17 +18,23 @@ export const DataService = {
   },
 
   // --- ALUNOS ---
-  async getStudents(): Promise<Student[]> {
+  async getStudents(trainerId?: string): Promise<Student[]> {
     if (!supabase) {
       const data = localStorage.getItem('fitai_pro_students');
       return data ? JSON.parse(data) : [];
     }
 
     // Traz também dados do trainer (join)
-    const { data, error } = await supabase
+    let query = supabase
       .from('students')
       .select('*, trainers:trainer_id(*)')
       .order('name');
+
+    if (trainerId) {
+      query = query.eq('trainer_id', trainerId);
+    }
+
+    const { data, error } = await query;
 
     if (error) {
       console.error("Erro Supabase:", error);
@@ -108,16 +114,25 @@ export const DataService = {
   },
 
   // --- EXERCÍCIOS ---
-  async getLibraryExercises(): Promise<LibraryExercise[]> {
+  async getLibraryExercises(trainerId?: string): Promise<LibraryExercise[]> {
     if (!supabase) {
       const data = localStorage.getItem('fitai_pro_custom_exercises');
       const custom = data ? JSON.parse(data) : [];
       return [...EXERCISES_DB, ...custom];
     }
 
-    const { data, error } = await supabase.from('exercises').select('*');
+    let query = supabase.from('exercises').select('*');
+    if (trainerId) {
+      query = query.or(`trainer_id.eq.${trainerId},trainer_id.is.null`);
+    }
+
+    const { data, error } = await query;
     if (error) {
-      console.error("Erro ao buscar exercícios:", error);
+      if (error.message?.includes('AbortError')) {
+        console.warn("Busca de exercícios abortada (provável refresh).");
+      } else {
+        console.error("Erro ao buscar exercícios:", error);
+      }
       return EXERCISES_DB;
     }
 
@@ -234,12 +249,16 @@ export const DataService = {
 
 
   // --- TEMPLATES DE TREINO ---
-  async getWorkoutFolders(): Promise<WorkoutFolder[]> {
+  async getWorkoutFolders(trainerId?: string): Promise<WorkoutFolder[]> {
     if (!supabase) {
       const data = localStorage.getItem('fitai_pro_workout_folders');
       return data ? JSON.parse(data) : [];
     }
-    const { data, error } = await supabase.from('workout_folders').select('*');
+    let query = supabase.from('workout_folders').select('*');
+    if (trainerId) {
+      query = query.eq('trainer_id', trainerId);
+    }
+    const { data, error } = await query;
     if (error) return [];
     return data.map(f => ({
       id: f.id,
@@ -277,12 +296,16 @@ export const DataService = {
     await supabase.from('workout_folders').delete().eq('id', id);
   },
 
-  async getWorkoutTemplates(): Promise<WorkoutTemplate[]> {
+  async getWorkoutTemplates(trainerId?: string): Promise<WorkoutTemplate[]> {
     if (!supabase) {
       const data = localStorage.getItem('fitai_pro_workout_templates');
       return data ? JSON.parse(data) : [];
     }
-    const { data, error } = await supabase.from('workout_templates').select('*');
+    let query = supabase.from('workout_templates').select('*');
+    if (trainerId) {
+      query = query.eq('trainer_id', trainerId);
+    }
+    const { data, error } = await query;
     if (error) return [];
     return data.map(t => ({
       ...t,

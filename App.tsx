@@ -30,8 +30,18 @@ import SubscriptionScreen from './components/SubscriptionScreen';
 const STORAGE_KEY_AUTH = 'fitai_pro_auth_session';
 
 const App: React.FC = () => {
-  const { subscriptionStatus, loading: authLoading } = useAuth();
-  const [isLoading, setIsLoading] = useState(true);
+  const { user: supabaseUser, subscriptionStatus, loading: authLoading } = useAuth();
+  const [authUser, setAuthUser] = useState<AuthUser | null>(() => {
+    const saved = localStorage.getItem(STORAGE_KEY_AUTH);
+    return saved ? JSON.parse(saved) : null;
+  });
+
+  const [isLoading, setIsLoading] = useState(() => {
+    // Se temos um usuário salvo, começamos carregando. Caso contrário, não.
+    const saved = localStorage.getItem(STORAGE_KEY_AUTH);
+    return !!saved;
+  });
+
   const [isSaving, setIsSaving] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
@@ -39,11 +49,6 @@ const App: React.FC = () => {
     setToast({ message, type });
     setTimeout(() => setToast(null), 3000);
   }, []);
-
-  const [authUser, setAuthUser] = useState<AuthUser | null>(() => {
-    const saved = localStorage.getItem(STORAGE_KEY_AUTH);
-    return saved ? JSON.parse(saved) : null;
-  });
 
   const [activeView, setActiveView] = useState<'dashboard' | 'register' | 'exercises' | 'edit-student' | 'student-stats' | 'library'>('dashboard');
   const [activeTab, setActiveTab] = useState<'home' | 'students' | 'evolution' | 'chat' | 'workout' | 'profile'>('home');
@@ -64,8 +69,9 @@ const App: React.FC = () => {
   const [expandedWorkoutId, setExpandedWorkoutId] = useState<string | null>(null);
 
   const reloadStudents = useCallback(async () => {
+    if (!authUser?.id) return;
     try {
-      const loadedStudents = await DataService.getStudents();
+      const loadedStudents = await DataService.getStudents(authUser.id);
       setStudents(loadedStudents);
 
       setSelectedStudent(prev => {
@@ -75,76 +81,117 @@ const App: React.FC = () => {
     } catch (err) {
       console.error("Erro ao recarregar alunos:", err);
     }
-  }, []);
+  }, [authUser?.id]);
 
   const reloadExercises = useCallback(async () => {
     try {
-      const loadedExercises = await DataService.getLibraryExercises();
+      const loadedExercises = await DataService.getLibraryExercises(authUser?.id);
       setCustomExercises(loadedExercises);
     } catch (err) {
       console.error("Erro ao recarregar exercícios:", err);
     }
-  }, []);
+  }, [authUser?.id]);
 
   const reloadTemplates = useCallback(async () => {
+    if (!authUser?.id) return;
     try {
-      const loaded = await DataService.getWorkoutTemplates();
+      const loaded = await DataService.getWorkoutTemplates(authUser.id);
       setWorkoutTemplates(loaded);
     } catch (err) {
       console.error("Erro ao recarregar templates:", err);
     }
-  }, []);
+  }, [authUser?.id]);
 
   const reloadFolders = useCallback(async () => {
+    if (!authUser?.id) return;
     try {
-      const loaded = await DataService.getWorkoutFolders();
+      const loaded = await DataService.getWorkoutFolders(authUser.id);
       setWorkoutFolders(loaded);
     } catch (err) {
       console.error("Erro ao recarregar pastas:", err);
     }
-  }, []);
+  }, [authUser?.id]);
 
   const refreshProfile = useCallback(async () => {
     if (authUser && authUser.role === UserRole.TRAINER && DataService.isCloudActive()) {
       try {
         const trainerData = await DataService.findTrainer(authUser.email);
         if (trainerData) {
-          const updatedUser: AuthUser = {
-            ...authUser,
-            name: trainerData.name || authUser.name,
-            surname: trainerData.surname || authUser.surname,
-            avatar: trainerData.avatar || authUser.avatar,
-            instagram: trainerData.instagram || authUser.instagram,
-            whatsapp: trainerData.whatsapp || authUser.whatsapp,
-            cref: trainerData.cref || authUser.cref,
-            subscriptionStatus: trainerData.subscriptionStatus,
-            subscriptionEndDate: trainerData.subscriptionEndDate,
-          };
-          setAuthUser(updatedUser);
+          // Só atualiza se houver mudança real para evitar loop infinito
+          const hasChanged =
+            trainerData.name !== authUser.name ||
+            trainerData.surname !== authUser.surname ||
+            trainerData.subscriptionStatus !== authUser.subscriptionStatus ||
+            trainerData.subscriptionEndDate !== authUser.subscriptionEndDate ||
+            trainerData.instagram !== authUser.instagram ||
+            trainerData.whatsapp !== authUser.whatsapp;
+
+          if (hasChanged) {
+            setAuthUser(prev => prev ? {
+              ...prev,
+              name: trainerData.name || prev.name,
+              surname: trainerData.surname || prev.surname,
+              avatar: trainerData.avatar || prev.avatar,
+              instagram: trainerData.instagram || prev.instagram,
+              whatsapp: trainerData.whatsapp || prev.whatsapp,
+              cref: trainerData.cref || prev.cref,
+              subscriptionStatus: trainerData.subscriptionStatus,
+              subscriptionEndDate: trainerData.subscriptionEndDate,
+            } : null);
+          }
         }
       } catch (err) {
         console.error("Erro ao atualizar perfil do trainer:", err);
       }
     }
-  }, [authUser]);
+  }, [authUser?.email, authUser?.name, authUser?.subscriptionStatus]); // Dependências mais granulares
+  const [loadingTakingTooLong, setLoadingTakingTooLong] = useState(false);
 
   useEffect(() => {
-    const loadData = async () => {
+    let mounted = true;
+    if (!authUser) {
+      setIsLoading(false);
+      return;
+    }
+
+    // Se já temos alunos e não é um novo usuário (ID mudou), não precisamos forçar o loading visual pesado
+    // Isso evita o "flash" de carregamento se for apenas um refresh de perfil
+    if (students.length === 0) {
       setIsLoading(true);
+    }
+
+    setLoadingTakingTooLong(false);
+
+    // Safety check: if loading takes > 10s, show a retry button
+    const timeoutId = setTimeout(() => {
+      if (mounted && isLoading) {
+        setLoadingTakingTooLong(true);
+      }
+    }, 10000);
+
+    const loadData = async () => {
       try {
-        await refreshProfile();
-        await reloadStudents();
-        await reloadExercises();
-        await reloadTemplates();
-        await reloadFolders();
+        await Promise.allSettled([
+          refreshProfile(),
+          reloadStudents(),
+          reloadExercises(),
+          reloadTemplates(),
+          reloadFolders()
+        ]);
       } catch (err) {
         console.error("Erro ao carregar dados:", err);
       } finally {
-        setIsLoading(false);
+        if (mounted) {
+          clearTimeout(timeoutId);
+          setIsLoading(false);
+          setLoadingTakingTooLong(false);
+        }
       }
     };
+
     loadData();
-  }, []);
+    return () => { mounted = false; clearTimeout(timeoutId); };
+  }, [authUser?.id]); // CRÍTICO: Depender apenas do ID para evitar loops infinitos
 
   useEffect(() => {
     if (authUser) {
@@ -154,7 +201,24 @@ const App: React.FC = () => {
     }
   }, [authUser]);
 
+  // Sync Supabase Auth with app-wide authUser state for Trainers
+  useEffect(() => {
+    // Só limpamos o estado se authLoading terminar DEFINITIVAMENTE e não houver usuário
+    // Adicionamos um pequeno delay defensivo para evitar "flashes" de deslogado durante transições
+    if (!authLoading) {
+      const timer = setTimeout(() => {
+        if (!supabaseUser && authUser?.role === UserRole.TRAINER) {
+          console.log('Sessão Supabase confirmada como encerrada, limpando estado local...');
+          setAuthUser(null);
+          setIsLoading(false);
+        }
+      }, 500); // 500ms de tolerância para o Supabase se estabilizar
+      return () => clearTimeout(timer);
+    }
+  }, [supabaseUser, authLoading, authUser]);
+
   const handleLogin = (user: AuthUser) => {
+    setIsLoading(true); // Garante que ao logar, o useEffect de loadData seja "notado"
     setAuthUser(user);
     setActiveTab('home');
     setActiveView('dashboard');
@@ -866,6 +930,7 @@ const App: React.FC = () => {
     return (
       <TrainerDashboard
         students={students}
+        trainerName={authUser?.name}
         onSelectStudent={(s) => { setSelectedStudent(s); setSelectedStudentView('dashboard'); setActiveTab('students'); }}
         onOpenOnboarding={() => setIsOnboardingOpen(true)}
         onOpenExerciseManager={() => setActiveView('exercises')}
@@ -878,14 +943,29 @@ const App: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 dark:bg-zinc-950">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 dark:bg-zinc-950 p-6 text-center">
         <Loader2 className="w-12 h-12 text-zinc-900 dark:text-zinc-100 animate-spin mb-4" />
-        <p className="text-slate-400 dark:text-zinc-500 font-black uppercase text-[10px] tracking-widest">Carregando PersonalFlow...</p>
+        <p className="text-slate-400 dark:text-zinc-500 font-black uppercase text-[10px] tracking-widest mb-4">Carregando PersonalFlow...</p>
+
+        {loadingTakingTooLong && (
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <p className="text-zinc-500 dark:text-zinc-400 text-sm font-medium mb-4 max-w-xs">
+              O carregamento está demorando mais que o esperado. Verifique sua conexão.
+            </p>
+            <button
+              onClick={() => window.location.reload()}
+              className="px-6 py-3 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl text-xs font-black uppercase tracking-widest text-zinc-900 dark:text-white shadow-sm hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all active:scale-95 flex items-center gap-2 mx-auto"
+            >
+              <RefreshCw size={14} />
+              Recarregar App
+            </button>
+          </div>
+        )}
       </div>
     );
   }
 
-  if (authUser?.role === UserRole.TRAINER && !authLoading && subscriptionStatus !== 'active') {
+  if (authUser?.role === UserRole.TRAINER && !authLoading && (!subscriptionStatus || subscriptionStatus !== 'active')) {
     return <SubscriptionScreen />;
   }
 
@@ -1016,7 +1096,6 @@ const App: React.FC = () => {
                   setSelectedStudentView('dashboard');
                   setActiveTab('students');
                 }
-
                 setIsStudentSelectorOpen(false);
                 setPendingTemplate(null);
               }

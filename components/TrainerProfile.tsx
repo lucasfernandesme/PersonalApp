@@ -1,10 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { User, Calendar, Edit2, CheckCircle2, ChevronRight, X, Camera, Eye, EyeOff, BarChart2, Loader2, ArrowLeft, CreditCard } from 'lucide-react';
+import { User, Calendar, Edit2, CheckCircle2, ChevronRight, X, Camera, Eye, EyeOff, BarChart2, Loader2, ArrowLeft, CreditCard, RefreshCw, Zap } from 'lucide-react';
 import { AuthUser, ScheduleEvent } from '../types'; // Import ScheduleEvent
 import AgendaScreen from './AgendaScreen';
 import ScheduleEventModal from './ScheduleEventModal';
 import ReportsScreen from './ReportsScreen';
-import { DataService } from '../services/dataService'; // Assuming DataService will handle fetching students
+import { DataService } from '../services/dataService';
+import { useAuth } from '../contexts/AuthContext';
+import { supabase } from '../services/supabase';
 
 interface TrainerProfileProps {
     user: AuthUser;
@@ -12,8 +14,17 @@ interface TrainerProfileProps {
     onBack?: () => void;
 }
 
+const statusMap: Record<string, { label: string; color: string }> = {
+    'active': { label: 'Ativo', color: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' },
+    'past_due': { label: 'Pendente', color: 'bg-amber-500/10 text-amber-500 border-amber-500/20' },
+    'canceled': { label: 'Cancelado', color: 'bg-red-500/10 text-red-500 border-red-500/20' },
+    'unpaid': { label: 'Inativo', color: 'bg-zinc-500/10 text-zinc-500 border-zinc-500/20' },
+};
+
 const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, onBack }) => {
+    const { subscriptionStatus, subscriptionEndDate, refreshSubscription, session } = useAuth();
     const [activeModal, setActiveModal] = useState<'edit' | 'schedule' | 'reports' | 'subscription' | null>(null);
+    const [isRedirecting, setIsRedirecting] = useState(false);
 
     // Agenda State
     const [events, setEvents] = useState<ScheduleEvent[]>([]);
@@ -26,7 +37,7 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, 
     // Load initial data for students and agenda
     useEffect(() => {
         // Load Students for selector
-        DataService.getStudents().then(setStudents);
+        DataService.getStudents(user.id).then(setStudents);
 
         // Load Agenda Events from Cloud
         if (user?.id) {
@@ -120,6 +131,96 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, 
     };
 
 
+
+    const handleSubscribe = async () => {
+        setIsRedirecting(true);
+        console.log('Iniciando handleSubscribe via Direct Fetch...');
+
+        try {
+            // Garante sessão fresca
+            const { data: { session: freshSession } } = await supabase.auth.refreshSession();
+            const sessionToUse = freshSession || session;
+            if (!sessionToUse) throw new Error('Sessão não encontrada. Por favor, saia e entre novamente.');
+
+            const functionUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-checkout-session`;
+            const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+            console.log('[DEBUG] URL:', functionUrl);
+            console.log('[DEBUG] Key Prefix:', anonKey?.substring(0, 10));
+            console.log('[DEBUG] Token Prefix:', sessionToUse.access_token.substring(0, 10));
+
+            const response = await fetch(functionUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${sessionToUse.access_token}`,
+                    'apikey': anonKey
+                },
+                body: JSON.stringify({ priceId: 'price_1SxYEd2ZxwvErFzHuO5bLQLA' })
+            });
+
+            console.log('Status da resposta:', response.status);
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.error || `Erro do servidor (Status: ${response.status})`);
+            }
+
+            const data = await response.json();
+            if (data?.url) {
+                window.location.href = data.url;
+            } else {
+                throw new Error('Não recebi o link de pagamento do servidor.');
+            }
+        } catch (err: any) {
+            console.error('Erro detalhado no checkout:', err);
+            alert(`[DIRECT FETCH] Erro ao iniciar pagamento: ${err.message}`);
+        } finally {
+            setIsRedirecting(false);
+        }
+    };
+
+    const handleManageSubscription = async () => {
+        setIsSavingLocal(true);
+        try {
+            const { data: { session: freshSession } } = await supabase.auth.refreshSession();
+            const sessionToUse = freshSession || session;
+            if (!sessionToUse) throw new Error('Sessão não encontrada');
+
+            const functionUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-portal-session`;
+            const response = await fetch(functionUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${sessionToUse.access_token}`,
+                    'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY
+                }
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.error || 'Erro ao abrir portal');
+            }
+
+            const data = await response.json();
+            if (data?.url) {
+                window.location.href = data.url;
+            }
+        } catch (err: any) {
+            alert(err.message);
+        } finally {
+            setIsSavingLocal(false);
+        }
+    };
+    const handleRefreshStatus = async () => {
+        setIsSavingLocal(true);
+        try {
+            await refreshSubscription();
+            alert('Status atualizado!');
+        } finally {
+            setIsSavingLocal(false);
+        }
+    };
+
     // Form States
     const [formData, setFormData] = useState({
         name: user.name || '',
@@ -165,7 +266,7 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, 
 
             // Verificar tamanho (limitar a 2MB para base64)
             if (file.size > 2 * 1024 * 1024) {
-                alert('A imagem é muito grande. Escolha uma imagem de até 2MB.');
+                alert('[DIRECT FETCH] A imagem é muito grande. Escolha uma imagem de até 2MB.');
                 return;
             }
 
@@ -277,15 +378,31 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, 
 
                 <button
                     onClick={() => setActiveModal('reports')}
-                    className="bg-white dark:bg-zinc-900 p-6 rounded-[28px] border border-zinc-100 dark:border-zinc-800 shadow-sm flex items-center justify-between hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all group md:col-span-2"
+                    className="bg-white dark:bg-zinc-900 p-6 rounded-[28px] border border-zinc-100 dark:border-zinc-800 shadow-sm flex items-center justify-between hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all group"
                 >
                     <div className="flex items-center gap-4">
                         <div className="w-12 h-12 bg-zinc-100 dark:bg-zinc-800 rounded-2xl flex items-center justify-center text-zinc-600 dark:text-zinc-400 group-hover:bg-zinc-900 dark:group-hover:bg-zinc-100 group-hover:text-white dark:group-hover:text-zinc-900 transition-colors">
                             <BarChart2 size={24} />
                         </div>
                         <div className="text-left">
-                            <h3 className="font-black text-zinc-900 dark:text-white text-lg transition-colors">Relatórios de Aulas</h3>
-                            <p className="text-sm font-medium text-zinc-400 dark:text-zinc-500 transition-colors">Filtrar e analisar atendimentos</p>
+                            <h3 className="font-black text-zinc-900 dark:text-white text-lg transition-colors">Relatórios</h3>
+                            <p className="text-sm font-medium text-zinc-400 dark:text-zinc-500 transition-colors">Analisar aulas</p>
+                        </div>
+                    </div>
+                    <ChevronRight className="text-zinc-300 dark:text-zinc-700 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition-colors" />
+                </button>
+
+                <button
+                    onClick={() => setActiveModal('subscription')}
+                    className="bg-white dark:bg-zinc-900 p-6 rounded-[28px] border border-zinc-100 dark:border-zinc-800 shadow-sm flex items-center justify-between hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all group"
+                >
+                    <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-zinc-100 dark:bg-zinc-800 rounded-2xl flex items-center justify-center text-zinc-600 dark:text-zinc-400 group-hover:bg-zinc-900 dark:group-hover:bg-zinc-100 group-hover:text-white dark:group-hover:text-zinc-900 transition-colors">
+                            <CreditCard size={24} />
+                        </div>
+                        <div className="text-left">
+                            <h3 className="font-black text-zinc-900 dark:text-white text-lg transition-colors">Assinatura</h3>
+                            <p className="text-sm font-medium text-zinc-400 dark:text-zinc-500 transition-colors">Plano Pro</p>
                         </div>
                     </div>
                     <ChevronRight className="text-zinc-300 dark:text-zinc-700 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition-colors" />
@@ -522,18 +639,56 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, 
                             <div className="bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl p-6 border border-zinc-100 dark:border-zinc-800 mb-8">
                                 <div className="flex items-center justify-between mb-2">
                                     <span className="text-xs font-black text-zinc-400 dark:text-zinc-500 uppercase">Status do Plano</span>
-                                    <span className="px-3 py-1 bg-emerald-500/10 text-emerald-500 rounded-full text-[10px] font-black uppercase tracking-wider border border-emerald-500/20">Ativo</span>
+                                    <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border ${statusMap[subscriptionStatus || 'unpaid']?.color || statusMap['unpaid'].color}`}>
+                                        {statusMap[subscriptionStatus || 'unpaid']?.label || 'Inativo'}
+                                    </span>
                                 </div>
                                 <div className="text-lg font-black text-zinc-900 dark:text-white">Plano Personal Pro</div>
-                                <p className="text-xs text-zinc-500 dark:text-zinc-400">Assinatura Mensal (R$ 10,90/mês)</p>
+                                {subscriptionEndDate && (
+                                    <p className="text-xs text-zinc-500 dark:text-zinc-400">Expira em: {new Date(subscriptionEndDate).toLocaleDateString('pt-BR')}</p>
+                                )}
                             </div>
 
-                            <button
-                                onClick={() => setActiveModal(null)}
-                                className="w-full py-4 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 font-black rounded-2xl shadow-lg hover:opacity-90 transition-all active:scale-95"
-                            >
-                                OK, Entendi
-                            </button>
+                            <div className="space-y-3">
+                                {subscriptionStatus !== 'active' ? (
+                                    <button
+                                        onClick={handleSubscribe}
+                                        disabled={isRedirecting}
+                                        className="w-full py-4 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 font-black rounded-2xl shadow-lg hover:opacity-90 transition-all active:scale-95 flex items-center justify-center gap-2"
+                                    >
+                                        {isRedirecting ? (
+                                            <>
+                                                <Loader2 className="animate-spin" size={20} />
+                                                Redirecionando...
+                                            </>
+                                        ) : (
+                                            'ASSINAR PRO PLAN'
+                                        )}
+                                    </button>
+                                ) : (
+                                    <button
+                                        onClick={handleManageSubscription}
+                                        disabled={isSavingLocal}
+                                        className="w-full py-4 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 font-black rounded-2xl shadow-lg hover:opacity-90 transition-all active:scale-95 flex items-center justify-center gap-2"
+                                    >
+                                        {isSavingLocal ? (
+                                            <Loader2 className="animate-spin" size={20} />
+                                        ) : (
+                                            <Zap size={20} />
+                                        )}
+                                        {isSavingLocal ? 'Abrindo...' : 'GERENCIAR ASSINATURA'}
+                                    </button>
+                                )}
+
+                                <button
+                                    onClick={handleRefreshStatus}
+                                    disabled={isSavingLocal}
+                                    className="w-full py-3 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 font-bold rounded-2xl hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all flex items-center justify-center gap-2 text-xs uppercase"
+                                >
+                                    {isSavingLocal ? <Loader2 className="animate-spin" size={14} /> : <RefreshCw size={14} />}
+                                    Atualizar Status
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

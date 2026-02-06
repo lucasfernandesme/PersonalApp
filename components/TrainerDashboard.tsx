@@ -14,6 +14,7 @@ import { Student } from '../types';
 
 interface TrainerDashboardProps {
   students: Student[]; // Lista agora vem de fora
+  trainerName?: string;
   onSelectStudent: (student: Student) => void;
   onOpenOnboarding: () => void;
   onOpenExerciseManager: () => void;
@@ -24,6 +25,7 @@ interface TrainerDashboardProps {
 
 const TrainerDashboard: React.FC<TrainerDashboardProps> = ({
   students,
+  trainerName,
   onSelectStudent,
   onOpenOnboarding,
   onOpenExerciseManager,
@@ -60,7 +62,7 @@ const TrainerDashboard: React.FC<TrainerDashboardProps> = ({
               if (hour < 12) return 'Bom dia';
               if (hour < 18) return 'Boa tarde';
               return 'Boa noite';
-            })()}, Lucas
+            })()}, {trainerName || 'Professor'}
           </h2>
         </div>
       )}

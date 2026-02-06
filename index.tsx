@@ -13,11 +13,11 @@ if (!rootElement) {
 
 const root = ReactDOM.createRoot(rootElement);
 root.render(
-  <React.StrictMode>
-    <AuthProvider>
-      <ThemeProvider>
-        <App />
-      </ThemeProvider>
-    </AuthProvider>
-  </React.StrictMode>
+  // <React.StrictMode>
+  <AuthProvider>
+    <ThemeProvider>
+      <App />
+    </ThemeProvider>
+  </AuthProvider>
+  // </React.StrictMode>
 );

@@ -1,28 +1,89 @@
 import React from 'react';
-import { CreditCard, Rocket, CheckCircle2, ShieldCheck, Zap, ArrowRight, Loader2 } from 'lucide-react';
+import { CreditCard, Rocket, CheckCircle2, ShieldCheck, Zap, ArrowRight, Loader2, RefreshCw } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../services/supabase';
 
 const SubscriptionScreen: React.FC = () => {
-    const { user, subscriptionStatus, subscriptionEndDate, signOut } = useAuth();
+    const { user, subscriptionStatus, subscriptionEndDate, signOut, session, refreshSubscription } = useAuth();
     const [isRedirecting, setIsRedirecting] = React.useState(false);
+    const [isRefreshing, setIsRefreshing] = React.useState(false);
 
     const handleSubscribe = async () => {
+        console.log('Iniciando handleSubscribe...');
         setIsRedirecting(true);
+
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 20000); // 20s timeout
+
         try {
-            // Here we would call the Supabase Edge Function to create a checkout session
-            const { data, error } = await supabase.functions.invoke('create-checkout-session', {
-                body: { priceId: 'price_1SxYEd2ZxwvErFzHuO5bLQLA' },
+            console.log('Garantindo sessão fresca...');
+            // Tenta dar um refresh na sessão para evitar 401 (token expirado)
+            const { data: { session: freshSession }, error: refreshError } = await supabase.auth.refreshSession();
+
+            if (refreshError) {
+                console.warn('Não foi possível dar refresh na sessão, tentando usar a atual:', refreshError);
+            }
+
+            const sessionToUse = freshSession || session;
+
+            if (!sessionToUse) {
+                throw new Error('Sessão não encontrada. Por favor, saia e entre novamente no app.');
+            }
+
+            console.log('Invocando função create-checkout-session via Direct Fetch...');
+            const functionUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-checkout-session`;
+            const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+            console.log('[DEBUG] URL:', functionUrl);
+            console.log('[DEBUG] Key Prefix:', anonKey?.substring(0, 10));
+            console.log('[DEBUG] Token Prefix:', sessionToUse.access_token.substring(0, 10));
+
+            const response = await fetch(functionUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${sessionToUse.access_token}`,
+                    'apikey': anonKey
+                },
+                body: JSON.stringify({ priceId: 'price_1SxYEd2ZxwvErFzHuO5bLQLA' })
             });
 
-            if (error) throw error;
-            if (data?.url) {
-                window.location.href = data.url;
+            clearTimeout(timeoutId);
+            console.log('Status da resposta:', response.status);
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                console.error('Erro na resposta:', errorData);
+                throw new Error(errorData.error || `Erro do servidor (Status: ${response.status})`);
             }
-        } catch (err) {
-            console.error('Erro ao iniciar checkout:', err);
-            alert('Ocorreu um erro ao iniciar o checkout. Por favor, tente novamente.');
-        } finally {
+
+            const data = await response.json();
+            console.log('Resposta completa:', data);
+
+            if (data?.url) {
+                console.log('Redirecionando para Stripe:', data.url);
+                window.location.href = data.url;
+            } else if (data?.error) {
+                throw new Error(data.error);
+            } else {
+                throw new Error('Não recebi o link de pagamento do servidor.');
+            }
+        } catch (err: any) {
+            clearTimeout(timeoutId);
+            console.error('Erro detalhado no checkout:', err);
+
+            let message = 'Não conseguimos iniciar o pagamento.';
+            if (err.name === 'AbortError') {
+                message = 'A conexão demorou muito. Verifique sua internet.';
+            } else if (err.message) {
+                if (err.message.includes('401')) {
+                    message = 'Sua sessão expirou (Erro 401). Por favor, clique em "Sair da conta" e entre novamente.';
+                } else {
+                    message = err.message;
+                }
+            }
+
+            alert(`[DIRECT FETCH] ${message}`);
             setIsRedirecting(false);
         }
     };
@@ -36,6 +97,40 @@ const SubscriptionScreen: React.FC = () => {
 
     const currentStatus = subscriptionStatus && statusMap[subscriptionStatus] ? statusMap[subscriptionStatus] : statusMap['unpaid'];
     const StatusIcon = currentStatus.icon;
+
+    const handleManageSubscription = async () => {
+        setIsRefreshing(true);
+        try {
+            const { data: { session: freshSession } } = await supabase.auth.refreshSession();
+            const sessionToUse = freshSession || session;
+
+            if (!sessionToUse) throw new Error('Sessão não encontrada');
+
+            const functionUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-portal-session`;
+            const response = await fetch(functionUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${sessionToUse.access_token}`,
+                    'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY
+                }
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.error || 'Erro ao abrir portal de gerenciamento');
+            }
+
+            const data = await response.json();
+            if (data?.url) {
+                window.location.href = data.url;
+            }
+        } catch (err: any) {
+            alert(err.message);
+        } finally {
+            setIsRefreshing(false);
+        }
+    };
 
     return (
         <div className="min-h-screen bg-zinc-50 dark:bg-black p-6 flex flex-col items-center justify-center animate-in fade-in duration-500">
@@ -80,26 +175,101 @@ const SubscriptionScreen: React.FC = () => {
                     </div>
 
                     {(!subscriptionStatus || subscriptionStatus !== 'active') ? (
-                        <button
-                            onClick={handleSubscribe}
-                            disabled={isRedirecting}
-                            className="w-full py-5 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 font-black rounded-3xl shadow-xl shadow-zinc-900/20 dark:shadow-white/10 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 group"
-                        >
-                            {isRedirecting ? (
-                                <>
-                                    <Loader2 size={24} className="animate-spin" />
-                                    Redirecionando...
-                                </>
-                            ) : (
-                                <>
-                                    ASSINAR POR R$ 10,90/MÊS
-                                    <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
-                                </>
-                            )}
-                        </button>
+                        <>
+                            <button
+                                onClick={handleSubscribe}
+                                disabled={isRedirecting}
+                                className="w-full py-5 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 font-black rounded-3xl shadow-xl shadow-zinc-900/20 dark:shadow-white/10 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 group"
+                            >
+                                {isRedirecting ? (
+                                    <>
+                                        <Loader2 size={24} className="animate-spin" />
+                                        Redirecionando...
+                                    </>
+                                ) : (
+                                    <>
+                                        ASSINAR POR R$ 10,90/MÊS
+                                        <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                                    </>
+                                )}
+                            </button>
+
+                            <button
+                                onClick={async () => {
+                                    if (isRefreshing) return;
+                                    console.log('Verificando status manualmente...');
+                                    setIsRefreshing(true);
+                                    try {
+                                        let data = await refreshSubscription();
+
+                                        if (data?.subscription_status === 'active') {
+                                            alert('Sucesso! Sua assinatura Pro está ativa. Aproveite!');
+                                        } else {
+                                            // SELF-HEALING: Tenta forçar a sincronização via Edge Function
+                                            console.log('Status local inativo. Tentando Self-Healing com Stripe...');
+
+                                            const { data: { session: currentSession } } = await supabase.auth.getSession();
+                                            if (currentSession) {
+                                                const syncResponse = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/sync-subscription`, {
+                                                    method: 'POST',
+                                                    headers: {
+                                                        'Content-Type': 'application/json',
+                                                        'Authorization': `Bearer ${currentSession.access_token}`,
+                                                        'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY
+                                                    }
+                                                });
+
+                                                const syncData = await syncResponse.json();
+                                                console.log('Self-Healing result:', syncData);
+
+                                                if (syncData.fixed && syncData.status === 'active') {
+                                                    // Sincronização forçada funcionou! Atualiza local.
+                                                    data = await refreshSubscription();
+                                                    if (data?.subscription_status === 'active') {
+                                                        alert('Sucesso! Pagamento confirmado e ativado automaticamente.');
+                                                        return;
+                                                    }
+                                                }
+                                            }
+
+                                            alert('Status verificado, mas o pagamento ainda não foi processado pelo Stripe. Se você já pagou, pode levar alguns minutos para atualizar automaticamente.');
+                                        }
+                                    } catch (err) {
+                                        console.error(err);
+                                        alert('Não conseguimos verificar o status agora. Tente novamente em alguns instantes.');
+                                    } finally {
+                                        setIsRefreshing(false);
+                                    }
+                                }}
+                                disabled={isRefreshing || isRedirecting}
+                                className="w-full mt-4 py-4 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 font-black rounded-3xl hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all flex items-center justify-center gap-2 text-xs uppercase tracking-widest disabled:opacity-50"
+                            >
+                                {isRefreshing ? (
+                                    <Loader2 size={16} className="animate-spin" />
+                                ) : (
+                                    <RefreshCw size={16} />
+                                )}
+                                {isRefreshing ? 'Verificando...' : 'Já paguei, verificar status'}
+                            </button>
+                        </>
                     ) : (
-                        <div className="text-zinc-400 dark:text-zinc-500 text-xs font-bold">
-                            Próxima renovação em {new Date(subscriptionEndDate!).toLocaleDateString('pt-BR')}
+                        <div className="space-y-4">
+                            <div className="text-zinc-400 dark:text-zinc-500 text-xs font-bold">
+                                Próxima renovação em {subscriptionEndDate ? new Date(subscriptionEndDate).toLocaleDateString('pt-BR') : '...'}
+                            </div>
+
+                            <button
+                                onClick={handleManageSubscription}
+                                disabled={isRefreshing}
+                                className="w-full py-4 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 font-black rounded-3xl hover:scale-[1.02] transition-all flex items-center justify-center gap-2 text-xs uppercase tracking-widest"
+                            >
+                                {isRefreshing ? (
+                                    <Loader2 size={16} className="animate-spin" />
+                                ) : (
+                                    <Zap size={16} />
+                                )}
+                                {isRefreshing ? 'Abrindo...' : 'Gerenciar Assinatura'}
+                            </button>
                         </div>
                     )}
 

@@ -1,5 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.7";
-import Stripe from "https://esm.sh/stripe@11.1.0?target=deno";
+import Stripe from "https://esm.sh/stripe@14.16.0?target=denonext";
 
 const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") ?? "", {
     apiVersion: "2022-11-15",
@@ -17,10 +17,11 @@ Deno.serve(async (req) => {
     }
 
     try {
+        const authHeader = req.headers.get("Authorization");
         const supabaseClient = createClient(
             Deno.env.get("SUPABASE_URL") ?? "",
             Deno.env.get("SUPABASE_ANON_KEY") ?? "",
-            { global: { headers: { Authorization: req.headers.get("Authorization")! } } }
+            { global: { headers: { Authorization: authHeader || "" } } }
         );
 
         const { data: { user } } = await supabaseClient.auth.getUser();
@@ -58,6 +59,11 @@ Deno.serve(async (req) => {
             mode: "subscription",
             success_url: `${req.headers.get("origin")}/?payment=success`,
             cancel_url: `${req.headers.get("origin")}/?payment=cancel`,
+            subscription_data: {
+                metadata: {
+                    supabase_id: user.id // CRITICAL: This allows robust mapping in webhook
+                }
+            }
         });
 
         return new Response(JSON.stringify({ url: session.url }), {
