@@ -62,6 +62,40 @@ export const DataService = {
     });
   },
 
+  async getStudentById(id: string): Promise<Student | null> {
+    if (!supabase) {
+      const students = await this.getStudents();
+      return students.find(s => s.id === id) || null;
+    }
+
+    const { data, error } = await supabase
+      .from('students')
+      .select('*, trainers:trainer_id(*)')
+      .eq('id', id)
+      .single();
+
+    if (error || !data) {
+      console.error("Erro ao buscar aluno por ID:", error);
+      return null;
+    }
+
+    const trainer = data.trainers;
+
+    return {
+      ...data,
+      phone: data.phone || '',
+      birthDate: data.birth_date || '',
+      gender: data.gender || '',
+      isActive: data.is_active !== false,
+      height: data.height || '',
+      weight: data.weight || '',
+      trainerName: trainer ? `${trainer.name} ${trainer.surname || ''}`.trim() : undefined,
+      trainerAvatar: trainer?.avatar,
+      trainerInstagram: trainer?.instagram,
+      trainerWhatsapp: trainer?.whatsapp
+    };
+  },
+
   async saveStudent(student: Student, trainerId?: string): Promise<void> {
     if (!supabase) {
       const students = await this.getStudents();

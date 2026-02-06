@@ -58,7 +58,9 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin }) => {
         const inputEmail = email.trim().toLowerCase();
         const student = students.find(s => s.email.toLowerCase() === inputEmail);
 
-        if (student && password === '123456') {
+        const validPassword = student.password || '123456';
+
+        if (student && password === validPassword) {
           onLogin({
             id: student.id,
             name: student.name,

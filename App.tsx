@@ -71,17 +71,32 @@ const App: React.FC = () => {
   const reloadStudents = useCallback(async () => {
     if (!authUser?.id) return;
     try {
-      const loadedStudents = await DataService.getStudents(authUser.id);
-      setStudents(loadedStudents);
+      if (authUser.role === UserRole.STUDENT) {
+        // Se for aluno, carrega apenas os dados dele mesmo
+        const myself = await DataService.getStudentById(authUser.id);
+        setStudents(myself ? [myself] : []);
 
-      setSelectedStudent(prev => {
-        if (!prev) return null;
-        return loadedStudents.find(s => s.id === prev.id) || null;
-      });
+        // Atualiza seleção se necessário
+        if (myself) {
+          setSelectedStudent(prev => {
+            // Mantém a seleção se já estiver selecionado ou seleciona automaticamente se for o único
+            return prev?.id === myself.id ? myself : myself;
+          });
+        }
+      } else {
+        // Se for Trainer, carrega todos os alunos dele
+        const loadedStudents = await DataService.getStudents(authUser.id);
+        setStudents(loadedStudents);
+
+        setSelectedStudent(prev => {
+          if (!prev) return null;
+          return loadedStudents.find(s => s.id === prev.id) || null;
+        });
+      }
     } catch (err) {
       console.error("Erro ao recarregar alunos:", err);
     }
-  }, [authUser?.id]);
+  }, [authUser?.id, authUser?.role]);
 
   const reloadExercises = useCallback(async () => {
     try {
@@ -668,13 +683,13 @@ const App: React.FC = () => {
                         </div>
                         <div className="bg-white dark:bg-zinc-900 p-4 rounded-2xl border border-zinc-100 dark:border-zinc-800">
                           <p className="text-[9px] font-black uppercase text-zinc-400 dark:text-zinc-500 mb-1">Senha (Padrão CPF)</p>
-                          <p className="font-mono font-bold text-zinc-900 dark:text-white select-all">{selectedStudent.password || '******'}</p>
+                          <p className="font-mono font-bold text-zinc-900 dark:text-white select-all">{selectedStudent.password || '123456'}</p>
                         </div>
                       </div>
 
                       <button
                         onClick={() => {
-                          const msg = `Olá ${selectedStudent.name.split(' ')[0]}! Aqui estão seus dados de acesso ao PersonalFlow:%0A%0A📧 E-mail: ${selectedStudent.email}%0A🔑 Senha: ${selectedStudent.password || 'sua senha'}%0A%0AAbra o app e comece seus treinos!`;
+                          const msg = `Olá ${selectedStudent.name.split(' ')[0]}! Aqui estão seus dados de acesso ao PersonalFlow:%0A%0A📧 E-mail: ${selectedStudent.email}%0A🔑 Senha: ${selectedStudent.password || '123456'}%0A%0AAbra o app e comece seus treinos!`;
                           const phone = selectedStudent.phone?.replace(/\D/g, '') || '';
                           window.open(`https://wa.me/55${phone}?text=${msg}`, '_blank');
                         }}
