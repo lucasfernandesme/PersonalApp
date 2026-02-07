@@ -21,12 +21,14 @@ interface StudentDashboardProps {
     student: Student;
     onNavigateToWorkout: () => void;
     onNavigateToProgress: () => void;
+    onNavigateToAssessments: () => void;
 }
 
 const StudentDashboard: React.FC<StudentDashboardProps> = ({
     student,
     onNavigateToWorkout,
-    onNavigateToProgress
+    onNavigateToProgress,
+    onNavigateToAssessments
 }) => {
     // Calcular dias da semana com treino
     const today = new Date().getDay(); // 0 = Domingo, 1 = Segunda, etc
@@ -107,7 +109,7 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
 
                 {/* Avaliações */}
                 <button
-                    onClick={() => setActiveModal('assessments')}
+                    onClick={onNavigateToAssessments}
                     className="bg-white dark:bg-zinc-900 p-6 rounded-[32px] border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col items-start gap-4 hover:border-amber-200 dark:hover:border-amber-800 transition-all active:scale-95 group"
                 >
                     <div className="w-12 h-12 bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 rounded-2xl flex items-center justify-center group-hover:bg-amber-600 group-hover:text-white transition-all">

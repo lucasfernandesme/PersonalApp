@@ -66,7 +66,7 @@ const App: React.FC = () => {
   const [isStudentSelectorOpen, setIsStudentSelectorOpen] = useState(false);
   const [pendingTemplate, setPendingTemplate] = useState<WorkoutTemplate | null>(null);
   const [showLoginInfo, setShowLoginInfo] = useState(false);
-  const [studentView, setStudentView] = useState<'dashboard' | 'workout'>('dashboard');
+  const [studentView, setStudentView] = useState<'dashboard' | 'workout' | 'assessments'>('dashboard');
   const [expandedWorkoutId, setExpandedWorkoutId] = useState<string | null>(null);
 
   const reloadStudents = useCallback(async () => {
@@ -298,6 +298,10 @@ const App: React.FC = () => {
     setIsManualBuilderOpen(false);
     setIsOnboardingOpen(false);
     setStudentView('dashboard');
+    if (tab === 'home') {
+      // Ensure we go back to dashboard if user clicks Home while in Assessments
+      // Note: activeTab controls the high-level view for students too
+    }
     if (tab !== 'students' || !selectedStudent) {
       setSelectedStudent(null);
     }
@@ -1103,6 +1107,7 @@ const App: React.FC = () => {
             student={loggedInStudent}
             onNavigateToWorkout={() => setActiveTab('workout')}
             onNavigateToProgress={() => setActiveTab('evolution')}
+            onNavigateToAssessments={() => setActiveTab('assessments')}
           />
         );
       case 'workout':
@@ -1119,6 +1124,15 @@ const App: React.FC = () => {
       case 'evolution': return loggedInStudent ? <StudentProgressScreen student={loggedInStudent} onBack={() => setActiveTab('home')} /> : null;
       case 'chat': return <ChatScreen role={UserRole.STUDENT} student={loggedInStudent || undefined} />;
       case 'profile': return loggedInStudent ? <StudentProfile student={loggedInStudent} onUpdateProfile={handleUpdateStudentProfile} /> : null;
+      case 'assessments':
+        return loggedInStudent ? (
+          <StudentAssessmentsScreen
+            student={loggedInStudent}
+            onUpdate={async () => { }} // Read-only, no update needed
+            onBack={() => setActiveTab('home')}
+            readOnly={true}
+          />
+        ) : null;
       default: return null;
     }
   };

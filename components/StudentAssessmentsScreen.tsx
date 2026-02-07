@@ -7,9 +7,10 @@ interface StudentAssessmentsScreenProps {
     student: Student;
     onUpdate: (updatedStudent: Student) => Promise<void>;
     onBack: () => void;
+    readOnly?: boolean;
 }
 
-const StudentAssessmentsScreen: React.FC<StudentAssessmentsScreenProps> = ({ student, onUpdate, onBack }) => {
+const StudentAssessmentsScreen: React.FC<StudentAssessmentsScreenProps> = ({ student, onUpdate, onBack, readOnly = false }) => {
     const [expandedSection, setExpandedSection] = useState<'morphological' | 'anamnesis' | null>('morphological');
     const [showNewAssessmentModal, setShowNewAssessmentModal] = useState(false);
     const [selectedAssessment, setSelectedAssessment] = useState<Assessment | null>(null);
@@ -319,30 +320,32 @@ const StudentAssessmentsScreen: React.FC<StudentAssessmentsScreenProps> = ({ stu
                     {expandedSection === 'morphological' && (
                         <div className="p-6 pt-0 animate-in slide-in-from-top-4 fade-in duration-300">
                             {/* Create Button area */}
-                            <div className="pl-16 mb-6">
-                                <button
-                                    onClick={() => {
-                                        setEditingAssessmentId(null); // Ensure we're creating a new one
-                                        setNewAssessment({
-                                            date: new Date().toISOString().split('T')[0],
-                                            protocol: 'pollock3',
-                                            weight: 0,
-                                            height: student.height ? parseFloat(student.height) : 0,
-                                            skinfolds: {},
-                                            circumferences: {},
-                                            photos: [],
-                                            targetBodyFat: 0,
-                                            idealWeight: 0,
-                                            notes: ''
-                                        });
-                                        setShowNewAssessmentModal(true);
-                                    }}
-                                    className="w-full py-4 bg-emerald-50 dark:bg-emerald-900/10 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800 rounded-2xl font-black flex items-center justify-center gap-2 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 transition-colors shadow-sm"
-                                >
-                                    <Plus size={18} />
-                                    NOVA AVALIAÇÃO DE DOBRAS
-                                </button>
-                            </div>
+                            {!readOnly && (
+                                <div className="pl-16 mb-6">
+                                    <button
+                                        onClick={() => {
+                                            setEditingAssessmentId(null); // Ensure we're creating a new one
+                                            setNewAssessment({
+                                                date: new Date().toISOString().split('T')[0],
+                                                protocol: 'pollock3',
+                                                weight: 0,
+                                                height: student.height ? parseFloat(student.height) : 0,
+                                                skinfolds: {},
+                                                circumferences: {},
+                                                photos: [],
+                                                targetBodyFat: 0,
+                                                idealWeight: 0,
+                                                notes: ''
+                                            });
+                                            setShowNewAssessmentModal(true);
+                                        }}
+                                        className="w-full py-4 bg-emerald-50 dark:bg-emerald-900/10 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800 rounded-2xl font-black flex items-center justify-center gap-2 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 transition-colors shadow-sm"
+                                    >
+                                        <Plus size={18} />
+                                        NOVA AVALIAÇÃO DE DOBRAS
+                                    </button>
+                                </div>
+                            )}
 
                             {/* Assessments List */}
                             <div className="space-y-3 pl-4 border-l-2 border-zinc-100 dark:border-zinc-800 ml-6">
@@ -402,15 +405,17 @@ const StudentAssessmentsScreen: React.FC<StudentAssessmentsScreenProps> = ({ stu
 
                     {expandedSection === 'anamnesis' && (
                         <div className="p-6 pt-0 animate-in slide-in-from-top-4 fade-in duration-300">
-                            <div className="pl-16 mb-6">
-                                <button
-                                    onClick={() => setShowNewAnamnesisModal(true)}
-                                    className="w-full py-4 bg-purple-50 dark:bg-purple-900/10 text-purple-700 dark:text-purple-400 border border-purple-100 dark:border-purple-800 rounded-2xl font-black flex items-center justify-center gap-2 hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-colors shadow-sm"
-                                >
-                                    <Plus size={18} />
-                                    NOVA ANAMNESE PADRÃO
-                                </button>
-                            </div>
+                            {!readOnly && (
+                                <div className="pl-16 mb-6">
+                                    <button
+                                        onClick={() => setShowNewAnamnesisModal(true)}
+                                        className="w-full py-4 bg-purple-50 dark:bg-purple-900/10 text-purple-700 dark:text-purple-400 border border-purple-100 dark:border-purple-800 rounded-2xl font-black flex items-center justify-center gap-2 hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-colors shadow-sm"
+                                    >
+                                        <Plus size={18} />
+                                        NOVA ANAMNESE PADRÃO
+                                    </button>
+                                </div>
+                            )}
 
                             <div className="space-y-4 pl-4 border-l-2 border-zinc-100 dark:border-zinc-800 ml-6">
                                 {(student.anamnesis || []).map((anam, index) => (
@@ -678,13 +683,15 @@ const StudentAssessmentsScreen: React.FC<StudentAssessmentsScreenProps> = ({ stu
                                 <p className="text-zinc-500 text-xs font-bold">{selectedAssessment.date}</p>
                             </div>
                             <div className="flex items-center gap-2">
-                                <button
-                                    onClick={() => handleEditAssessment(selectedAssessment)}
-                                    className="p-2 text-zinc-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-full transition-colors"
-                                    title="Editar Avaliação"
-                                >
-                                    <Pencil size={20} />
-                                </button>
+                                {!readOnly && (
+                                    <button
+                                        onClick={() => handleEditAssessment(selectedAssessment)}
+                                        className="p-2 text-zinc-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-full transition-colors"
+                                        title="Editar Avaliação"
+                                    >
+                                        <Pencil size={20} />
+                                    </button>
+                                )}
                                 <button onClick={() => setSelectedAssessment(null)}><X className="text-zinc-400" /></button>
                             </div>
                         </div>
