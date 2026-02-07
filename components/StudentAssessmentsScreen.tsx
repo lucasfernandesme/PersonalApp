@@ -16,6 +16,7 @@ const StudentAssessmentsScreen: React.FC<StudentAssessmentsScreenProps> = ({ stu
     const [selectedAssessment, setSelectedAssessment] = useState<Assessment | null>(null);
     const [showNewAnamnesisModal, setShowNewAnamnesisModal] = useState(false);
     const [editingAssessmentId, setEditingAssessmentId] = useState<string | null>(null);
+    const [selectedAnamnesis, setSelectedAnamnesis] = useState<Anamnesis | null>(null);
 
     // New Assessment State
     const [newAssessment, setNewAssessment] = useState<Partial<Assessment>>({
@@ -421,20 +422,26 @@ const StudentAssessmentsScreen: React.FC<StudentAssessmentsScreenProps> = ({ stu
                                 {(student.anamnesis || []).map((anam, index) => (
                                     <div key={anam.id || index} className="pl-6 relative group">
                                         <div className="absolute -left-[7px] top-6 w-3 h-3 rounded-full bg-purple-500 ring-4 ring-white dark:ring-zinc-900 group-hover:scale-125 transition-transform"></div>
-                                        <div className="bg-zinc-50 dark:bg-zinc-950 p-5 rounded-2xl border border-zinc-100 dark:border-zinc-800/50 hover:border-purple-200 dark:hover:border-purple-900/30 transition-colors">
+                                        <button
+                                            onClick={() => setSelectedAnamnesis(anam)}
+                                            className="w-full text-left bg-zinc-50 dark:bg-zinc-950 p-5 rounded-2xl border border-zinc-100 dark:border-zinc-800/50 hover:border-purple-200 dark:hover:border-purple-900/30 transition-colors group-active:scale-[0.99] duration-200"
+                                        >
                                             <div className="flex items-center justify-between mb-4">
                                                 <h4 className="font-bold text-slate-900 dark:text-white text-sm">{anam.date}</h4>
                                                 <span className="text-[9px] font-black uppercase text-purple-500 bg-purple-100 dark:bg-purple-900/30 px-2 py-1 rounded-md">Completa</span>
                                             </div>
-                                            <div className="space-y-2 max-h-32 overflow-y-auto pr-2 custom-scrollbar">
-                                                {Object.entries(anam.answers).map(([q, a]) => (
+                                            <div className="space-y-2 max-h-32 overflow-hidden relative">
+                                                {Object.entries(anam.answers).slice(0, 2).map(([q, a]) => (
                                                     <div key={q} className="p-3 bg-white dark:bg-zinc-900 rounded-xl border border-zinc-100 dark:border-zinc-800">
-                                                        <p className="text-[9px] font-bold text-zinc-400 uppercase mb-1">{q}</p>
-                                                        <p className="text-xs text-zinc-800 dark:text-zinc-300 font-medium">{a}</p>
+                                                        <p className="text-[9px] font-bold text-zinc-400 uppercase mb-1 truncate">{q}</p>
+                                                        <p className="text-xs text-zinc-800 dark:text-zinc-300 font-medium truncate">{a}</p>
                                                     </div>
                                                 ))}
+                                                <div className="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-zinc-50 dark:from-zinc-950 to-transparent flex items-end justify-center pb-1">
+                                                    <span className="text-[10px] font-bold text-zinc-400 uppercase">Ver detalhes</span>
+                                                </div>
                                             </div>
-                                        </div>
+                                        </button>
                                     </div>
                                 ))}
                                 {(!student.anamnesis || student.anamnesis.length === 0) && (
@@ -668,6 +675,30 @@ const StudentAssessmentsScreen: React.FC<StudentAssessmentsScreenProps> = ({ stu
                             >
                                 SALVAR ANAMNESE
                             </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Modal Detalhes da Anamnese */}
+            {selectedAnamnesis && (
+                <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+                    <div className="bg-white dark:bg-zinc-900 w-full max-w-lg rounded-[32px] p-6 max-h-[90vh] overflow-y-auto custom-scrollbar">
+                        <div className="flex items-center justify-between mb-6">
+                            <div>
+                                <h3 className="text-xl font-black text-slate-900 dark:text-white">Detalhes da Anamnese</h3>
+                                <p className="text-zinc-500 text-xs font-bold">{selectedAnamnesis.date}</p>
+                            </div>
+                            <button onClick={() => setSelectedAnamnesis(null)}><X className="text-zinc-400" /></button>
+                        </div>
+
+                        <div className="space-y-4">
+                            {Object.entries(selectedAnamnesis.answers).map(([q, a]) => (
+                                <div key={q} className="bg-zinc-50 dark:bg-zinc-950 p-4 rounded-2xl border border-zinc-100 dark:border-zinc-800">
+                                    <p className="text-[10px] font-bold text-zinc-400 uppercase mb-2">{q}</p>
+                                    <p className="text-sm text-zinc-800 dark:text-zinc-300 font-medium leading-relaxed">{a}</p>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </div>
