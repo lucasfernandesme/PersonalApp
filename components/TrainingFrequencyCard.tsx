@@ -19,8 +19,9 @@ export const TrainingFrequencyCard: React.FC<TrainingFrequencyCardProps> = ({ st
     // Se o nome do treino contiver o dia da semana, marcamos como alvo.
     const trainingDays: number[] = [];
 
-    if (student?.program?.split) {
+    if (student?.program?.split && Array.isArray(student.program.split)) {
         student.program.split.forEach(day => {
+            if (!day || !day.label || !day.day) return;
             const label = (day.label + " " + day.day).toLowerCase();
             if (label.includes('domingo')) trainingDays.push(0);
             if (label.includes('segunda')) trainingDays.push(1);
@@ -35,7 +36,7 @@ export const TrainingFrequencyCard: React.FC<TrainingFrequencyCardProps> = ({ st
     // 2. Identificar dias COMPLETOS (History) na semana atual
     const completedDays: number[] = [];
 
-    if (student?.history) {
+    if (student?.history && Array.isArray(student.history)) {
         const now = new Date();
         const startOfWeek = new Date(now);
         startOfWeek.setDate(now.getDate() - now.getDay()); // Domingo da semana atual
@@ -46,23 +47,35 @@ export const TrainingFrequencyCard: React.FC<TrainingFrequencyCardProps> = ({ st
         endOfWeek.setHours(23, 59, 59, 999);
 
         student.history.forEach(h => {
+            if (!h || !h.date) return;
             // Converter data dd/mm/yyyy ou ISO para Date
             let entryDate: Date;
 
-            if (h.date.includes('/')) {
-                // Formato PT-BR dd/mm/yyyy
-                const dateParts = h.date.split('/');
-                entryDate = new Date(parseInt(dateParts[2]), parseInt(dateParts[1]) - 1, parseInt(dateParts[0]));
-            } else {
-                // Tentar ISO com parseISO (evita shift de fuso horário)
-                entryDate = parseISO(h.date);
-            }
+            try {
+                if (h.date.includes('/')) {
+                    // Formato PT-BR dd/mm/yyyy
+                    const dateParts = h.date.split('/');
+                    if (dateParts.length === 3) {
+                        entryDate = new Date(parseInt(dateParts[2]), parseInt(dateParts[1]) - 1, parseInt(dateParts[0]));
+                    } else {
+                        return;
+                    }
+                } else {
+                    // Tentar ISO com parseISO (evita shift de fuso horário)
+                    entryDate = parseISO(h.date);
+                }
 
-            // Normalize time to avoid timezone edge cases when comparing
-            entryDate.setHours(12, 0, 0, 0);
+                // Check for Invalid Date
+                if (isNaN(entryDate.getTime())) return;
 
-            if (entryDate >= startOfWeek && entryDate <= endOfWeek) {
-                completedDays.push(entryDate.getDay());
+                // Normalize time to avoid timezone edge cases when comparing
+                entryDate.setHours(12, 0, 0, 0);
+
+                if (entryDate >= startOfWeek && entryDate <= endOfWeek) {
+                    completedDays.push(entryDate.getDay());
+                }
+            } catch (e) {
+                console.warn("Invalid date in history:", h.date);
             }
         });
     }

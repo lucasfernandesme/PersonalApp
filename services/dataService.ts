@@ -37,8 +37,39 @@ export const DataService = {
     const { data, error } = await query;
 
     if (error) {
-      console.error("Erro Supabase:", error);
-      return [];
+      console.warn("Erro ao buscar alunos com join (trainers). Tentando busca simples...", error);
+
+      // Fallback: Tenta buscar sem o JOIN
+      let simpleQuery = supabase
+        .from('students')
+        .select('*')
+        .order('name');
+
+      if (trainerId) {
+        simpleQuery = simpleQuery.eq('trainer_id', trainerId);
+      }
+
+      const { data: simpleData, error: simpleError } = await simpleQuery;
+
+      if (simpleError) {
+        console.error("Erro Supabase (Fallback):", simpleError);
+        return [];
+      }
+
+      // Se sucesso no fallback, usa os dados simples (sem info do trainer)
+      return (simpleData || []).map(s => ({
+        ...s,
+        phone: s.phone || '',
+        birthDate: s.birth_date || '',
+        gender: s.gender || '',
+        isActive: s.is_active !== false,
+        height: s.height || '',
+        weight: s.weight || '',
+        trainerName: undefined,
+        trainerAvatar: undefined,
+        trainerInstagram: undefined,
+        trainerWhatsapp: undefined
+      }));
     }
 
     return (data || []).map(s => {

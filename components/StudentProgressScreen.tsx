@@ -8,14 +8,16 @@ import {
   CheckCircle2,
   Trophy,
   History,
-  Dumbbell
+  Dumbbell,
+  ArrowLeft
 } from 'lucide-react';
 
 interface StudentProgressScreenProps {
   student: Student;
+  onBack: () => void;
 }
 
-const StudentProgressScreen: React.FC<StudentProgressScreenProps> = ({ student }) => {
+const StudentProgressScreen: React.FC<StudentProgressScreenProps> = ({ student, onBack }) => {
   const history = student.history || [];
 
   const stats = {
@@ -31,9 +33,17 @@ const StudentProgressScreen: React.FC<StudentProgressScreenProps> = ({ student }
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-24">
-      <div className="flex flex-col gap-2">
-        <h2 className="text-3xl font-black text-zinc-900 dark:text-white tracking-tight">Meu Progresso</h2>
-        <p className="text-zinc-400 dark:text-zinc-500 font-medium">Veja como está sua evolução nos treinos.</p>
+      <div className="flex items-center gap-4">
+        <button
+          onClick={onBack}
+          className="p-2 bg-zinc-50 dark:bg-zinc-800 rounded-xl text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors"
+        >
+          <ArrowLeft size={20} />
+        </button>
+        <div>
+          <h2 className="text-2xl font-black text-zinc-900 dark:text-white tracking-tight">Meu Progresso</h2>
+          <p className="text-sm font-medium text-zinc-400 dark:text-zinc-500">Veja como está sua evolução nos treinos.</p>
+        </div>
       </div>
 
       {/* Stats Grid */}

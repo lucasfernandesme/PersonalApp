@@ -58,7 +58,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin }) => {
         const inputEmail = email.trim().toLowerCase();
         const student = students.find(s => s.email.toLowerCase() === inputEmail);
 
-        const validPassword = student.password || '123456';
+        const validPassword = student?.password || '123456';
 
         if (student && password === validPassword) {
           onLogin({
@@ -69,11 +69,13 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin }) => {
             avatar: student.avatar
           });
         } else {
+          // Log detalhado para debug se necessário
           if (!student) {
-            console.log("Aluno não encontrado na lista. Email buscado:", inputEmail);
-            console.log("Lista de alunos disponível:", students.map(s => s.email));
+            console.log("Tentativa de login: Aluno não encontrado.", inputEmail);
+          } else {
+            console.log("Tentativa de login: Senha incorreta.");
           }
-          setError('Aluno não encontrado ou senha padrão (123456) incorreta.');
+          setError(`Aluno não encontrado ou senha incorreta. (Alunos carregados: ${students.length})`);
         }
       }
     } catch (err) {
@@ -270,6 +272,30 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin }) => {
             </form>
           </div>
         )}
+        {/* DEBUG INFO */}
+        <div className="fixed bottom-2 left-2 text-[10px] text-zinc-500 opacity-50 pointer-events-auto">
+          <p>Students Conn: {students.length}</p>
+          <p className="max-w-[200px] truncate">Emails: {students.map(s => s.email).join(', ')}</p>
+          <p>API: {import.meta.env.VITE_SUPABASE_URL?.slice(0, 20)}...</p>
+        </div>
+        <button
+          onClick={async () => {
+            try {
+              // Busca os dados REAIS para ver se o RLS permite ler os nomes
+              const { data, error } = await supabase.from('students').select('name, email').limit(5);
+              if (error) alert('Erro: ' + error.message);
+              else {
+                const names = data.map(s => `${s.name} (${s.email})`).join('\n');
+                alert(`Conexão OK!\n\nAlunos encontrados (${data.length}):\n${names}`);
+              }
+            } catch (e) {
+              alert('Erro fatal: ' + e);
+            }
+          }}
+          className="fixed bottom-2 right-2 text-[10px] text-zinc-500 opacity-50 hover:opacity-100 underline"
+        >
+          Testar Conexão Real
+        </button>
       </div>
     </div>
   );

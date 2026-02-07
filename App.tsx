@@ -69,8 +69,17 @@ const App: React.FC = () => {
   const [expandedWorkoutId, setExpandedWorkoutId] = useState<string | null>(null);
 
   const reloadStudents = useCallback(async () => {
-    if (!authUser?.id) return;
     try {
+      if (!authUser?.id) {
+        // Se não há usuário logado, carrega todos os alunos (para validar login na tela inicial)
+        // Em um app SaaS real, isso seria perigoso/ineficiente, mas para este app local/single-trainer é aceitável.
+        // O ideal seria ter uma rota específica para validar credenciais.
+        console.log("Carregando lista de alunos para login...");
+        const allStudents = await DataService.getStudents();
+        setStudents(allStudents);
+        return;
+      }
+
       if (authUser.role === UserRole.STUDENT) {
         // Se for aluno, carrega apenas os dados dele mesmo
         const myself = await DataService.getStudentById(authUser.id);
@@ -164,9 +173,21 @@ const App: React.FC = () => {
 
   useEffect(() => {
     let mounted = true;
+
+    // Se não temos usuário, carregamos APENAS os alunos (para o login funcionar)
     if (!authUser) {
-      setIsLoading(false);
-      return;
+      const loadInitialData = async () => {
+        try {
+          console.log("App: Sem usuário, carregando alunos para login...");
+          await reloadStudents();
+        } catch (e) {
+          console.error("Erro ao carregar alunos iniciais:", e);
+        } finally {
+          if (mounted) setIsLoading(false);
+        }
+      };
+      loadInitialData();
+      return () => { mounted = false; };
     }
 
     // Se já temos alunos e não é um novo usuário (ID mudou), não precisamos forçar o loading visual pesado
@@ -433,6 +454,39 @@ const App: React.FC = () => {
     } catch (error) {
       console.error("Failed to update profile", error);
       showToast("Erro ao salvar perfil. Tente novamente.", "error");
+    }
+  };
+
+  const handleUpdateStudentProfile = async (updates: Partial<Student>) => {
+    if (!authUser || authUser.role !== UserRole.STUDENT) return;
+
+    const currentStudent = students.find(s => s.id === authUser.id);
+    if (!currentStudent) return;
+
+    try {
+      setIsSaving(true);
+      const updatedStudent = { ...currentStudent, ...updates };
+
+      await DataService.saveStudent(updatedStudent);
+
+      // Update local student list
+      setStudents(prev => prev.map(s => s.id === updatedStudent.id ? updatedStudent : s));
+
+      // Update AuthUser if relevant fields changed (name, avatar) so sidebar updates
+      if (updates.name || updates.avatar) {
+        setAuthUser(prev => prev ? {
+          ...prev,
+          name: updates.name || prev.name,
+          avatar: updates.avatar || prev.avatar
+        } : null);
+      }
+
+      showToast("Foto/Perfil atualizado com sucesso!");
+    } catch (error) {
+      console.error("Failed to update student profile", error);
+      showToast("Erro ao atualizar perfil.", "error");
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -1000,7 +1054,22 @@ const App: React.FC = () => {
     const loggedInStudent = students.find(s => s.id === authUser?.id);
     switch (activeTab) {
       case 'home':
-        if (!loggedInStudent) return null;
+        if (!loggedInStudent) {
+          // Fallback UI if student is logged in but data not found in list yet
+          return (
+            <div className="flex flex-col items-center justify-center min-h-screen p-6 text-center animate-in fade-in">
+              <Loader2 className="w-10 h-10 text-zinc-300 animate-spin mb-4" />
+              <p className="text-zinc-500 font-medium text-sm">Carregando perfil do aluno...</p>
+              <p className="text-xs text-zinc-400 mt-2">ID: {authUser?.id}</p>
+              <button
+                onClick={() => window.location.reload()}
+                className="mt-6 text-xs font-bold text-zinc-900 dark:text-white underline"
+              >
+                Recarregar
+              </button>
+            </div>
+          );
+        }
         return (
           <StudentDashboard
             student={loggedInStudent}
@@ -1019,9 +1088,9 @@ const App: React.FC = () => {
             onBack={() => setActiveTab('home')}
           />
         );
-      case 'evolution': return loggedInStudent ? <StudentProgressScreen student={loggedInStudent} /> : null;
+      case 'evolution': return loggedInStudent ? <StudentProgressScreen student={loggedInStudent} onBack={() => setActiveTab('home')} /> : null;
       case 'chat': return <ChatScreen role={UserRole.STUDENT} student={loggedInStudent || undefined} />;
-      case 'profile': return loggedInStudent ? <StudentProfile student={loggedInStudent} onUpdateProfile={(updates) => setAuthUser({ ...authUser, ...updates } as AuthUser)} /> : null;
+      case 'profile': return loggedInStudent ? <StudentProfile student={loggedInStudent} onUpdateProfile={handleUpdateStudentProfile} /> : null;
       default: return null;
     }
   };

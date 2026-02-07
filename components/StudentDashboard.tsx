@@ -83,7 +83,7 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
                     {/* Student Greeting - À Esquerda */}
                     <div>
                         <p className="text-2xl font-black text-zinc-900 dark:text-white tracking-tight">
-                            {getGreeting()}, {student.name.split(' ')[0]}!
+                            {getGreeting()}, {student.name ? student.name.split(' ')[0] : 'Aluno'}!
                         </p>
                     </div>
                 </div>
@@ -180,7 +180,7 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
                         {/* Listagem de Arquivos */}
                         <div className="mt-6 flex-1 overflow-y-auto space-y-3">
                             <h4 className="text-xs font-black text-zinc-400 uppercase tracking-wider mb-3">Seus Arquivos</h4>
-                            {(!student.files || student.files.length === 0) ? (
+                            {(!student.files || !Array.isArray(student.files) || student.files.length === 0) ? (
                                 <p className="text-xs text-zinc-400 text-center py-4">Nenhum arquivo enviado.</p>
                             ) : (
                                 student.files.map((file) => (
