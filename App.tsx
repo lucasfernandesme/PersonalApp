@@ -20,6 +20,7 @@ import TrainerProfile from './components/TrainerProfile';
 import StudentProfile from './components/StudentProfile';
 import StudentSelectorModal from './components/StudentSelectorModal';
 import StudentDashboard from './components/StudentDashboard';
+import StudentAssessmentsScreen from './components/StudentAssessmentsScreen';
 import { WorkoutFolder, WorkoutTemplate, Student, StudentFile } from './types';
 import { ArrowLeft, Settings, Loader2, RefreshCw, CheckCircle2, X, Dumbbell, ArrowRight, Zap, Award, ChevronRight, Plus, Edit2, Trash2, User, Calendar, FileText, MessageCircle } from 'lucide-react';
 import { TrainingFrequencyCard } from './components/TrainingFrequencyCard';
@@ -57,7 +58,7 @@ const App: React.FC = () => {
   const [workoutFolders, setWorkoutFolders] = useState<WorkoutFolder[]>([]);
   const [customExercises, setCustomExercises] = useState<LibraryExercise[]>([]);
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
-  const [selectedStudentView, setSelectedStudentView] = useState<'dashboard' | 'workouts' | 'workout-detail'>('dashboard');
+  const [selectedStudentView, setSelectedStudentView] = useState<'dashboard' | 'workouts' | 'workout-detail' | 'assessments' | 'files'>('dashboard');
   const [workoutToEdit, setWorkoutToEdit] = useState<TrainingProgram | null>(null);
   const [isOnboardingOpen, setIsOnboardingOpen] = useState(false);
   const [isManualBuilderOpen, setIsManualBuilderOpen] = useState(false);
@@ -700,6 +701,24 @@ const App: React.FC = () => {
                 </div>
               </button>
 
+              <button
+                onClick={() => setSelectedStudentView('assessments')}
+                className="group bg-white dark:bg-zinc-900 p-5 rounded-[28px] transition-all active:scale-[0.98] shadow-sm hover:shadow-md border border-slate-200 dark:border-zinc-800 flex items-center justify-between w-full"
+              >
+                <div className="flex items-center gap-4 flex-1">
+                  <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-2xl flex items-center justify-center shadow-lg shadow-purple-600/20 dark:shadow-purple-900/10 group-hover:scale-105 transition-transform flex-shrink-0">
+                    <Award size={24} />
+                  </div>
+                  <div className="text-left">
+                    <h3 className="text-lg font-black text-slate-900 dark:text-white leading-tight">Avaliações</h3>
+                    <p className="text-slate-500 dark:text-zinc-400 text-[10px] font-bold uppercase tracking-wider">Morfológica e Anamnese</p>
+                  </div>
+                </div>
+                <div className="w-10 h-10 bg-slate-50 dark:bg-zinc-800 rounded-xl flex items-center justify-center text-slate-300 dark:text-zinc-600 group-hover:bg-purple-600 group-hover:text-white transition-all flex-shrink-0">
+                  <ArrowRight size={20} />
+                </div>
+              </button>
+
               <div className="space-y-2">
                 <button
                   onClick={() => setShowLoginInfo(!showLoginInfo)}
@@ -759,13 +778,11 @@ const App: React.FC = () => {
             </div>
           ) : selectedStudentView === 'files' ? (
             <div className="space-y-6">
-              {/* Files Screen Header */}
               <div className="flex items-center justify-between px-2">
                 <h3 className="font-black text-slate-400 dark:text-zinc-500 uppercase text-[10px] tracking-widest">Arquivos do Aluno</h3>
               </div>
 
               <div className="grid gap-4">
-                {/* Upload Area */}
                 <button
                   onClick={() => {
                     const input = document.createElement('input');
@@ -786,11 +803,8 @@ const App: React.FC = () => {
                         setIsSaving(true);
                         try {
                           await DataService.saveStudent(updatedStudent, authUser?.id);
-
-                          // Update local states to reflect changes immediately in both views
                           setSelectedStudent(updatedStudent);
                           setStudents(prev => prev.map(s => s.id === updatedStudent.id ? updatedStudent : s));
-
                           showToast("Arquivo adicionado!");
                         } catch (err) {
                           showToast("Erro ao adicionar arquivo", "error");
@@ -801,39 +815,53 @@ const App: React.FC = () => {
                     };
                     input.click();
                   }}
-                  className="w-full py-8 border-2 border-dashed border-zinc-200 dark:border-zinc-800 rounded-3xl flex flex-col items-center justify-center gap-2 hover:border-zinc-400 hover:bg-zinc-100/50 dark:hover:bg-zinc-800/10 transition-all group"
+                  className="w-full py-8 border-2 border-dashed border-zinc-200 dark:border-zinc-700 rounded-2xl flex flex-col items-center justify-center hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors gap-2"
                 >
-                  <div className="w-12 h-12 bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <Plus size={24} />
-                  </div>
-                  <p className="font-bold text-zinc-600 dark:text-zinc-400 text-sm">Adicionar Novo Arquivo</p>
+                  <Plus className="text-zinc-400" />
+                  <span className="text-xs font-bold text-zinc-400 uppercase">Adicionar Arquivo</span>
                 </button>
 
-                {/* Full List */}
-                {(!selectedStudent.files || selectedStudent.files.length === 0) ? (
-                  <div className="text-center py-12">
-                    <p className="text-zinc-400 text-sm">Nenhum arquivo anexado ainda.</p>
-                  </div>
-                ) : (
-                  selectedStudent.files.map(file => (
-                    <div key={file.id} className="flex items-center justify-between p-4 bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-100 dark:border-zinc-800 shadow-sm">
+                <div className="space-y-3">
+                  {(selectedStudent.files || []).map((file) => (
+                    <div key={file.id} className="bg-white dark:bg-zinc-900 p-4 rounded-2xl border border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
                       <div className="flex items-center gap-4">
-                        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${file.type === 'pdf' ? 'bg-red-100 text-red-500' : 'bg-blue-100 text-blue-500'}`}>
-                          <FileText size={22} />
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${file.type === 'pdf' ? 'bg-red-50 text-red-500 dark:bg-red-900/20' : 'bg-blue-50 text-blue-500 dark:bg-blue-900/20'}`}>
+                          <FileText size={20} />
                         </div>
                         <div>
-                          <h4 className="font-bold text-sm text-zinc-900 dark:text-zinc-100 mb-0.5">{file.name}</h4>
-                          <p className="text-[10px] text-zinc-400 font-black uppercase tracking-wider">{file.date} • {file.type.toUpperCase()}</p>
+                          <p className="font-bold text-sm text-zinc-900 dark:text-white">{file.name}</p>
+                          <p className="text-[10px] text-zinc-400 uppercase font-bold">{file.date}</p>
                         </div>
                       </div>
-                      <button className="p-2 text-zinc-400 hover:text-red-500 transition-colors">
-                        <Trash2 size={20} />
-                      </button>
+                      <a href={file.url} target="_blank" rel="noopener noreferrer" className="p-2 text-zinc-300 hover:text-zinc-500 transition-colors">
+                        <ArrowRight size={16} />
+                      </a>
                     </div>
-                  ))
-                )}
+                  ))}
+                  {(!selectedStudent.files || selectedStudent.files.length === 0) && (
+                    <div className="text-center py-10 text-zinc-400 text-sm">Nenhum arquivo encontrado.</div>
+                  )}
+                </div>
               </div>
             </div>
+          ) : selectedStudentView === 'assessments' ? (
+            <StudentAssessmentsScreen
+              student={selectedStudent}
+              onUpdate={async (updatedStudent) => {
+                setIsSaving(true);
+                try {
+                  await DataService.saveStudent(updatedStudent, authUser?.id);
+                  await reloadStudents();
+                  setSelectedStudent(updatedStudent);
+                  showToast("Avaliação salva com sucesso!");
+                } catch (error) {
+                  showToast("Erro ao salvar avaliação", "error");
+                } finally {
+                  setIsSaving(false);
+                }
+              }}
+              onBack={() => setSelectedStudentView('dashboard')}
+            />
           ) : selectedStudentView === 'workouts' ? (
             <div className="space-y-6">
               <div className="flex items-center justify-between px-2">

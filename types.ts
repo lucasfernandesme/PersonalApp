@@ -98,6 +98,10 @@ export interface Student {
   trainerAvatar?: string;
   trainerInstagram?: string;
   trainerWhatsapp?: string;
+  instagram?: string;
+  whatsapp?: string;
+  assessments?: Assessment[];
+  anamnesis?: Anamnesis[];
   history: {
     date: string;
     rpe_avg: number;
@@ -131,4 +135,57 @@ export interface ScheduleEvent {
   recurringDays?: number[]; // 0=Sunday, 1=Monday...
   recurringMonths?: number[]; // 0=January...
   status: 'planned' | 'completed' | 'cancelled';
+}
+
+export interface SkinfoldData {
+  triceps?: number; // Tríceps
+  subscapular?: number; // Subescapular
+  biceps?: number; // Bíceps
+  iliacCrest?: number; // Crista Ilíaca / Supra-ilíaca
+  supraspinale?: number; // Supra-espinhal
+  abdominal?: number; // Abdominal
+  thigh?: number; // Coxa
+  calf?: number; // Panturrilha
+  chest?: number; // Peitoral
+  axilla?: number; // Axilar
+}
+
+export interface CircumferenceData {
+  neck?: number; // Pescoço
+  shoulders?: number; // Ombros
+  chest?: number; // Peitoral
+  abdomen?: number; // Abdômen
+  waist?: number; // Cintura
+  hips?: number; // Quadril
+  rightArm?: number; // Braço Direito
+  leftArm?: number; // Braço Esquerdo
+  rightForearm?: number; // Antebraço Direito
+  leftForearm?: number; // Antebraço Esquerdo
+  rightThigh?: number; // Coxa Direita
+  leftThigh?: number; // Coxa Esquerda
+  rightCalf?: number; // Panturrilha Direita
+  leftCalf?: number; // Panturrilha Esquerda
+}
+
+export interface Assessment {
+  id: string;
+  date: string;
+  protocol: 'pollock3' | 'pollock7' | 'guedes' | 'custom';
+  weight: number;
+  height?: number;
+  skinfolds: SkinfoldData;
+  circumferences?: CircumferenceData;
+  photos?: string[]; // Array of Base64 strings or URLs
+  bodyFatPercentage?: number;
+  targetBodyFat?: number; // % Proposta
+  idealWeight?: number; // Peso Ideal
+  fatMass?: number;
+  leanMass?: number;
+  notes?: string;
+}
+
+export interface Anamnesis {
+  id: string;
+  date: string;
+  answers: Record<string, string>; // Pergunta -> Resposta
 }

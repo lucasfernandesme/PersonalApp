@@ -68,7 +68,11 @@ export const DataService = {
         trainerName: undefined,
         trainerAvatar: undefined,
         trainerInstagram: undefined,
-        trainerWhatsapp: undefined
+        trainerWhatsapp: undefined,
+        instagram: s.instagram,
+        whatsapp: s.whatsapp,
+        assessments: s.assessments || [],
+        anamnesis: s.anamnesis || []
       }));
     }
 
@@ -88,7 +92,11 @@ export const DataService = {
         trainerName: trainer ? `${trainer.name} ${trainer.surname || ''}`.trim() : undefined,
         trainerAvatar: trainer?.avatar,
         trainerInstagram: trainer?.instagram,
-        trainerWhatsapp: trainer?.whatsapp
+        trainerWhatsapp: trainer?.whatsapp,
+        instagram: s.instagram,
+        whatsapp: s.whatsapp,
+        assessments: s.assessments || [],
+        anamnesis: s.anamnesis || []
       }
     });
   },
@@ -123,7 +131,11 @@ export const DataService = {
       trainerName: trainer ? `${trainer.name} ${trainer.surname || ''}`.trim() : undefined,
       trainerAvatar: trainer?.avatar,
       trainerInstagram: trainer?.instagram,
-      trainerWhatsapp: trainer?.whatsapp
+      trainerWhatsapp: trainer?.whatsapp,
+      instagram: data.instagram,
+      whatsapp: data.whatsapp,
+      assessments: data.assessments || [],
+      anamnesis: data.anamnesis || []
     };
   },
 
@@ -155,7 +167,11 @@ export const DataService = {
       program: student.program,
       programs: student.programs, // only one instance please
       history: student.history,
-      files: student.files
+      files: student.files,
+      instagram: student.instagram,
+      whatsapp: student.whatsapp,
+      assessments: student.assessments,
+      anamnesis: student.anamnesis
     };
 
     if (trainerId) {

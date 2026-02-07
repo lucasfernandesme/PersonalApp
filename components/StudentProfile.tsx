@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { User, Edit2, X, GraduationCap, Target, Camera } from 'lucide-react';
+import { User, Edit2, X, GraduationCap, Target, Camera, Mail, Instagram, Phone } from 'lucide-react';
 import { Student } from '../types';
 
 interface StudentProfileProps {
@@ -13,12 +13,18 @@ const StudentProfile: React.FC<StudentProfileProps> = ({ student, onUpdateProfil
 
     // Estados extras se quisermos permitir editar
     const [goal, setGoal] = useState(student.goal || '');
+    const [email, setEmail] = useState(student.email);
+    const [instagram, setInstagram] = useState(student.instagram || '');
+    const [whatsapp, setWhatsapp] = useState(student.whatsapp || '');
 
     const handleSaveProfile = () => {
         if (onUpdateProfile) {
             onUpdateProfile({
                 name,
-                goal: goal as any
+                goal: goal as any,
+                email,
+                instagram,
+                whatsapp
             });
         }
         setActiveModal(null);
@@ -136,6 +142,47 @@ const StudentProfile: React.FC<StudentProfileProps> = ({ student, onUpdateProfil
                                     <option value="Força">Força</option>
                                     <option value="Condicionamento">Condicionamento</option>
                                 </select>
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase mb-2">Email</label>
+                                <div className="relative">
+                                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400" size={18} />
+                                    <input
+                                        type="email"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        className="w-full pl-12 pr-4 py-3 bg-zinc-50 dark:bg-zinc-800 border-none rounded-2xl font-bold text-zinc-800 dark:text-white focus:ring-2 focus:ring-emerald-500 transition-all"
+                                    />
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase mb-2">Instagram</label>
+                                <div className="relative">
+                                    <Instagram className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400" size={18} />
+                                    <input
+                                        type="text"
+                                        value={instagram}
+                                        onChange={(e) => setInstagram(e.target.value)}
+                                        placeholder="@usuario"
+                                        className="w-full pl-12 pr-4 py-3 bg-zinc-50 dark:bg-zinc-800 border-none rounded-2xl font-bold text-zinc-800 dark:text-white focus:ring-2 focus:ring-emerald-500 transition-all"
+                                    />
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase mb-2">WhatsApp</label>
+                                <div className="relative">
+                                    <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400" size={18} />
+                                    <input
+                                        type="tel"
+                                        value={whatsapp}
+                                        onChange={(e) => setWhatsapp(e.target.value)}
+                                        placeholder="(00) 00000-0000"
+                                        className="w-full pl-12 pr-4 py-3 bg-zinc-50 dark:bg-zinc-800 border-none rounded-2xl font-bold text-zinc-800 dark:text-white focus:ring-2 focus:ring-emerald-500 transition-all"
+                                    />
+                                </div>
                             </div>
 
                             <button
