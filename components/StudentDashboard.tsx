@@ -2,18 +2,12 @@ import React, { useState } from 'react';
 import { TrainingFrequencyCard } from './TrainingFrequencyCard';
 import {
     Dumbbell,
-    ClipboardList,
     TrendingUp,
     DollarSign,
-    Archive,
     Calendar,
-    CheckCircle2,
-    Clock,
     X,
     Upload,
-    FileText,
-    ChevronRight,
-    Play
+    FileText
 } from 'lucide-react';
 import { Student } from '../types';
 
@@ -31,13 +25,13 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
     onNavigateToAssessments
 }) => {
     // Calcular dias da semana com treino
-    const today = new Date().getDay(); // 0 = Domingo, 1 = Segunda, etc
-    const daysOfWeek = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
-    const daysLabels = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
+    // const today = new Date().getDay(); // 0 = Domingo, 1 = Segunda, etc
+    // const daysOfWeek = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
+    // const daysLabels = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
 
     // Simular dias de treino (você pode ajustar baseado no programa do aluno)
-    const trainingDays = [1, 3, 5]; // Segunda, Quarta, Sexta
-    const completedDays = [1]; // Apenas segunda foi completada
+    // const trainingDays = [1, 3, 5]; // Segunda, Quarta, Sexta
+    // const completedDays = [1]; // Apenas segunda foi completada
 
     const getGreeting = () => {
         const hour = new Date().getHours();
@@ -47,6 +41,7 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
     };
 
     const [activeModal, setActiveModal] = useState<'files' | 'assessments' | null>(null);
+    const [fileToView, setFileToView] = useState<{ url: string; name: string; type: string } | null>(null);
 
     // Mock Avaliações
     const assessments = [
@@ -189,7 +184,14 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
                                     <div
                                         key={file.id}
                                         className="flex items-center justify-between p-4 bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-100 dark:border-zinc-800 shadow-sm cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors"
-                                        onClick={() => window.open(file.url, '_blank')}
+                                        onClick={() => {
+                                            console.log("Arquivo clicado:", file);
+                                            if (file.url && file.url !== '#' && file.url.length > 10) {
+                                                setFileToView(file);
+                                            } else {
+                                                alert("Este arquivo parece estar corrompido ou com URL inválida. Peça ao seu treinador para enviar novamente.");
+                                            }
+                                        }}
                                     >
                                         <div className="flex items-center gap-4">
                                             <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${file.type === 'pdf' ? 'bg-red-100 text-red-500' : 'bg-blue-100 text-blue-500'}`}>
@@ -247,6 +249,38 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
                                     )}
                                 </div>
                             ))}
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Modal de Visualização de Arquivo */}
+            {fileToView && (
+                <div className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
+                    <div className="bg-white dark:bg-zinc-900 rounded-[32px] w-full max-w-4xl h-[85vh] shadow-2xl relative flex flex-col overflow-hidden">
+                        <div className="flex items-center justify-between p-4 border-b border-zinc-100 dark:border-zinc-800">
+                            <h3 className="font-bold text-zinc-900 dark:text-white truncate pr-8">{fileToView.name}</h3>
+                            <button
+                                onClick={() => setFileToView(null)}
+                                className="p-2 bg-zinc-100 dark:bg-zinc-800 rounded-full hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
+                            >
+                                <X size={20} className="text-zinc-600 dark:text-zinc-400" />
+                            </button>
+                        </div>
+                        <div className="flex-1 bg-zinc-50 dark:bg-zinc-950 p-4 flex items-center justify-center overflow-auto">
+                            {fileToView.type === 'pdf' ? (
+                                <iframe
+                                    src={fileToView.url}
+                                    className="w-full h-full rounded-xl border border-zinc-200 dark:border-zinc-800"
+                                    title={fileToView.name}
+                                />
+                            ) : (
+                                <img
+                                    src={fileToView.url}
+                                    alt={fileToView.name}
+                                    className="max-w-full max-h-full object-contain rounded-xl shadow-lg"
+                                />
+                            )}
                         </div>
                     </div>
                 </div>

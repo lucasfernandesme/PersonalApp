@@ -444,13 +444,15 @@ const StudentAssessmentsScreen: React.FC<StudentAssessmentsScreenProps> = ({ stu
                                                     <p className="font-black text-slate-900 dark:text-white text-lg">{assessment.weight}kg</p>
                                                     {assessment.bodyFatPercentage && <p className="text-[10px] font-bold text-emerald-500">{assessment.bodyFatPercentage}% BF</p>}
                                                 </div>
-                                                <button
-                                                    onClick={(e) => handleDeleteAssessment(assessment.id, e)}
-                                                    className="p-2 text-zinc-300 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-full transition-colors"
-                                                    title="Excluir Avaliação"
-                                                >
-                                                    <Trash2 size={16} />
-                                                </button>
+                                                {!readOnly && (
+                                                    <button
+                                                        onClick={(e) => handleDeleteAssessment(assessment.id, e)}
+                                                        className="p-2 text-zinc-300 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-full transition-colors"
+                                                        title="Excluir Avaliação"
+                                                    >
+                                                        <Trash2 size={16} />
+                                                    </button>
+                                                )}
                                             </div>
                                         </div>
                                     </div>
@@ -538,13 +540,15 @@ const StudentAssessmentsScreen: React.FC<StudentAssessmentsScreenProps> = ({ stu
                                                 )}
                                                 <div className="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-zinc-50 dark:from-zinc-950 to-transparent flex items-end justify-between px-3 pb-2">
                                                     <span className="text-[10px] font-bold text-zinc-400 uppercase">Ver detalhes</span>
-                                                    <button
-                                                        onClick={(e) => handleDeleteAnamnesis(anam.id, e)}
-                                                        className="text-zinc-400 hover:text-red-500 transition-colors p-1"
-                                                        title="Excluir Anamnese"
-                                                    >
-                                                        <Trash2 size={14} />
-                                                    </button>
+                                                    {!readOnly && (
+                                                        <button
+                                                            onClick={(e) => handleDeleteAnamnesis(anam.id, e)}
+                                                            className="text-zinc-400 hover:text-red-500 transition-colors p-1"
+                                                            title="Excluir Anamnese"
+                                                        >
+                                                            <Trash2 size={14} />
+                                                        </button>
+                                                    )}
                                                 </div>
                                             </div>
                                         </button>

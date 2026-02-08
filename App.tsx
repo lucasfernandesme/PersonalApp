@@ -63,6 +63,7 @@ const App: React.FC = () => {
   const [showLoginInfo, setShowLoginInfo] = useState(false);
   const [studentView, setStudentView] = useState<'dashboard' | 'workout' | 'assessments'>('dashboard');
   const [expandedWorkoutId, setExpandedWorkoutId] = useState<string | null>(null);
+  const [fileToView, setFileToView] = useState<{ url: string; name: string; type: string } | null>(null);
 
   const reloadStudents = useCallback(async () => {
     try {
@@ -857,15 +858,9 @@ const App: React.FC = () => {
                       key={file.id}
                       className="bg-white dark:bg-zinc-900 p-4 rounded-2xl border border-zinc-100 dark:border-zinc-800 flex items-center justify-between cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors group"
                       onClick={() => {
-                        if (file.url && file.url !== '#') {
-                          const newWindow = window.open();
-                          if (newWindow) {
-                            newWindow.document.write(
-                              `<iframe src="${file.url}" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>`
-                            );
-                          } else {
-                            alert("Pop-up bloqueado. Permita pop-ups para visualizar o arquivo.");
-                          }
+                        console.log("Arquivo clicado (Trainer):", file);
+                        if (file.url && file.url !== '#' && file.url.length > 10) {
+                          setFileToView(file);
                         } else {
                           alert("Visualização indisponível para este arquivo (URL inválida). Exclua e adicione novamente.");
                         }
@@ -1108,20 +1103,25 @@ const App: React.FC = () => {
   if (isLoading || (authUser && authLoading)) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 dark:bg-zinc-950 p-6 text-center">
-        <Loader2 className="w-12 h-12 text-zinc-900 dark:text-zinc-100 animate-spin mb-4" />
-        <p className="text-slate-400 dark:text-zinc-500 font-black uppercase text-[10px] tracking-widest mb-4">Carregando PersonalFlow...</p>
+        <div className="relative mb-8">
+          <img
+            src="/logo.jpg"
+            alt="PersonalFlow"
+            className="w-24 h-24 rounded-full shadow-2xl shadow-zinc-900/20 dark:shadow-white/10 animate-pulse"
+          />
+        </div>
 
         {loadingTakingTooLong && (
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
             <p className="text-zinc-500 dark:text-zinc-400 text-sm font-medium mb-4 max-w-xs">
-              O carregamento está demorando mais que o esperado. Verifique sua conexão.
+              O carregamento está demorando mais que o esperado.
             </p>
             <button
               onClick={() => window.location.reload()}
               className="px-6 py-3 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl text-xs font-black uppercase tracking-widest text-zinc-900 dark:text-white shadow-sm hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all active:scale-95 flex items-center gap-2 mx-auto"
             >
               <RefreshCw size={14} />
-              Recarregar App
+              Recarregar
             </button>
           </div>
         )}
@@ -1302,6 +1302,38 @@ const App: React.FC = () => {
 
 
 
+
+      {/* Modal de Visualização de Arquivo (Trainer) */}
+      {fileToView && (
+        <div className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="bg-white dark:bg-zinc-900 rounded-[32px] w-full max-w-4xl h-[85vh] shadow-2xl relative flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between p-4 border-b border-zinc-100 dark:border-zinc-800">
+              <h3 className="font-bold text-zinc-900 dark:text-white truncate pr-8">{fileToView.name}</h3>
+              <button
+                onClick={() => setFileToView(null)}
+                className="p-2 bg-zinc-100 dark:bg-zinc-800 rounded-full hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
+              >
+                <X size={20} className="text-zinc-600 dark:text-zinc-400" />
+              </button>
+            </div>
+            <div className="flex-1 bg-zinc-50 dark:bg-zinc-950 p-4 flex items-center justify-center overflow-auto">
+              {fileToView.type === 'pdf' ? (
+                <iframe
+                  src={fileToView.url}
+                  className="w-full h-full rounded-xl border border-zinc-200 dark:border-zinc-800"
+                  title={fileToView.name}
+                />
+              ) : (
+                <img
+                  src={fileToView.url}
+                  alt={fileToView.name}
+                  className="max-w-full max-h-full object-contain rounded-xl shadow-lg"
+                />
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
     </ThemeProvider >
   );
