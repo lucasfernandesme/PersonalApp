@@ -228,8 +228,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin }) => {
             </button>
 
             <div className="space-y-2">
-              <h2 className="text-2xl font-black text-slate-900 dark:text-white transition-colors">Cadastro Cloud</h2>
-              <p className="text-slate-400 dark:text-zinc-500 text-xs font-medium transition-colors">Sua conta será salva no banco de dados do Supabase.</p>
+              <h2 className="text-2xl font-black text-slate-900 dark:text-white transition-colors">Criar Conta</h2>
             </div>
 
             <form onSubmit={handleRegister} className="space-y-4">
@@ -265,37 +264,14 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin }) => {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-5 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 shadow-2xl shadow-zinc-900/20 dark:shadow-white/10 active:scale-95 disabled:opacity-50"
+                className="w-full py-5 rounded-[24px] font-black uppercase text-xs tracking-[0.2em] flex items-center justify-center gap-3 shadow-2xl transition-all active:scale-95 bg-zinc-900 dark:bg-white shadow-zinc-900/20 dark:shadow-white/10 text-white dark:text-zinc-900 disabled:opacity-50"
               >
-                {isLoading ? <Loader2 className="animate-spin" size={20} /> : <>Criar Conta na Nuvem <Cloud size={18} /></>}
+                {isLoading ? <Loader2 className="animate-spin" size={20} /> : <>Criar Conta <UserPlus size={18} /></>}
               </button>
             </form>
           </div>
         )}
         {/* DEBUG INFO */}
-        <div className="fixed bottom-2 left-2 text-[10px] text-zinc-500 opacity-50 pointer-events-auto">
-          <p>Students Conn: {students.length}</p>
-          <p className="max-w-[200px] truncate">Emails: {students.map(s => s.email).join(', ')}</p>
-          <p>API: {import.meta.env.VITE_SUPABASE_URL?.slice(0, 20)}...</p>
-        </div>
-        <button
-          onClick={async () => {
-            try {
-              // Busca os dados REAIS para ver se o RLS permite ler os nomes
-              const { data, error } = await supabase.from('students').select('name, email').limit(5);
-              if (error) alert('Erro: ' + error.message);
-              else {
-                const names = data.map(s => `${s.name} (${s.email})`).join('\n');
-                alert(`Conexão OK!\n\nAlunos encontrados (${data.length}):\n${names}`);
-              }
-            } catch (e) {
-              alert('Erro fatal: ' + e);
-            }
-          }}
-          className="fixed bottom-2 right-2 text-[10px] text-zinc-500 opacity-50 hover:opacity-100 underline"
-        >
-          Testar Conexão Real
-        </button>
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { User, Edit2, X, GraduationCap, Target, Camera, Mail, Instagram, Phone } from 'lucide-react';
 import { Student } from '../types';
+import { formatPhone } from '../utils/formatters';
 
 interface StudentProfileProps {
     student: Student;
@@ -24,7 +25,8 @@ const StudentProfile: React.FC<StudentProfileProps> = ({ student, onUpdateProfil
                 goal: goal as any,
                 email,
                 instagram,
-                whatsapp
+                whatsapp,
+                phone: whatsapp // Ensure phone is also updated
             });
         }
         setActiveModal(null);
@@ -178,7 +180,7 @@ const StudentProfile: React.FC<StudentProfileProps> = ({ student, onUpdateProfil
                                     <input
                                         type="tel"
                                         value={whatsapp}
-                                        onChange={(e) => setWhatsapp(e.target.value)}
+                                        onChange={(e) => setWhatsapp(formatPhone(e.target.value))}
                                         placeholder="(00) 00000-0000"
                                         className="w-full pl-12 pr-4 py-3 bg-zinc-50 dark:bg-zinc-800 border-none rounded-2xl font-bold text-zinc-800 dark:text-white focus:ring-2 focus:ring-emerald-500 transition-all"
                                     />

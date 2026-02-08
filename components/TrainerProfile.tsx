@@ -7,6 +7,7 @@ import ReportsScreen from './ReportsScreen';
 import { DataService } from '../services/dataService';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../services/supabase';
+import { formatPhone } from '../utils/formatters';
 
 interface TrainerProfileProps {
     user: AuthUser;
@@ -516,7 +517,9 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, 
                                     type="text"
                                     name="whatsapp"
                                     value={formData.whatsapp}
-                                    onChange={handleInputChange}
+                                    onChange={(e) => {
+                                        setFormData(prev => ({ ...prev, whatsapp: formatPhone(e.target.value) }));
+                                    }}
                                     className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800 border-none rounded-2xl font-bold text-zinc-800 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 transition-colors"
                                     placeholder="(00) 00000-0000"
                                 />

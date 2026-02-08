@@ -31,7 +31,7 @@ import SubscriptionScreen from './components/SubscriptionScreen';
 const STORAGE_KEY_AUTH = 'fitai_pro_auth_session';
 
 const App: React.FC = () => {
-  const { user: supabaseUser, subscriptionStatus, loading: authLoading } = useAuth();
+  const { user: supabaseUser, subscriptionStatus, loading: authLoading, refreshSubscription } = useAuth();
   const [authUser, setAuthUser] = useState<AuthUser | null>(() => {
     const saved = localStorage.getItem(STORAGE_KEY_AUTH);
     return saved ? JSON.parse(saved) : null;
@@ -256,6 +256,9 @@ const App: React.FC = () => {
 
   const handleLogin = (user: AuthUser) => {
     setIsLoading(true); // Garante que ao logar, o useEffect de loadData seja "notado"
+    if (user.role === UserRole.TRAINER && user.email) {
+      refreshSubscription(user.email).catch(console.error);
+    }
     setAuthUser(user);
     setActiveTab('home');
     setActiveView('dashboard');
@@ -470,6 +473,13 @@ const App: React.FC = () => {
 
     try {
       setIsSaving(true);
+
+      // Sync phone with whatsapp if whatsapp is being updated
+      // ensuring consistency between StudentRegistration (uses phone) and StudentProfile (uses whatsapp)
+      if (updates.whatsapp) {
+        updates.phone = updates.whatsapp;
+      }
+
       const updatedStudent = { ...currentStudent, ...updates };
 
       await DataService.saveStudent(updatedStudent);
@@ -1042,7 +1052,7 @@ const App: React.FC = () => {
     );
   };
 
-  if (isLoading) {
+  if (isLoading || (authUser && authLoading)) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 dark:bg-zinc-950 p-6 text-center">
         <Loader2 className="w-12 h-12 text-zinc-900 dark:text-zinc-100 animate-spin mb-4" />

@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, User, Mail, Phone, Calendar, Ruler, Weight, CheckCircle2 } from 'lucide-react';
+import { formatPhone } from '../utils/formatters';
 
 interface StudentRegistrationScreenProps {
   onSave: (studentData: any) => void;
@@ -10,20 +11,6 @@ interface StudentRegistrationScreenProps {
 }
 
 const StudentRegistrationScreen: React.FC<StudentRegistrationScreenProps> = ({ onSave, onBack, initialData, onDelete }) => {
-  const formatPhone = (value: string) => {
-    const numbers = value.replace(/\D/g, '');
-    if (numbers.length <= 11) {
-      let formatted = numbers;
-      if (numbers.length > 2) {
-        formatted = `(${numbers.slice(0, 2)}) ${numbers.slice(2)}`;
-      }
-      if (numbers.length > 7) {
-        formatted = `(${numbers.slice(0, 2)}) ${numbers.slice(2, 7)}-${numbers.slice(7, 11)}`;
-      }
-      return formatted;
-    }
-    return value.slice(0, 15); // Limita o tamanho visual
-  };
 
   const formatCPF = (value: string) => {
     const numbers = value.replace(/\D/g, '');
@@ -63,7 +50,7 @@ const StudentRegistrationScreen: React.FC<StudentRegistrationScreenProps> = ({ o
         name: initialData.name || '',
         email: initialData.email || '',
         cpf: initialData.cpf || '',
-        phone: initialData.phone || '',
+        phone: formatPhone(initialData.phone || ''),
         birthDate: initialData.birthDate || '',
         gender: initialData.gender || 'male',
         goal: initialData.goal || 'Hipertrofia',
