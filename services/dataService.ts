@@ -59,6 +59,7 @@ export const DataService = {
       // Se sucesso no fallback, usa os dados simples (sem info do trainer)
       return (simpleData || []).map(s => ({
         ...s,
+        cpf: s.cpf || '',
         phone: s.phone || '',
         birthDate: s.birth_date || '',
         gender: s.gender || '',
@@ -82,6 +83,7 @@ export const DataService = {
 
       return {
         ...s,
+        cpf: s.cpf || '',
         phone: s.phone || '',
         birthDate: s.birth_date || '',
         gender: s.gender || '',
@@ -153,6 +155,7 @@ export const DataService = {
       id: student.id,
       name: student.name,
       email: student.email,
+      cpf: student.cpf,
       phone: student.phone,
       birth_date: student.birthDate,
       height: student.height,
@@ -331,11 +334,21 @@ export const DataService = {
     if (!trainer.id) return;
 
     // Remove campos que não são colunas do banco se existirem
-    const { role, ...rest } = trainer as any;
+    const { role, subscriptionStatus, subscriptionEndDate, ...rest } = trainer as any;
+
+    const payload = {
+      ...rest,
+      id: trainer.id,
+      subscription_status: subscriptionStatus,
+      subscription_end_date: subscriptionEndDate
+    };
+
+    // Remove undefined values
+    Object.keys(payload).forEach(key => payload[key] === undefined && delete payload[key]);
 
     const { error } = await supabase
       .from('trainers')
-      .upsert({ ...rest, id: trainer.id });
+      .upsert(payload);
 
     if (error) {
       console.error("Erro ao atualizar trainer:", error);

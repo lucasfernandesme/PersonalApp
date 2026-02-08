@@ -14,13 +14,11 @@ import {
   Calendar,
   Eye,
   MessageSquareQuote,
-  Sparkles,
   Loader2
 } from 'lucide-react';
 import { TrainingProgram, WorkoutDay, Exercise } from '../types';
 import ExerciseLibraryModal from './ExerciseLibraryModal';
 import { LibraryExercise } from '../constants/exercises';
-import { generateSingleExerciseTip } from '../services/geminiService';
 
 interface ManualWorkoutBuilderProps {
   studentName: string;
@@ -50,7 +48,7 @@ const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
   ]);
   const [error, setError] = useState<string | null>(null);
   const [observations, setObservations] = useState(initialProgram?.observations || '');
-  const [generatingTips, setGeneratingTips] = useState<Record<string, boolean>>({});
+
   const [isSaving, setIsSaving] = useState(false);
 
   const [isLibraryOpen, setIsLibraryOpen] = useState(false);
@@ -107,26 +105,7 @@ const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
     setActiveExIdx(null);
   };
 
-  const handleGenerateAITip = async (dIdx: number, eIdx: number, exerciseName: string) => {
-    if (!exerciseName) return;
 
-    console.log("Gerando dica para:", exerciseName);
-    const tipKey = `${dIdx}-${eIdx}`;
-    setGeneratingTips(prev => ({ ...prev, [tipKey]: true }));
-
-    try {
-      const tip = await generateSingleExerciseTip(exerciseName, { goal: studentGoal, injuries: studentInjuries });
-      if (tip) {
-        updateExercise(dIdx, eIdx, 'notes', tip);
-      }
-    } catch (err: any) {
-      console.error("Erro no front:", err);
-      alert(`Erro ao gerar dica: ${err.message || 'Verifique sua conexão e a chave de API.'}`);
-      updateExercise(dIdx, eIdx, 'notes', "Erro ao gerar dica. Tente manualmente.");
-    } finally {
-      setGeneratingTips(prev => ({ ...prev, [tipKey]: false }));
-    }
-  };
 
   const updateExercise = (dayIndex: number, exIndex: number, field: keyof Exercise, value: any) => {
     const newDays = [...days];
@@ -389,19 +368,7 @@ const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
                             <MessageSquareQuote size={10} />
                             Dica do Personal
                           </label>
-                          <button
-                            type="button"
-                            onClick={() => handleGenerateAITip(dIdx, eIdx, ex.name)}
-                            disabled={generatingTips[`${dIdx}-${eIdx}`] || !ex.name}
-                            className="flex items-center gap-1 text-[8px] font-black uppercase text-zinc-900 dark:text-zinc-100 bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 disabled:opacity-50 transition-all"
-                          >
-                            {generatingTips[`${dIdx}-${eIdx}`] ? (
-                              <Loader2 size={10} className="animate-spin" />
-                            ) : (
-                              <Sparkles size={10} />
-                            )}
-                            Gerar com IA
-                          </button>
+
                         </div>
                         <textarea
                           placeholder="Dica de biomecânica ou segurança..."

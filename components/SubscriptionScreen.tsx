@@ -8,6 +8,8 @@ const SubscriptionScreen: React.FC = () => {
     const [isRedirecting, setIsRedirecting] = React.useState(false);
     const [isRefreshing, setIsRefreshing] = React.useState(false);
 
+    console.log('SubscriptionScreen Debug:', { subscriptionStatus, subscriptionEndDate });
+
     const handleSubscribe = async () => {
         console.log('Iniciando handleSubscribe...');
         setIsRedirecting(true);
@@ -90,7 +92,7 @@ const SubscriptionScreen: React.FC = () => {
 
     const statusMap: Record<string, { label: string; color: string; icon: any }> = {
         'active': { label: 'Assinatura Ativa', color: 'text-emerald-500 bg-emerald-50 dark:bg-emerald-900/20', icon: ShieldCheck },
-        'trial': { label: 'Período de Testes', color: 'text-blue-500 bg-blue-50 dark:bg-blue-900/20', icon: Rocket },
+        'trial': { label: 'Teste Grátis (7 dias)', color: 'text-blue-500 bg-blue-50 dark:bg-blue-900/20', icon: Rocket },
         'past_due': { label: 'Pagamento Pendente', color: 'text-amber-500 bg-amber-50 dark:bg-amber-900/20', icon: Zap },
         'canceled': { label: 'Assinatura Cancelada', color: 'text-red-500 bg-red-50 dark:bg-red-900/20', icon: Zap },
         'unpaid': { label: 'Aguardando Pagamento', color: 'text-zinc-500 bg-zinc-50 dark:bg-zinc-800', icon: CreditCard },
@@ -174,6 +176,16 @@ const SubscriptionScreen: React.FC = () => {
                             <p className="font-black text-sm uppercase">{currentStatus.label}</p>
                         </div>
                     </div>
+
+                    {subscriptionStatus === 'trial' && subscriptionEndDate && (
+                        <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/10 rounded-2xl border border-blue-100 dark:border-blue-800/50">
+                            <p className="text-sm text-blue-600 dark:text-blue-400 font-bold mb-1">Seu teste expira em</p>
+                            <div className="text-3xl font-black text-blue-700 dark:text-blue-300">
+                                {Math.ceil((new Date(subscriptionEndDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} dias
+                            </div>
+                            <p className="text-[10px] text-blue-500/70 dark:text-blue-400/70 mt-1 font-bold uppercase tracking-widest">Aproveite todos os recursos</p>
+                        </div>
+                    )}
 
                     {(!subscriptionStatus || subscriptionStatus !== 'active') ? (
                         <>

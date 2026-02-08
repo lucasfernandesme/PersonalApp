@@ -19,3 +19,15 @@ export const formatPhone = (value: string | undefined | null) => {
 
     return formatted;
 };
+
+export const translateExperience = (level: string | undefined) => {
+    if (!level) return 'Iniciante';
+
+    const map: Record<string, string> = {
+        'beginner': 'Iniciante',
+        'intermediate': 'Intermediário',
+        'advanced': 'Avançado'
+    };
+
+    return map[level.toLowerCase()] || level;
+};

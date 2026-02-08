@@ -10,6 +10,7 @@ import ManualWorkoutBuilder from './components/ManualWorkoutBuilder';
 import WorkoutLibraryScreen from './components/WorkoutLibraryScreen';
 
 import { DataService } from './services/dataService';
+import { formatPhone, translateExperience } from './utils/formatters';
 import { LibraryExercise } from './constants/exercises';
 import StudentRegistrationScreen from './components/StudentRegistrationScreen';
 import ExerciseManagerScreen from './components/ExerciseManagerScreen';
@@ -507,22 +508,23 @@ const App: React.FC = () => {
                 email: studentData.email,
                 phone: studentData.phone,
                 birthDate: studentData.birthDate,
-                isActive: true,
+                cpf: studentData.cpf,
+                gender: studentData.gender,
+                goal: studentData.goal,
+                experience: studentData.experience,
+                isActive: studentData.isActive,
                 program: null,
+                programs: [],
                 history: [],
-                // Default values or derived from form if available
-                goal: 'Hipertrofia',
-                experience: 'beginner',
-                files: [
-                  { id: '1', name: 'Avaliação Física.pdf', type: 'pdf', url: '#', date: '04/02/2026' },
-                  { id: '2', name: 'Dieta.pdf', type: 'pdf', url: '#', date: '01/02/2026' }
-                ]
+                files: []
               };
               await DataService.saveStudent(newStudent as any, authUser?.id);
               await reloadStudents();
               setActiveView('dashboard');
+              alert('Aluno cadastrado com sucesso!');
             } catch (e) {
               console.error("Erro ao cadastrar.", e);
+              alert('Erro ao cadastrar aluno. Verifique os dados e tente novamente.');
             } finally {
               setIsSaving(false);
             }
@@ -560,8 +562,10 @@ const App: React.FC = () => {
               await reloadStudents();
               setSelectedStudent(updated);
               setActiveView('dashboard');
+              alert('Dados atualizados com sucesso!');
             } catch (e) {
               console.error("Erro ao salvar.", e);
+              alert('Erro ao salvar os dados. Tente novamente.');
             } finally {
               setIsSaving(false);
             }
@@ -643,6 +647,65 @@ const App: React.FC = () => {
       return <ChatScreen role={UserRole.TRAINER} />;
     }
 
+    const handleActivateStudentProgram = async (programId: string) => {
+      if (!selectedStudent || !selectedStudent.programs) return;
+
+      const programToActivate = selectedStudent.programs.find(p => p.id === programId);
+      if (!programToActivate) return;
+
+      const updatedStudent = {
+        ...selectedStudent,
+        program: programToActivate
+      };
+
+      setSelectedStudent(updatedStudent);
+
+      // Update local students list immediately
+      setStudents(prev => prev.map(s => s.id === updatedStudent.id ? updatedStudent : s));
+
+      try {
+        if (authUser?.id) {
+          await DataService.saveStudent(updatedStudent, authUser.id);
+        }
+      } catch (error) {
+        console.error("Erro ao ativar treino:", error);
+        alert("Erro ao ativar o treino. Tente novamente.");
+      }
+    };
+
+    const handleDeleteStudentProgram = async (programId: string) => {
+      if (!selectedStudent || !selectedStudent.programs) return;
+
+      if (!window.confirm("Tem certeza que deseja excluir este treino? A ação não pode ser desfeita.")) {
+        return;
+      }
+
+      const updatedPrograms = selectedStudent.programs.filter(p => p.id !== programId);
+
+      let updatedActiveProgram = selectedStudent.program;
+      if (selectedStudent.program?.id === programId) {
+        updatedActiveProgram = undefined;
+      }
+
+      const updatedStudent = {
+        ...selectedStudent,
+        programs: updatedPrograms,
+        program: updatedActiveProgram
+      };
+
+      setSelectedStudent(updatedStudent);
+      setStudents(prev => prev.map(s => s.id === updatedStudent.id ? updatedStudent : s));
+
+      try {
+        if (authUser?.id) {
+          await DataService.saveStudent(updatedStudent, authUser.id);
+        }
+      } catch (error) {
+        console.error("Erro ao excluir treino:", error);
+        alert("Erro ao excluir o treino. Tente novamente.");
+      }
+    };
+
     if (activeTab === 'students' && selectedStudent) {
       return (
         <div className="space-y-6 animate-in fade-in duration-300 pb-20">
@@ -671,7 +734,7 @@ const App: React.FC = () => {
                 <h2 className="text-2xl md:text-3xl font-black text-slate-900 dark:text-white tracking-tight">{selectedStudent.name}</h2>
                 <div className="flex flex-wrap gap-2 mt-2">
                   <span className="px-3 py-1 bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 text-[10px] font-black uppercase rounded-full border border-zinc-200 dark:border-zinc-700">{selectedStudent.goal}</span>
-                  <span className="px-3 py-1 bg-slate-50 dark:bg-zinc-800 text-slate-500 dark:text-zinc-400 text-[10px] font-black uppercase rounded-full border border-slate-100 dark:border-zinc-700">{selectedStudent.experience}</span>
+                  <span className="px-3 py-1 bg-slate-50 dark:bg-zinc-800 text-slate-500 dark:text-zinc-400 text-[10px] font-black uppercase rounded-full border border-slate-100 dark:border-zinc-700">{translateExperience(selectedStudent.experience)}</span>
                 </div>
               </div>
             </div>
@@ -956,9 +1019,7 @@ const App: React.FC = () => {
                           className="cursor-pointer flex-1"
                         >
                           <div className="flex items-center gap-2 mb-2">
-                            {selectedStudent.program?.id === prog.id && (
-                              <span className="px-2 py-0.5 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 text-[9px] font-black uppercase rounded-md border border-emerald-100 dark:border-emerald-800">Ativo</span>
-                            )}
+
                           </div>
                           <div className="flex items-center gap-2">
                             <h4 className="text-xl font-black text-slate-900 dark:text-white mb-1">{prog.name}</h4>
@@ -971,11 +1032,32 @@ const App: React.FC = () => {
                                 <span className="w-1 h-1 bg-slate-200 dark:bg-slate-700 rounded-full"></span>
                                 <span className="text-red-400">Expira em: {prog.endDate}</span>
                               </>
+
                             )}
                           </div>
                         </div>
 
                         <div className="flex items-center gap-2">
+                          {selectedStudent.program?.id === prog.id ? (
+                            <button
+                              disabled
+                              className="px-3 py-1.5 bg-emerald-500 text-white rounded-xl text-[10px] font-black uppercase tracking-wide flex items-center gap-1.5 shadow-sm shadow-emerald-500/20 cursor-default"
+                            >
+                              <CheckCircle2 size={12} className="text-white" strokeWidth={3} />
+                              Ativo
+                            </button>
+                          ) : (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleActivateStudentProgram(prog.id);
+                              }}
+                              className="px-3 py-1.5 border border-zinc-200 dark:border-zinc-700 text-zinc-400 dark:text-zinc-500 hover:border-emerald-500 hover:text-emerald-500 dark:hover:border-emerald-500 dark:hover:text-emerald-500 rounded-xl text-[10px] font-black uppercase tracking-wide transition-all bg-transparent"
+                            >
+                              Ativar
+                            </button>
+                          )}
+                          <div className="w-px h-4 bg-zinc-200 dark:bg-zinc-800 mx-1"></div>
                           <button
                             onClick={() => {
                               setWorkoutToEdit(prog);
@@ -986,8 +1068,9 @@ const App: React.FC = () => {
                             <Edit2 size={18} />
                           </button>
                           <button
-                            onClick={async () => {
-                              // ... delete confirm ...
+                            onClick={async (e) => {
+                              e.stopPropagation();
+                              handleDeleteStudentProgram(prog.id);
                             }}
                             className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-xl transition-all"
                           >
@@ -1129,8 +1212,23 @@ const App: React.FC = () => {
     );
   }
 
-  if (authUser?.role === UserRole.TRAINER && !authLoading && (!subscriptionStatus || subscriptionStatus !== 'active')) {
-    return <SubscriptionScreen />;
+  // Check for Active Subscription
+  // Allowing 'trial' status to pass here, because specific trial expiration is handled below (around line 1290)
+
+  if (authUser?.role === UserRole.TRAINER && !authLoading) {
+    // If status is not yet loaded (null/undefined), show loading instead of blocking
+    // This prevents the "flash" of the subscription screen while status is syncing
+    if (!subscriptionStatus) {
+      return (
+        <div className="min-h-screen bg-zinc-50 dark:bg-black flex items-center justify-center">
+          <Loader2 className="w-8 h-8 text-indigo-500 animate-spin" />
+        </div>
+      );
+    }
+
+    if (subscriptionStatus !== 'active' && subscriptionStatus !== 'trial') {
+      return <SubscriptionScreen />;
+    }
   }
 
   if (!authUser) {
@@ -1207,9 +1305,52 @@ const App: React.FC = () => {
   if (authUser && authUser.role === UserRole.TRAINER && authUser.subscriptionStatus === 'trial') {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
+
+    // Parse the date string "YYYY-MM-DD" correctly
+    // If it's already a string like "2026-02-15", new Date() usually works, but let's be safe
+    // and ensure we are comparing timestamps or properly parsed dates
     const endDate = authUser.subscriptionEndDate ? new Date(authUser.subscriptionEndDate) : null;
 
+    // If it was just a date string (YYYY-MM-DD), set to end of day.
+    // If it is an ISO string (YYYY-MM-DDTHH:mm:ss.sssZ), it already has time.
+    // But for trial, we want to be generous: if it has a time, use it. If it's just a date, assume end of day.
+    // The previous split('T')[0] made it midnight of that day.
+
+    if (endDate) {
+      // If the date is exactly midnight (local or UTC), it might have been created without time.
+      // Let's force it to 23:59:59 if we suspect it's just a date.
+      // However, since we changed LoginScreen to send ISO, let's trust the date object but maybe add a buffer?
+      // Actually, the safest logic for "7 days free":
+      // If I sign up Monday 10am, it expires Monday 10am next week.
+      // "Today" (at 00:00) > EndDate (Monday 10am) -> False.
+      // Tuesday (00:00) > EndDate (Monday 10am) -> True. 
+      // usage: on Monday 11am, today (Mon 00:00) is NOT > EndDate. So it passes.
+      // BUT, new Date() defaults to local time.
+      // If today is Mon 00:00. EndDate is Mon 10am. 
+      // today > endDate is FALSE. Access granted.
+      //
+      // If I check at Monday 11pm. today is STILL Mon 00:00.
+      // today > endDate is FALSE. Access granted.
+      // This effectively gives until the END of the expiry day, assuming 'today' is stripped of time.
+
+      // So the logic `today.setHours(0,0,0,0)` combined with `today > endDate` is actually very permissive.
+      // It only blocks the DAY AFTER the end date.
+      // Example: EndDate = 15th Feb 14:00.
+      // Current Time = 15th Feb 20:00. Today = 15th Feb 00:00.
+      // Today > EndDate? (15th 00:00 > 15th 14:00) -> FALSE. Access GRANTED.
+      // Current Time = 16th Feb 08:00. Today = 16th Feb 00:00.
+      // Today > EndDate? (16th 00:00 > 15th 14:00) -> TRUE. Access BLOCKED.
+
+      // So the logic seems correct for "inclusive" expiration.
+      // The issue might be parsing.
+      console.log('Validating Trial:', { today, endDate, raw: authUser.subscriptionEndDate });
+    }
+
     if (endDate && today > endDate) {
+      console.log('BLOCKING ACCESS - Trial Expired');
+      console.log('Today:', today);
+      console.log('End Date:', endDate);
+      console.log('Raw Subscription End Date:', authUser.subscriptionEndDate);
       return (
         <ThemeProvider>
           <SubscriptionScreen />

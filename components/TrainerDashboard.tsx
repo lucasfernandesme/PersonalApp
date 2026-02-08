@@ -3,11 +3,9 @@ import {
   Users,
   UserPlus,
   Search,
-  Activity,
   BookOpen,
   ChevronRight,
   PlusCircle,
-  ExternalLink,
   MessageCircle
 } from 'lucide-react';
 import { Student } from '../types';
@@ -240,27 +238,7 @@ const TrainerDashboard: React.FC<TrainerDashboardProps> = ({
         )}
       </div>
 
-      {!onlyList && (
-        <div className="bg-gradient-to-br from-zinc-900 to-zinc-950 dark:from-zinc-950 dark:to-black rounded-[40px] p-8 text-white relative overflow-hidden shadow-2xl">
-          <div className="relative z-10 max-w-[200px]">
-            <h4 className="font-black text-xl mb-2 leading-tight">Gere treinos em segundos</h4>
-            <p className="text-sm text-zinc-400 font-medium mb-6">Use nossa inteligência para otimizar suas fichas.</p>
-            <button
-              onClick={onOpenOnboarding}
-              className="bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white px-6 py-3 rounded-2xl text-xs font-black uppercase tracking-widest shadow-lg active:scale-95 transition-all flex items-center gap-2"
-            >
-              Começar IA
-              <ExternalLink size={14} />
-            </button>
-          </div>
-          <Activity className="absolute -right-8 -bottom-8 w-48 h-48 text-white/5 rotate-12" />
-          <div className="absolute top-0 right-0 p-8">
-            <div className="p-3 bg-white/10 rounded-2xl backdrop-blur-md">
-              <BookOpen className="text-zinc-400" size={24} />
-            </div>
-          </div>
-        </div>
-      )}
+
     </div>
   );
 };

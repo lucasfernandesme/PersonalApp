@@ -11,6 +11,7 @@ import {
   Dumbbell,
   ArrowLeft
 } from 'lucide-react';
+import { translateExperience } from '../utils/formatters';
 
 interface StudentProgressScreenProps {
   student: Student;
@@ -69,7 +70,7 @@ const StudentProgressScreen: React.FC<StudentProgressScreenProps> = ({ student, 
         <StatCard
           icon={<Trophy className="text-orange-500" size={20} />}
           label="Nível"
-          value={student.experience}
+          value={translateExperience(student.experience)}
           unit="experiência"
           isUpper
         />

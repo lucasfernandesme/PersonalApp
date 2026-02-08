@@ -17,6 +17,7 @@ interface TrainerProfileProps {
 
 const statusMap: Record<string, { label: string; color: string }> = {
     'active': { label: 'Ativo', color: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' },
+    'trial': { label: 'Teste Grátis', color: 'bg-blue-500/10 text-blue-500 border-blue-500/20' },
     'past_due': { label: 'Pendente', color: 'bg-amber-500/10 text-amber-500 border-amber-500/20' },
     'canceled': { label: 'Cancelado', color: 'bg-red-500/10 text-red-500 border-red-500/20' },
     'unpaid': { label: 'Inativo', color: 'bg-zinc-500/10 text-zinc-500 border-zinc-500/20' },
@@ -651,6 +652,16 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, 
                                     <p className="text-xs text-zinc-500 dark:text-zinc-400">Expira em: {new Date(subscriptionEndDate).toLocaleDateString('pt-BR')}</p>
                                 )}
                             </div>
+
+                            {subscriptionStatus === 'trial' && subscriptionEndDate && (
+                                <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/10 rounded-2xl border border-blue-100 dark:border-blue-800/50 text-center">
+                                    <p className="text-sm text-blue-600 dark:text-blue-400 font-bold mb-1">Seu teste expira em</p>
+                                    <div className="text-3xl font-black text-blue-700 dark:text-blue-300">
+                                        {Math.ceil((new Date(subscriptionEndDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} dias
+                                    </div>
+                                    <p className="text-[10px] text-blue-500/70 dark:text-blue-400/70 mt-1 font-bold uppercase tracking-widest">Aproveite todos os recursos</p>
+                                </div>
+                            )}
 
                             <div className="space-y-3">
                                 {subscriptionStatus !== 'active' ? (

@@ -120,7 +120,10 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin }) => {
           role: UserRole.TRAINER,
           avatar: `https://picsum.photos/seed/${email.toLowerCase()}/100`,
           subscriptionStatus: 'trial',
-          subscriptionEndDate: trialEndDate.toISOString().split('T')[0]
+          // Use full ISO string to avoid timezone confusion, handled by DB as TIMESTAMPTZ or parsed
+          // Actually, App.tsx parses it as Date. 
+          // Let's set it to 7 days from now.
+          subscriptionEndDate: trialEndDate.toISOString()
         };
 
         // Salvar no banco customizado 'trainers' também
@@ -129,8 +132,10 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin }) => {
         onLogin(initialProfile);
       }
 
-    } catch (err) {
-      setError('Falha ao criar conta. Verifique sua conexão.');
+    } catch (err: any) {
+      console.error("Erro no registro:", err);
+      setError(err.message || 'Falha ao criar conta. Verifique sua conexão.');
+      alert(`Erro: ${err.message || 'Desconhecido'}`);
     } finally {
       setIsLoading(false);
     }

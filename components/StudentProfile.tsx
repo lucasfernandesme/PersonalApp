@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { User, Edit2, X, GraduationCap, Target, Camera, Mail, Instagram, Phone } from 'lucide-react';
+import { translateExperience } from '../utils/formatters';
 import { Student } from '../types';
 import { formatPhone } from '../utils/formatters';
 
@@ -91,7 +92,7 @@ const StudentProfile: React.FC<StudentProfileProps> = ({ student, onUpdateProfil
                     </div>
                     <div className="text-center">
                         <p className="text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase">Nível</p>
-                        <p className="text-sm font-bold text-zinc-800 dark:text-white transition-colors">{student.experience || 'Iniciante'}</p>
+                        <p className="text-sm font-bold text-zinc-800 dark:text-white transition-colors">{translateExperience(student.experience)}</p>
                     </div>
                 </div>
             </div>
