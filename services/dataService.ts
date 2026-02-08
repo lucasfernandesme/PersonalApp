@@ -221,10 +221,16 @@ export const DataService = {
     const cloudExercises = data || [];
     const combined = [...EXERCISES_DB];
 
-    cloudExercises.forEach((cloudEx: LibraryExercise) => {
+    cloudExercises.forEach((cloudEx: any) => {
       const exists = combined.some(ex => ex.name.toLowerCase() === cloudEx.name.toLowerCase());
       if (!exists) {
-        combined.unshift(cloudEx);
+        combined.unshift({
+          id: cloudEx.id,
+          name: cloudEx.name,
+          category: cloudEx.category,
+          videoUrl: cloudEx.video_url, // Map from DB column
+          isStandard: false
+        });
       }
     });
 
@@ -262,6 +268,15 @@ export const DataService = {
 
     const { error } = await supabase.from('exercises').upsert(payload);
     if (error) throw error;
+  },
+
+  async deleteExercise(id: string): Promise<void> {
+    if (!supabase) {
+      const exercises = await this.getLibraryExercises();
+      localStorage.setItem('fitai_pro_custom_exercises', JSON.stringify(exercises.filter(ex => ex.id !== id)));
+      return;
+    }
+    await supabase.from('exercises').delete().eq('id', id);
   },
 
   // --- TRAINERS / AUTH ---

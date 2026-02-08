@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Plus, Activity, ChevronRight, Ruler, BrainCircuit, X, Image as ImageIcon, Trash2, Trophy, BarChart2, Pencil } from 'lucide-react';
+import { ArrowLeft, Plus, Activity, ChevronRight, Ruler, BrainCircuit, X, Image as ImageIcon, Trash2, Trophy, BarChart2, Pencil, Loader2 } from 'lucide-react';
 import { Student, Assessment, Anamnesis, SkinfoldData, CircumferenceData } from '../types';
 import { calculateAge, calculateBodyFat, calculateFatMass, calculateLeanMass, calculateIMC, calculateRCQ, sumCircumferences, sumSkinfolds, calculateIdealFat } from '../utils/assessmentCalculations';
+import { DataService } from '../services/dataService';
 
 interface StudentAssessmentsScreenProps {
     student: Student;
@@ -17,6 +18,9 @@ const StudentAssessmentsScreen: React.FC<StudentAssessmentsScreenProps> = ({ stu
     const [showNewAnamnesisModal, setShowNewAnamnesisModal] = useState(false);
     const [editingAssessmentId, setEditingAssessmentId] = useState<string | null>(null);
     const [selectedAnamnesis, setSelectedAnamnesis] = useState<Anamnesis | null>(null);
+    const [anamnesisTab, setAnamnesisTab] = useState<'medical' | 'lifestyle' | 'training'>('medical');
+    const [isSaving, setIsSaving] = useState(false);
+    const [viewingPhoto, setViewingPhoto] = useState<string | null>(null);
 
     // New Assessment State
     const [newAssessment, setNewAssessment] = useState<Partial<Assessment>>({
@@ -44,56 +48,69 @@ const StudentAssessmentsScreen: React.FC<StudentAssessmentsScreenProps> = ({ stu
             return;
         }
 
-        const age = calculateAge(student.birthDate || '');
-        const bodyFat = calculateBodyFat(newAssessment.skinfolds || {}, student.gender, age, newAssessment.protocol as any);
-        const fatMass = calculateFatMass(newAssessment.weight, bodyFat);
-        const leanMass = calculateLeanMass(newAssessment.weight, fatMass);
+        setIsSaving(true);
+        try {
+            const age = calculateAge(student.birthDate || '');
+            const bodyFat = calculateBodyFat(newAssessment.skinfolds || {}, student.gender, age, newAssessment.protocol as any);
+            const fatMass = calculateFatMass(newAssessment.weight, bodyFat);
+            const leanMass = calculateLeanMass(newAssessment.weight, fatMass);
 
-        const assessmentData: Assessment = {
-            id: editingAssessmentId || Math.random().toString(36).substr(2, 9),
-            date: newAssessment.date!,
-            protocol: newAssessment.protocol as any,
-            weight: newAssessment.weight,
-            height: newAssessment.height,
-            skinfolds: newAssessment.skinfolds || {},
-            circumferences: newAssessment.circumferences || {},
-            photos: newAssessment.photos || [],
-            targetBodyFat: newAssessment.targetBodyFat,
-            idealWeight: newAssessment.idealWeight,
-            notes: newAssessment.notes,
-            bodyFatPercentage: bodyFat,
-            fatMass: fatMass,
-            leanMass: leanMass
-        };
+            const assessmentData: Assessment = {
+                id: editingAssessmentId || Math.random().toString(36).substr(2, 9),
+                date: newAssessment.date!,
+                protocol: newAssessment.protocol as any,
+                weight: newAssessment.weight,
+                height: newAssessment.height,
+                skinfolds: newAssessment.skinfolds || {},
+                circumferences: newAssessment.circumferences || {},
+                photos: newAssessment.photos || [],
+                targetBodyFat: newAssessment.targetBodyFat,
+                idealWeight: newAssessment.idealWeight,
+                notes: newAssessment.notes,
+                bodyFatPercentage: bodyFat,
+                fatMass: fatMass,
+                leanMass: leanMass
+            };
 
-        const updatedStudent = { ...student };
+            const updatedStudent = { ...student };
 
-        if (editingAssessmentId) {
-            updatedStudent.assessments = (student.assessments || []).map(a =>
-                a.id === editingAssessmentId ? assessmentData : a
-            );
-        } else {
-            updatedStudent.assessments = [...(student.assessments || []), assessmentData];
-            updatedStudent.height = newAssessment.height ? newAssessment.height.toString() : student.height;
+            if (editingAssessmentId) {
+                updatedStudent.assessments = (student.assessments || []).map(a =>
+                    a.id === editingAssessmentId ? assessmentData : a
+                );
+            } else {
+                updatedStudent.assessments = [...(student.assessments || []), assessmentData];
+                updatedStudent.height = newAssessment.height ? newAssessment.height.toString() : student.height;
+            }
+
+            // Optimistic update
+            if (onUpdate) onUpdate(updatedStudent);
+
+            // Persist
+            await DataService.saveStudent(updatedStudent);
+
+            setShowNewAssessmentModal(false);
+            setEditingAssessmentId(null);
+
+            // Reset form
+            setNewAssessment({
+                date: new Date().toISOString().split('T')[0],
+                protocol: 'pollock3',
+                weight: 0,
+                height: student.height ? parseFloat(student.height) : 0,
+                skinfolds: {},
+                circumferences: {},
+                photos: [],
+                targetBodyFat: 0,
+                idealWeight: 0,
+                notes: ''
+            });
+        } catch (error) {
+            console.error("Erro ao salvar avaliação:", error);
+            alert("Erro ao salvar avaliação.");
+        } finally {
+            setIsSaving(false);
         }
-
-        await onUpdate(updatedStudent);
-        setShowNewAssessmentModal(false);
-        setEditingAssessmentId(null);
-
-        // Reset form
-        setNewAssessment({
-            date: new Date().toISOString().split('T')[0],
-            protocol: 'pollock3',
-            weight: 0,
-            height: student.height ? parseFloat(student.height) : 0,
-            skinfolds: {},
-            circumferences: {},
-            photos: [],
-            targetBodyFat: 0,
-            idealWeight: 0,
-            notes: ''
-        });
     };
 
     const handleEditAssessment = (assessment: Assessment) => {
@@ -115,23 +132,77 @@ const StudentAssessmentsScreen: React.FC<StudentAssessmentsScreenProps> = ({ stu
     };
 
     const handleSaveAnamnesis = async () => {
-        const anamnesis: Anamnesis = {
-            id: Math.random().toString(36).substr(2, 9),
-            date: newAnamnesis.date!,
-            answers: newAnamnesis.answers || {}
-        };
+        setIsSaving(true);
+        try {
+            const anamnesis: Anamnesis = {
+                id: Math.random().toString(36).substr(2, 9),
+                date: newAnamnesis.date!,
+                answers: newAnamnesis.answers || {}, // Keep legacy for fallback or if used
+                medical: newAnamnesis.medical,
+                lifestyle: newAnamnesis.lifestyle,
+                training: newAnamnesis.training
+            };
+
+            const updatedStudent = {
+                ...student,
+                anamnesis: [anamnesis, ...(student.anamnesis || [])]
+            };
+
+            // Optimistic update
+            if (onUpdate) onUpdate(updatedStudent);
+
+            // Persist
+            await DataService.saveStudent(updatedStudent);
+
+            setShowNewAnamnesisModal(false);
+            setNewAnamnesis({
+                date: new Date().toISOString().split('T')[0],
+                answers: {}
+            });
+        } catch (error) {
+            console.error("Erro ao salvar anamnese:", error);
+            alert("Erro ao salvar anamnese.");
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
+    const handleDeleteAnamnesis = async (id: string, e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (!window.confirm('Tem certeza que deseja excluir esta anamnese?')) return;
 
         const updatedStudent = {
             ...student,
-            anamnesis: [anamnesis, ...(student.anamnesis || [])]
+            anamnesis: (student.anamnesis || []).filter(a => a.id !== id)
         };
 
-        await onUpdate(updatedStudent);
-        setShowNewAnamnesisModal(false);
-        setNewAnamnesis({
-            date: new Date().toISOString().split('T')[0],
-            answers: {}
-        });
+        if (onUpdate) onUpdate(updatedStudent);
+
+        try {
+            await DataService.saveStudent(updatedStudent);
+        } catch (error) {
+            console.error("Erro ao excluir anamnese:", error);
+            alert("Erro ao excluir anamnese.");
+        }
+    };
+
+    const handleDeleteAssessment = async (id: string, e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (!window.confirm('Tem certeza que deseja excluir esta avaliação?')) return;
+
+        const updatedStudent = {
+            ...student,
+            assessments: (student.assessments || []).filter(a => a.id !== id)
+        };
+
+        if (onUpdate) onUpdate(updatedStudent);
+
+        try {
+            await DataService.saveStudent(updatedStudent);
+        } catch (error) {
+            console.error("Erro ao excluir avaliação:", error);
+            alert("Erro ao excluir avaliação.");
+        }
     };
 
     const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -353,9 +424,9 @@ const StudentAssessmentsScreen: React.FC<StudentAssessmentsScreenProps> = ({ stu
                                 {(student.assessments || []).map((assessment, index) => (
                                     <div key={assessment.id || index} className="pl-6 relative group">
                                         <div className="absolute -left-[7px] top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-emerald-500 ring-4 ring-white dark:ring-zinc-900 group-hover:scale-125 transition-transform"></div>
-                                        <button
+                                        <div
                                             onClick={() => setSelectedAssessment(assessment)}
-                                            className="w-full bg-zinc-50 dark:bg-zinc-950 p-4 rounded-2xl flex items-center justify-between border border-zinc-100 dark:border-zinc-800/50 hover:border-emerald-200 dark:hover:border-emerald-900/30 transition-colors text-left"
+                                            className="w-full bg-zinc-50 dark:bg-zinc-950 p-4 rounded-2xl flex items-center justify-between border border-zinc-100 dark:border-zinc-800/50 hover:border-emerald-200 dark:hover:border-emerald-900/30 transition-colors text-left cursor-pointer group/item relative"
                                         >
                                             <div>
                                                 <p className="font-bold text-slate-900 dark:text-white text-sm">{assessment.date}</p>
@@ -368,11 +439,20 @@ const StudentAssessmentsScreen: React.FC<StudentAssessmentsScreenProps> = ({ stu
                                                     )}
                                                 </div>
                                             </div>
-                                            <div className="text-right">
-                                                <p className="font-black text-slate-900 dark:text-white text-lg">{assessment.weight}kg</p>
-                                                {assessment.bodyFatPercentage && <p className="text-[10px] font-bold text-emerald-500">{assessment.bodyFatPercentage}% BF</p>}
+                                            <div className="flex items-center gap-4">
+                                                <div className="text-right">
+                                                    <p className="font-black text-slate-900 dark:text-white text-lg">{assessment.weight}kg</p>
+                                                    {assessment.bodyFatPercentage && <p className="text-[10px] font-bold text-emerald-500">{assessment.bodyFatPercentage}% BF</p>}
+                                                </div>
+                                                <button
+                                                    onClick={(e) => handleDeleteAssessment(assessment.id, e)}
+                                                    className="p-2 text-zinc-300 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-full transition-colors"
+                                                    title="Excluir Avaliação"
+                                                >
+                                                    <Trash2 size={16} />
+                                                </button>
                                             </div>
-                                        </button>
+                                        </div>
                                     </div>
                                 ))}
                                 {(!student.assessments || student.assessments.length === 0) && (
@@ -431,14 +511,40 @@ const StudentAssessmentsScreen: React.FC<StudentAssessmentsScreenProps> = ({ stu
                                                 <span className="text-[9px] font-black uppercase text-purple-500 bg-purple-100 dark:bg-purple-900/30 px-2 py-1 rounded-md">Completa</span>
                                             </div>
                                             <div className="space-y-2 max-h-32 overflow-hidden relative">
-                                                {Object.entries(anam.answers).slice(0, 2).map(([q, a]) => (
-                                                    <div key={q} className="p-3 bg-white dark:bg-zinc-900 rounded-xl border border-zinc-100 dark:border-zinc-800">
-                                                        <p className="text-[9px] font-bold text-zinc-400 uppercase mb-1 truncate">{q}</p>
-                                                        <p className="text-xs text-zinc-800 dark:text-zinc-300 font-medium truncate">{a}</p>
+                                                {anam.answers && Object.keys(anam.answers).length > 0 ? (
+                                                    // Legacy View
+                                                    Object.entries(anam.answers).slice(0, 2).map(([q, a]) => (
+                                                        <div key={q} className="p-3 bg-white dark:bg-zinc-900 rounded-xl border border-zinc-100 dark:border-zinc-800">
+                                                            <p className="text-[9px] font-bold text-zinc-400 uppercase mb-1 truncate">{q}</p>
+                                                            <p className="text-xs text-zinc-800 dark:text-zinc-300 font-medium truncate">{a}</p>
+                                                        </div>
+                                                    ))
+                                                ) : (
+                                                    // Structured Data Preview
+                                                    <div className="grid grid-cols-2 gap-2">
+                                                        <div className="p-3 bg-white dark:bg-zinc-900 rounded-xl border border-zinc-100 dark:border-zinc-800">
+                                                            <p className="text-[9px] font-bold text-zinc-400 uppercase mb-1">Médico</p>
+                                                            <p className="text-xs text-zinc-800 dark:text-zinc-300 font-medium truncate">
+                                                                {anam.medical?.hasPain ? 'Com Dor' : 'Sem Dor'} • {anam.medical?.cardiacIssues ? 'Cardíaco' : 'Saudável'}
+                                                            </p>
+                                                        </div>
+                                                        <div className="p-3 bg-white dark:bg-zinc-900 rounded-xl border border-zinc-100 dark:border-zinc-800">
+                                                            <p className="text-[9px] font-bold text-zinc-400 uppercase">Objetivo</p>
+                                                            <p className="text-xs text-zinc-800 dark:text-zinc-300 font-medium truncate">
+                                                                {anam.training?.goals || 'Não definido'}
+                                                            </p>
+                                                        </div>
                                                     </div>
-                                                ))}
-                                                <div className="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-zinc-50 dark:from-zinc-950 to-transparent flex items-end justify-center pb-1">
+                                                )}
+                                                <div className="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-zinc-50 dark:from-zinc-950 to-transparent flex items-end justify-between px-3 pb-2">
                                                     <span className="text-[10px] font-bold text-zinc-400 uppercase">Ver detalhes</span>
+                                                    <button
+                                                        onClick={(e) => handleDeleteAnamnesis(anam.id, e)}
+                                                        className="text-zinc-400 hover:text-red-500 transition-colors p-1"
+                                                        title="Excluir Anamnese"
+                                                    >
+                                                        <Trash2 size={14} />
+                                                    </button>
                                                 </div>
                                             </div>
                                         </button>
@@ -625,9 +731,17 @@ const StudentAssessmentsScreen: React.FC<StudentAssessmentsScreenProps> = ({ stu
 
                             <button
                                 onClick={handleSaveAssessment}
-                                className="w-full py-4 bg-emerald-600 text-white rounded-2xl font-black mt-6 hover:bg-emerald-700 transition-colors shadow-lg shadow-emerald-500/20"
+                                disabled={isSaving}
+                                className="w-full py-4 bg-emerald-600 text-white rounded-2xl font-black mt-6 hover:bg-emerald-700 transition-colors shadow-lg shadow-emerald-500/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                             >
-                                SALVAR AVALIAÇÃO
+                                {isSaving ? (
+                                    <>
+                                        <Loader2 size={18} className="animate-spin" />
+                                        SALVANDO...
+                                    </>
+                                ) : (
+                                    'SALVAR AVALIAÇÃO'
+                                )}
                             </button>
                         </div>
                     </div>
@@ -637,53 +751,267 @@ const StudentAssessmentsScreen: React.FC<StudentAssessmentsScreenProps> = ({ stu
             {/* Modal Nova Anamnese */}
             {showNewAnamnesisModal && (
                 <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-                    <div className="bg-white dark:bg-zinc-900 w-full max-w-lg rounded-[32px] p-6 max-h-[90vh] overflow-y-auto custom-scrollbar">
+                    <div className="bg-white dark:bg-zinc-900 w-full max-w-2xl rounded-[32px] p-6 max-h-[90vh] overflow-y-auto custom-scrollbar flex flex-col">
                         <div className="flex items-center justify-between mb-6">
-                            <h3 className="text-xl font-black text-slate-900 dark:text-white">Nova Anamnese</h3>
+                            <h3 className="text-xl font-black text-slate-900 dark:text-white">Nova Anamnese Completa</h3>
                             <button onClick={() => setShowNewAnamnesisModal(false)}><X className="text-zinc-400" /></button>
                         </div>
 
-                        <div className="space-y-4">
+                        <div className="flex bg-zinc-100 dark:bg-zinc-800 p-1 rounded-xl mb-6">
+                            {(['medical', 'lifestyle', 'training'] as const).map(tab => (
+                                <button
+                                    key={tab}
+                                    onClick={() => setAnamnesisTab(tab)}
+                                    className={`flex-1 py-2 rounded-lg text-xs font-bold uppercase transition-all ${anamnesisTab === tab
+                                        ? 'bg-white dark:bg-zinc-700 text-slate-900 dark:text-white shadow-sm'
+                                        : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300'
+                                        }`}
+                                >
+                                    {tab === 'medical' ? 'Médico' : tab === 'lifestyle' ? 'Estilo de Vida' : 'Treino'}
+                                </button>
+                            ))}
+                        </div>
+
+                        <div className="space-y-4 flex-1 overflow-y-auto px-1">
+                            {/* Data */}
                             <div>
                                 <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Data</label>
                                 <input
                                     type="date"
                                     value={newAnamnesis.date}
                                     onChange={e => setNewAnamnesis({ ...newAnamnesis, date: e.target.value })}
-                                    className="w-full p-3 rounded-xl bg-zinc-50 border-none font-bold text-slate-900"
+                                    className="w-full p-3 rounded-xl bg-zinc-50 dark:bg-zinc-950 border-none font-bold text-slate-900 dark:text-white"
                                 />
                             </div>
 
-                            <div className="space-y-4">
-                                {standardQuestions.map((q) => (
-                                    <div key={q}>
-                                        <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">{q}</label>
-                                        <textarea
-                                            className="w-full p-3 rounded-xl bg-zinc-50 border-none font-medium min-h-[80px] text-slate-900"
-                                            onChange={(e) => setNewAnamnesis(prev => ({
-                                                ...prev,
-                                                answers: { ...prev.answers, [q]: e.target.value }
-                                            }))}
+                            {anamnesisTab === 'medical' && (
+                                <div className="space-y-4 animate-in slide-in-from-right-4 duration-300">
+                                    <div className="grid grid-cols-3 gap-2">
+                                        {[
+                                            { key: 'cardiacIssues', label: 'Cardíaco?' },
+                                            { key: 'highBloodPressure', label: 'Hipertensão?' },
+                                            { key: 'diabetes', label: 'Diabetes?' },
+                                            { key: 'hasPain', label: 'Sente Dor?' }
+                                        ].map(({ key, label }) => (
+                                            <button
+                                                key={key}
+                                                // @ts-ignore
+                                                onClick={() => setNewAnamnesis(prev => ({
+                                                    ...prev,
+                                                    medical: { ...prev.medical, [key]: !prev.medical?.[key as keyof typeof prev.medical] }
+                                                }))}
+                                                className={`p-3 rounded-xl border flex flex-col items-center justify-center gap-1 transition-all ${newAnamnesis.medical?.[key as keyof typeof newAnamnesis.medical]
+                                                    ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-900 text-red-600 dark:text-red-400'
+                                                    : 'bg-zinc-50 dark:bg-zinc-950 border-zinc-100 dark:border-zinc-800 text-zinc-400'
+                                                    }`}
+                                            >
+                                                <span className="text-[10px] font-black uppercase text-center">{label}</span>
+                                                <span className="text-sm font-bold">{newAnamnesis.medical?.[key as keyof typeof newAnamnesis.medical] ? 'SIM' : 'NÃO'}</span>
+                                            </button>
+                                        ))}
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Medicamentos</label>
+                                        <input
+                                            type="text"
+                                            value={newAnamnesis.medical?.medications || ''}
+                                            onChange={e => setNewAnamnesis({ ...newAnamnesis, medical: { ...newAnamnesis.medical, medications: e.target.value } })}
+                                            className="w-full p-3 rounded-xl bg-zinc-50 dark:bg-zinc-950 border-none font-medium text-slate-900 dark:text-white"
+                                            placeholder="Uso contínuo..."
                                         />
                                     </div>
-                                ))}
-                            </div>
+                                    <div>
+                                        <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Cirurgias</label>
+                                        <input
+                                            type="text"
+                                            value={newAnamnesis.medical?.surgeries || ''}
+                                            onChange={e => setNewAnamnesis({ ...newAnamnesis, medical: { ...newAnamnesis.medical, surgeries: e.target.value } })}
+                                            className="w-full p-3 rounded-xl bg-zinc-50 dark:bg-zinc-950 border-none font-medium text-slate-900 dark:text-white"
+                                            placeholder="Procedimentos realizados..."
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Lesões</label>
+                                        <input
+                                            type="text"
+                                            value={newAnamnesis.medical?.injuries || ''}
+                                            onChange={e => setNewAnamnesis({ ...newAnamnesis, medical: { ...newAnamnesis.medical, injuries: e.target.value } })}
+                                            className="w-full p-3 rounded-xl bg-zinc-50 dark:bg-zinc-950 border-none font-medium text-slate-900 dark:text-white"
+                                            placeholder="Histórico de lesões..."
+                                        />
+                                    </div>
+                                    {newAnamnesis.medical?.hasPain && (
+                                        <div>
+                                            <label className="block text-xs font-bold text-red-500 uppercase mb-1">Descrição da Dor</label>
+                                            <textarea
+                                                value={newAnamnesis.medical?.painDescription || ''}
+                                                onChange={e => setNewAnamnesis({ ...newAnamnesis, medical: { ...newAnamnesis.medical, painDescription: e.target.value } })}
+                                                className="w-full p-3 rounded-xl bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/30 font-medium text-red-900 dark:text-red-200"
+                                                placeholder="Onde dói? Qual tipo?"
+                                            />
+                                        </div>
+                                    )}
+                                </div>
+                            )}
 
-                            <button
-                                onClick={handleSaveAnamnesis}
-                                className="w-full py-4 bg-emerald-600 text-white rounded-2xl font-black mt-6 hover:bg-emerald-700 transition-colors shadow-lg shadow-emerald-500/20"
-                            >
-                                SALVAR ANAMNESE
-                            </button>
+                            {anamnesisTab === 'lifestyle' && (
+                                <div className="space-y-4 animate-in slide-in-from-right-4 duration-300">
+                                    <div>
+                                        <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Profissão / Rotina</label>
+                                        <input
+                                            type="text"
+                                            value={newAnamnesis.lifestyle?.occupation || ''}
+                                            onChange={e => setNewAnamnesis({ ...newAnamnesis, lifestyle: { ...newAnamnesis.lifestyle, occupation: e.target.value } })}
+                                            className="w-full p-3 rounded-xl bg-zinc-50 dark:bg-zinc-950 border-none font-medium text-slate-900 dark:text-white"
+                                            placeholder="Ex: Escritório, 8h sentado..."
+                                        />
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Sono (horas/dia)</label>
+                                            <input
+                                                type="text"
+                                                value={newAnamnesis.lifestyle?.sleepHours || ''}
+                                                onChange={e => setNewAnamnesis({ ...newAnamnesis, lifestyle: { ...newAnamnesis.lifestyle, sleepHours: e.target.value } })}
+                                                className="w-full p-3 rounded-xl bg-zinc-50 dark:bg-zinc-950 border-none font-medium text-slate-900 dark:text-white"
+                                                placeholder="Ex: 7-8h"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Hidratação (L)</label>
+                                            <input
+                                                type="text"
+                                                value={newAnamnesis.lifestyle?.hydration || ''}
+                                                onChange={e => setNewAnamnesis({ ...newAnamnesis, lifestyle: { ...newAnamnesis.lifestyle, hydration: e.target.value } })}
+                                                className="w-full p-3 rounded-xl bg-zinc-50 dark:bg-zinc-950 border-none font-medium text-slate-900 dark:text-white"
+                                                placeholder="Ex: 2L"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Nível de Estresse</label>
+                                        <select
+                                            value={newAnamnesis.lifestyle?.stressLevel || 'medium'}
+                                            onChange={e => setNewAnamnesis({ ...newAnamnesis, lifestyle: { ...newAnamnesis.lifestyle, stressLevel: e.target.value as any } })}
+                                            className="w-full p-3 rounded-xl bg-zinc-50 dark:bg-zinc-950 border-none font-medium text-slate-900 dark:text-white"
+                                        >
+                                            <option value="low">Baixo</option>
+                                            <option value="medium">Médio</option>
+                                            <option value="high">Alto</option>
+                                        </select>
+                                    </div>
+                                    <div className="flex gap-4">
+                                        <label className="flex items-center gap-2 bg-zinc-50 dark:bg-zinc-950 p-3 rounded-xl flex-1 cursor-pointer">
+                                            <input
+                                                type="checkbox"
+                                                checked={newAnamnesis.lifestyle?.smoking || false}
+                                                onChange={e => setNewAnamnesis({ ...newAnamnesis, lifestyle: { ...newAnamnesis.lifestyle, smoking: e.target.checked } })}
+                                                className="rounded text-emerald-600 focus:ring-emerald-500"
+                                            />
+                                            <span className="text-sm font-bold text-zinc-700 dark:text-zinc-300">Fumante</span>
+                                        </label>
+                                        <label className="flex items-center gap-2 bg-zinc-50 dark:bg-zinc-950 p-3 rounded-xl flex-1 cursor-pointer">
+                                            <input
+                                                type="checkbox"
+                                                checked={newAnamnesis.lifestyle?.alcohol || false}
+                                                onChange={e => setNewAnamnesis({ ...newAnamnesis, lifestyle: { ...newAnamnesis.lifestyle, alcohol: e.target.checked } })}
+                                                className="rounded text-emerald-600 focus:ring-emerald-500"
+                                            />
+                                            <span className="text-sm font-bold text-zinc-700 dark:text-zinc-300">Álcool</span>
+                                        </label>
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Alimentação</label>
+                                        <textarea
+                                            value={newAnamnesis.lifestyle?.dietDescription || ''}
+                                            onChange={e => setNewAnamnesis({ ...newAnamnesis, lifestyle: { ...newAnamnesis.lifestyle, dietDescription: e.target.value } })}
+                                            className="w-full p-3 rounded-xl bg-zinc-50 dark:bg-zinc-950 border-none font-medium text-slate-900 dark:text-white min-h-[80px]"
+                                            placeholder="Descreva brevemente..."
+                                        />
+                                    </div>
+                                </div>
+                            )}
+
+                            {anamnesisTab === 'training' && (
+                                <div className="space-y-4 animate-in slide-in-from-right-4 duration-300">
+                                    <div>
+                                        <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Nível de Experiência</label>
+                                        <select
+                                            value={newAnamnesis.training?.experienceLevel || 'beginner'}
+                                            onChange={e => setNewAnamnesis({ ...newAnamnesis, training: { ...newAnamnesis.training, experienceLevel: e.target.value as any } })}
+                                            className="w-full p-3 rounded-xl bg-zinc-50 dark:bg-zinc-950 border-none font-medium text-slate-900 dark:text-white"
+                                        >
+                                            <option value="beginner">Iniciante</option>
+                                            <option value="intermediate">Intermediário</option>
+                                            <option value="advanced">Avançado</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Disponibilidade</label>
+                                        <input
+                                            type="text"
+                                            value={newAnamnesis.training?.availability || ''}
+                                            onChange={e => setNewAnamnesis({ ...newAnamnesis, training: { ...newAnamnesis.training, availability: e.target.value } })}
+                                            className="w-full p-3 rounded-xl bg-zinc-50 dark:bg-zinc-950 border-none font-medium text-slate-900 dark:text-white"
+                                            placeholder="Ex: 3x na semana, 1h por dia"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Objetivos</label>
+                                        <textarea
+                                            value={newAnamnesis.training?.goals || ''}
+                                            onChange={e => setNewAnamnesis({ ...newAnamnesis, training: { ...newAnamnesis.training, goals: e.target.value } })}
+                                            className="w-full p-3 rounded-xl bg-zinc-50 dark:bg-zinc-950 border-none font-medium text-slate-900 dark:text-white"
+                                            placeholder="O que o aluno deseja alcançar?"
+                                        />
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Preferências (Gosta)</label>
+                                            <textarea
+                                                value={newAnamnesis.training?.preferences || ''}
+                                                onChange={e => setNewAnamnesis({ ...newAnamnesis, training: { ...newAnamnesis.training, preferences: e.target.value } })}
+                                                className="w-full p-3 rounded-xl bg-green-50 dark:bg-green-900/10 border border-green-100 dark:border-green-900/20 font-medium text-slate-900 dark:text-white"
+                                                placeholder="Exercícios favoritos..."
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Restrições (Não Gosta)</label>
+                                            <textarea
+                                                value={newAnamnesis.training?.dislikes || ''}
+                                                onChange={e => setNewAnamnesis({ ...newAnamnesis, training: { ...newAnamnesis.training, dislikes: e.target.value } })}
+                                                className="w-full p-3 rounded-xl bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/20 font-medium text-slate-900 dark:text-white"
+                                                placeholder="O que evita fazer..."
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
                         </div>
+
+                        <button
+                            onClick={handleSaveAnamnesis}
+                            disabled={isSaving}
+                            className="w-full py-4 bg-emerald-600 text-white rounded-2xl font-black mt-6 hover:bg-emerald-700 transition-colors shadow-lg shadow-emerald-500/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                        >
+                            {isSaving ? (
+                                <>
+                                    <Loader2 size={18} className="animate-spin" />
+                                    SALVANDO...
+                                </>
+                            ) : (
+                                'SALVAR ANAMNESE'
+                            )}
+                        </button>
                     </div>
                 </div>
             )}
 
-            {/* Modal Detalhes da Anamnese */}
+            {/* Modal Detalhes da Anamnese (View Mode) */}
             {selectedAnamnesis && (
                 <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-                    <div className="bg-white dark:bg-zinc-900 w-full max-w-lg rounded-[32px] p-6 max-h-[90vh] overflow-y-auto custom-scrollbar">
+                    <div className="bg-white dark:bg-zinc-900 w-full max-w-2xl rounded-[32px] p-6 max-h-[90vh] overflow-y-auto custom-scrollbar">
                         <div className="flex items-center justify-between mb-6">
                             <div>
                                 <h3 className="text-xl font-black text-slate-900 dark:text-white">Detalhes da Anamnese</h3>
@@ -692,13 +1020,111 @@ const StudentAssessmentsScreen: React.FC<StudentAssessmentsScreenProps> = ({ stu
                             <button onClick={() => setSelectedAnamnesis(null)}><X className="text-zinc-400" /></button>
                         </div>
 
-                        <div className="space-y-4">
-                            {Object.entries(selectedAnamnesis.answers).map(([q, a]) => (
-                                <div key={q} className="bg-zinc-50 dark:bg-zinc-950 p-4 rounded-2xl border border-zinc-100 dark:border-zinc-800">
-                                    <p className="text-[10px] font-bold text-zinc-400 uppercase mb-2">{q}</p>
-                                    <p className="text-sm text-zinc-800 dark:text-zinc-300 font-medium leading-relaxed">{a}</p>
+                        {/* Structured View */}
+                        <div className="space-y-6">
+                            {/* Medical Section */}
+                            {(selectedAnamnesis.medical || selectedAnamnesis.answers) && (
+                                <div className="bg-zinc-50 dark:bg-zinc-950 p-4 rounded-2xl border border-zinc-100 dark:border-zinc-800">
+                                    <h4 className="flex items-center gap-2 font-black text-rose-500 mb-4 uppercase text-xs tracking-wider">
+                                        <Activity size={14} /> Médico
+                                    </h4>
+
+                                    {/* Legacy Answers */}
+                                    {selectedAnamnesis.answers && Object.entries(selectedAnamnesis.answers).map(([q, a]) => (
+                                        <div key={q} className="mb-2 last:mb-0">
+                                            <p className="text-[10px] font-bold text-zinc-400 uppercase">{q}</p>
+                                            <p className="text-sm font-medium text-zinc-800 dark:text-zinc-200">{a}</p>
+                                        </div>
+                                    ))}
+
+                                    {/* New Structured Medical */}
+                                    {selectedAnamnesis.medical && (
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <p className="text-[10px] font-bold text-zinc-400 uppercase">Medicamentos</p>
+                                                <p className="text-sm font-medium text-zinc-800 dark:text-zinc-200">{selectedAnamnesis.medical.medications || '-'}</p>
+                                            </div>
+                                            <div>
+                                                <p className="text-[10px] font-bold text-zinc-400 uppercase">Lesões</p>
+                                                <p className="text-sm font-medium text-zinc-800 dark:text-zinc-200">{selectedAnamnesis.medical.injuries || '-'}</p>
+                                            </div>
+                                            <div className="col-span-2 flex gap-2 flex-wrap">
+                                                {selectedAnamnesis.medical.cardiacIssues && <span className="px-2 py-1 bg-red-100 text-red-700 text-[10px] font-bold rounded uppercase">Cardíaco</span>}
+                                                {selectedAnamnesis.medical.highBloodPressure && <span className="px-2 py-1 bg-red-100 text-red-700 text-[10px] font-bold rounded uppercase">Hipertensão</span>}
+                                                {selectedAnamnesis.medical.diabetes && <span className="px-2 py-1 bg-red-100 text-red-700 text-[10px] font-bold rounded uppercase">Diabetes</span>}
+                                                {selectedAnamnesis.medical.hasPain && <span className="px-2 py-1 bg-red-100 text-red-700 text-[10px] font-bold rounded uppercase">Dor: {selectedAnamnesis.medical.painDescription}</span>}
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
-                            ))}
+                            )}
+
+                            {/* Lifestyle Section */}
+                            {selectedAnamnesis.lifestyle && (
+                                <div className="bg-zinc-50 dark:bg-zinc-950 p-4 rounded-2xl border border-zinc-100 dark:border-zinc-800">
+                                    <h4 className="flex items-center gap-2 font-black text-blue-500 mb-4 uppercase text-xs tracking-wider">
+                                        <BrainCircuit size={14} /> Estilo de Vida
+                                    </h4>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <p className="text-[10px] font-bold text-zinc-400 uppercase">Profissão</p>
+                                            <p className="text-sm font-medium text-zinc-800 dark:text-zinc-200">{selectedAnamnesis.lifestyle.occupation || '-'}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-[10px] font-bold text-zinc-400 uppercase">Sono</p>
+                                            <p className="text-sm font-medium text-zinc-800 dark:text-zinc-200">{selectedAnamnesis.lifestyle.sleepHours || '-'}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-[10px] font-bold text-zinc-400 uppercase">Estresse</p>
+                                            <p className="text-sm font-medium text-zinc-800 dark:text-zinc-200 capitalize">{selectedAnamnesis.lifestyle.stressLevel || '-'}</p>
+                                        </div>
+                                        <div className="flex gap-2">
+                                            {selectedAnamnesis.lifestyle.smoking && <span className="px-2 py-1 bg-zinc-200 text-zinc-700 text-[10px] font-bold rounded uppercase">Fumante</span>}
+                                            {selectedAnamnesis.lifestyle.alcohol && <span className="px-2 py-1 bg-zinc-200 text-zinc-700 text-[10px] font-bold rounded uppercase">Álcool</span>}
+                                        </div>
+                                        <div className="col-span-2">
+                                            <p className="text-[10px] font-bold text-zinc-400 uppercase">Dieta</p>
+                                            <p className="text-sm font-medium text-zinc-800 dark:text-zinc-200">{selectedAnamnesis.lifestyle.dietDescription || '-'}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Training Section */}
+                            {selectedAnamnesis.training && (
+                                <div className="bg-zinc-50 dark:bg-zinc-950 p-4 rounded-2xl border border-zinc-100 dark:border-zinc-800">
+                                    <h4 className="flex items-center gap-2 font-black text-emerald-500 mb-4 uppercase text-xs tracking-wider">
+                                        <Trophy size={14} /> Treino
+                                    </h4>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <p className="text-[10px] font-bold text-zinc-400 uppercase">Experiência</p>
+                                            <p className="text-sm font-medium text-zinc-800 dark:text-zinc-200 capitalize w-full">{
+                                                selectedAnamnesis.training.experienceLevel === 'beginner' ? 'Iniciante' :
+                                                    selectedAnamnesis.training.experienceLevel === 'intermediate' ? 'Intermediário' : 'Avançado'
+                                            }</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-[10px] font-bold text-zinc-400 uppercase">Disponibilidade</p>
+                                            <p className="text-sm font-medium text-zinc-800 dark:text-zinc-200">{selectedAnamnesis.training.availability || '-'}</p>
+                                        </div>
+                                        <div className="col-span-2">
+                                            <p className="text-[10px] font-bold text-zinc-400 uppercase">Objetivos</p>
+                                            <p className="text-sm font-medium text-zinc-800 dark:text-zinc-200">{selectedAnamnesis.training.goals || '-'}</p>
+                                        </div>
+                                        <div className="col-span-2 grid grid-cols-2 gap-4">
+                                            <div>
+                                                <p className="text-[10px] font-bold text-green-600 uppercase">Gosta</p>
+                                                <p className="text-sm font-medium text-zinc-800 dark:text-zinc-200">{selectedAnamnesis.training.preferences || '-'}</p>
+                                            </div>
+                                            <div>
+                                                <p className="text-[10px] font-bold text-red-500 uppercase">Não Gosta</p>
+                                                <p className="text-sm font-medium text-zinc-800 dark:text-zinc-200">{selectedAnamnesis.training.dislikes || '-'}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -804,22 +1230,7 @@ const StudentAssessmentsScreen: React.FC<StudentAssessmentsScreenProps> = ({ stu
                                 </div>
                             )}
 
-                            {/* Photos */}
-                            {selectedAssessment.photos && selectedAssessment.photos.length > 0 && (
-                                <div>
-                                    <h4 className="font-black text-slate-900 dark:text-white mb-2 flex items-center gap-2 text-sm">
-                                        <ImageIcon size={14} className="text-amber-500" />
-                                        Fotos
-                                    </h4>
-                                    <div className="grid grid-cols-2 gap-2">
-                                        {selectedAssessment.photos.map((photo, i) => (
-                                            <div key={i} className="aspect-[3/4] rounded-xl overflow-hidden bg-zinc-100 dark:bg-zinc-800">
-                                                <img src={photo} alt={`Foto ${i}`} className="w-full h-full object-cover" />
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
+
 
                             {/* Notes */}
                             {selectedAssessment.notes && (
@@ -989,8 +1400,50 @@ const StudentAssessmentsScreen: React.FC<StudentAssessmentsScreenProps> = ({ stu
                                 })()}
                             </div>
 
+                            {/* Photos moved to bottom */}
+                            {selectedAssessment.photos && selectedAssessment.photos.length > 0 && (
+                                <div className="border-t-2 border-dashed border-zinc-200 dark:border-zinc-800 pt-6 mt-2">
+                                    <h4 className="font-black text-slate-900 dark:text-white mb-2 flex items-center gap-2 text-sm">
+                                        <ImageIcon size={14} className="text-amber-500" />
+                                        Fotos
+                                    </h4>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        {selectedAssessment.photos.map((photo, i) => (
+                                            <div
+                                                key={i}
+                                                className="aspect-[3/4] rounded-xl overflow-hidden bg-zinc-100 dark:bg-zinc-800 cursor-pointer hover:opacity-90 transition-opacity"
+                                                onClick={() => setViewingPhoto(photo)}
+                                            >
+                                                <img src={photo} alt={`Foto ${i}`} className="w-full h-full object-cover" />
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
                         </div>
                     </div>
+                </div>
+            )}
+
+            {/* Modal de Visualização de Foto */}
+            {viewingPhoto && (
+                <div
+                    className="fixed inset-0 z-[60] bg-black/90 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200"
+                    onClick={() => setViewingPhoto(null)}
+                >
+                    <button
+                        onClick={() => setViewingPhoto(null)}
+                        className="absolute top-4 right-4 p-2 bg-white/10 text-white rounded-full hover:bg-white/20 transition-colors z-10"
+                    >
+                        <X size={24} />
+                    </button>
+                    <img
+                        src={viewingPhoto}
+                        alt="Visualização"
+                        className="max-w-full max-h-[90vh] rounded-lg shadow-2xl object-contain animate-in zoom-in-95 duration-200"
+                        onClick={(e) => e.stopPropagation()} // Prevent close when clicking the image
+                    />
                 </div>
             )}
 

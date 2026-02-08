@@ -186,7 +186,11 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
                                 <p className="text-xs text-zinc-400 text-center py-4">Nenhum arquivo enviado.</p>
                             ) : (
                                 student.files.map((file) => (
-                                    <div key={file.id} className="flex items-center justify-between p-4 bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-100 dark:border-zinc-800 shadow-sm">
+                                    <div
+                                        key={file.id}
+                                        className="flex items-center justify-between p-4 bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-100 dark:border-zinc-800 shadow-sm cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors"
+                                        onClick={() => window.open(file.url, '_blank')}
+                                    >
                                         <div className="flex items-center gap-4">
                                             <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${file.type === 'pdf' ? 'bg-red-100 text-red-500' : 'bg-blue-100 text-blue-500'}`}>
                                                 <FileText size={22} />

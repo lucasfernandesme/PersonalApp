@@ -39,7 +39,15 @@ export const TrainingFrequencyCard: React.FC<TrainingFrequencyCardProps> = ({ st
     if (student?.history && Array.isArray(student.history)) {
         const now = new Date();
         const startOfWeek = new Date(now);
-        startOfWeek.setDate(now.getDate() - now.getDay()); // Domingo da semana atual
+
+        // Ajustar para começar na Segunda-feira
+        const day = now.getDay(); // 0 (Dom) a 6 (Sab)
+        // Se for Domingo (0), subtrai 6 dias para voltar à Segunda
+        // Se for Segunda (1), subtrai 0 dias
+        // Fórmula: (day + 6) % 7
+        const diff = (day + 6) % 7;
+
+        startOfWeek.setDate(now.getDate() - diff);
         startOfWeek.setHours(0, 0, 0, 0);
 
         const endOfWeek = new Date(startOfWeek);

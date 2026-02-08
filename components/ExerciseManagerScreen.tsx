@@ -5,12 +5,14 @@ import { LibraryExercise, CATEGORIES } from '../constants/exercises';
 
 interface ExerciseManagerScreenProps {
   exercises: LibraryExercise[];
-  onAdd: (exercise: LibraryExercise) => void;
+  onAdd: (exercise: LibraryExercise) => Promise<void>;
+  onDelete: (id: string) => void;
   onBack: () => void;
 }
 
-const ExerciseManagerScreen: React.FC<ExerciseManagerScreenProps> = ({ exercises, onAdd, onBack }) => {
+const ExerciseManagerScreen: React.FC<ExerciseManagerScreenProps> = ({ exercises, onAdd, onDelete, onBack }) => {
   const [isAdding, setIsAdding] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Todos');
   const [isComboOpen, setIsComboOpen] = useState(false);
@@ -48,17 +50,29 @@ const ExerciseManagerScreen: React.FC<ExerciseManagerScreenProps> = ({ exercises
     return matchesSearch && matchesCategory;
   });
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!newExercise.name) return;
 
-    const formattedExercise = {
-      ...newExercise,
-      videoUrl: getYouTubeEmbedUrl(newExercise.videoUrl || '')
-    };
+    if (newExercise.videoUrl && !getYouTubeId(newExercise.videoUrl)) {
+      alert("Link de vídeo inválido. Por favor, use um link do YouTube.");
+      return;
+    }
 
-    onAdd(formattedExercise);
-    setNewExercise({ name: '', category: 'Peito', videoUrl: '' });
-    setIsAdding(false);
+    setIsSaving(true);
+    try {
+      const formattedExercise = {
+        ...newExercise,
+        videoUrl: getYouTubeEmbedUrl(newExercise.videoUrl || '')
+      };
+
+      await onAdd(formattedExercise);
+      setNewExercise({ name: '', category: 'Peito', videoUrl: '' });
+      setIsAdding(false);
+    } catch (error) {
+      console.error("Erro ao salvar:", error);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -195,7 +209,9 @@ const ExerciseManagerScreen: React.FC<ExerciseManagerScreenProps> = ({ exercises
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    // TODO: Implement delete logic
+                    if (window.confirm('Tem certeza que deseja excluir este exercício?')) {
+                      if (ex.id) onDelete(ex.id);
+                    }
                   }}
                   className="p-2 text-zinc-200 dark:text-zinc-600 hover:text-red-500 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-lg transition-colors"
                 >
@@ -294,7 +310,10 @@ const ExerciseManagerScreen: React.FC<ExerciseManagerScreenProps> = ({ exercises
                       placeholder="Cole o link do YouTube aqui..."
                       className={`w-full bg-zinc-50 dark:bg-zinc-800 border-none rounded-2xl pl-14 pr-5 py-4 font-bold focus:ring-2 focus:ring-red-500 text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 ${newExercise.isStandard ? 'opacity-70 cursor-not-allowed' : ''}`}
                       value={newExercise.videoUrl || ''}
-                      onChange={e => !newExercise.isStandard && setNewExercise({ ...newExercise, videoUrl: e.target.value })}
+                      onChange={e => {
+                        if (newExercise.isStandard) return;
+                        setNewExercise({ ...newExercise, videoUrl: e.target.value });
+                      }}
                       disabled={newExercise.isStandard}
                     />
                   </div>
@@ -307,9 +326,10 @@ const ExerciseManagerScreen: React.FC<ExerciseManagerScreenProps> = ({ exercises
               {!newExercise.isStandard && (
                 <button
                   onClick={handleSave}
-                  className="w-full bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 font-black uppercase text-xs tracking-widest py-5 rounded-2xl shadow-xl shadow-zinc-900/30 dark:shadow-zinc-100/10 hover:bg-zinc-800 dark:hover:bg-white active:scale-[0.98] transition-all"
+                  disabled={isSaving}
+                  className="w-full bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 font-black uppercase text-xs tracking-widest py-5 rounded-2xl shadow-xl shadow-zinc-900/30 dark:shadow-zinc-100/10 hover:bg-zinc-800 dark:hover:bg-white active:scale-[0.98] transition-all disabled:opacity-70 disabled:cursor-not-allowed"
                 >
-                  {newExercise.id ? 'Salvar Alterações' : 'Adicionar à Biblioteca'}
+                  {isSaving ? 'Salvando...' : (newExercise.id ? 'Salvar Alterações' : 'Adicionar à Biblioteca')}
                 </button>
               )}
               {newExercise.isStandard && (

@@ -109,12 +109,18 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin }) => {
       }
 
       if (data.user) {
-        const initialProfile = {
+        // Calculate 7-day trial end date
+        const trialEndDate = new Date();
+        trialEndDate.setDate(trialEndDate.getDate() + 7);
+
+        const initialProfile: AuthUser = {
           id: data.user.id,
           name: name,
           email: email.toLowerCase(),
           role: UserRole.TRAINER,
-          avatar: `https://picsum.photos/seed/${email.toLowerCase()}/100`
+          avatar: `https://picsum.photos/seed/${email.toLowerCase()}/100`,
+          subscriptionStatus: 'trial',
+          subscriptionEndDate: trialEndDate.toISOString().split('T')[0]
         };
 
         // Salvar no banco customizado 'trainers' também

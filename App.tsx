@@ -1,5 +1,5 @@
 
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { UserRole, TrainingProgram, OnboardingData, AuthUser } from './types';
 import Layout from './components/Layout';
 import TrainerDashboard from './components/TrainerDashboard';
@@ -8,7 +8,7 @@ import LoginScreen from './components/LoginScreen';
 import OnboardingModal from './components/OnboardingModal';
 import ManualWorkoutBuilder from './components/ManualWorkoutBuilder';
 import WorkoutLibraryScreen from './components/WorkoutLibraryScreen';
-import InstallPrompt from './components/InstallPrompt';
+
 import { DataService } from './services/dataService';
 import { LibraryExercise } from './constants/exercises';
 import StudentRegistrationScreen from './components/StudentRegistrationScreen';
@@ -44,12 +44,8 @@ const App: React.FC = () => {
   });
 
   const [isSaving, setIsSaving] = useState(false);
-  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
-
-  const showToast = useCallback((message: string, type: 'success' | 'error' = 'success') => {
-    setToast({ message, type });
-    setTimeout(() => setToast(null), 3000);
-  }, []);
+  const [selectedStudentView, setSelectedStudentView] = useState<'dashboard' | 'builder' | 'workouts' | 'workout-detail' | 'assessments' | 'files'>('dashboard');
+  const [workoutToEdit, setWorkoutToEdit] = useState<TrainingProgram | null>(null);
 
   const [activeView, setActiveView] = useState<'dashboard' | 'register' | 'exercises' | 'edit-student' | 'student-stats' | 'library'>('dashboard');
   const [activeTab, setActiveTab] = useState<'home' | 'students' | 'evolution' | 'chat' | 'workout' | 'profile'>('home');
@@ -58,8 +54,7 @@ const App: React.FC = () => {
   const [workoutFolders, setWorkoutFolders] = useState<WorkoutFolder[]>([]);
   const [customExercises, setCustomExercises] = useState<LibraryExercise[]>([]);
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
-  const [selectedStudentView, setSelectedStudentView] = useState<'dashboard' | 'workouts' | 'workout-detail' | 'assessments' | 'files'>('dashboard');
-  const [workoutToEdit, setWorkoutToEdit] = useState<TrainingProgram | null>(null);
+
   const [isOnboardingOpen, setIsOnboardingOpen] = useState(false);
   const [isManualBuilderOpen, setIsManualBuilderOpen] = useState(false);
   const [pendingStudentData, setPendingStudentData] = useState<OnboardingData | null>(null);
@@ -356,7 +351,6 @@ const App: React.FC = () => {
       setIsSaving(false);
       setIsManualBuilderOpen(false);
       setActiveView('dashboard');
-      showToast("Treino salvo com sucesso!");
     }
   }, [pendingStudentData, selectedStudent, enrichWithLibraryData, authUser]);
 
@@ -366,9 +360,8 @@ const App: React.FC = () => {
       const enriched = enrichWithLibraryData(template as any) as WorkoutTemplate;
       await DataService.saveWorkoutTemplate(enriched, authUser?.id);
       await reloadTemplates();
-      showToast("Template salvo na biblioteca!");
     } catch (e) {
-      showToast("Erro ao salvar template", "error");
+      console.error("Erro ao salvar template", e);
     } finally {
       setIsSaving(false);
     }
@@ -380,9 +373,8 @@ const App: React.FC = () => {
     try {
       await DataService.deleteWorkoutTemplate(id);
       await reloadTemplates();
-      showToast("Template removido", "error");
     } catch (e) {
-      showToast("Erro ao remover template", "error");
+      console.error("Erro ao remover template", e);
     } finally {
       setIsSaving(false);
     }
@@ -393,9 +385,8 @@ const App: React.FC = () => {
     try {
       await DataService.saveWorkoutFolder(folder, authUser?.id);
       await reloadFolders();
-      showToast("Pasta criada com sucesso!");
     } catch (e) {
-      showToast("Erro ao criar pasta", "error");
+      console.error("Erro ao criar pasta", e);
     } finally {
       setIsSaving(false);
     }
@@ -407,9 +398,8 @@ const App: React.FC = () => {
       await DataService.deleteWorkoutFolder(id);
       await reloadFolders();
       await reloadTemplates();
-      showToast("Pasta removida", "error");
     } catch (e) {
-      showToast("Erro ao remover pasta", "error");
+      console.error("Erro ao remover pasta", e);
     } finally {
       setIsSaving(false);
     }
@@ -458,10 +448,8 @@ const App: React.FC = () => {
       await DataService.updateTrainer({ ...updates, id: authUser.id });
       setAuthUser({ ...authUser, ...updates });
       await reloadStudents(); // To ensure linked data is refreshed if applicable
-      showToast("Perfil atualizado e salvo!");
     } catch (error) {
       console.error("Failed to update profile", error);
-      showToast("Erro ao salvar perfil. Tente novamente.", "error");
     }
   };
 
@@ -496,10 +484,8 @@ const App: React.FC = () => {
         } : null);
       }
 
-      showToast("Foto/Perfil atualizado com sucesso!");
     } catch (error) {
       console.error("Failed to update student profile", error);
-      showToast("Erro ao atualizar perfil.", "error");
     } finally {
       setIsSaving(false);
     }
@@ -534,9 +520,8 @@ const App: React.FC = () => {
               await DataService.saveStudent(newStudent as any, authUser?.id);
               await reloadStudents();
               setActiveView('dashboard');
-              showToast("Aluno cadastrado com sucesso!");
             } catch (e) {
-              showToast("Erro ao cadastrar.", "error");
+              console.error("Erro ao cadastrar.", e);
             } finally {
               setIsSaving(false);
             }
@@ -559,9 +544,8 @@ const App: React.FC = () => {
                 setSelectedStudent(null);
                 setActiveView('dashboard');
                 setActiveTab('students');
-                showToast("Aluno removido.");
               } catch (e) {
-                showToast("Erro ao remover.", "error");
+                console.error("Erro ao remover.", e);
               } finally {
                 setIsSaving(false);
               }
@@ -575,9 +559,8 @@ const App: React.FC = () => {
               await reloadStudents();
               setSelectedStudent(updated);
               setActiveView('dashboard');
-              showToast("Dados atualizados!");
             } catch (e) {
-              showToast("Erro ao salvar.", "error");
+              console.error("Erro ao salvar.", e);
             } finally {
               setIsSaving(false);
             }
@@ -590,12 +573,31 @@ const App: React.FC = () => {
         <ExerciseManagerScreen
           exercises={customExercises}
           onAdd={async (ex) => {
-            // TODO: Add support for saving exercises to DB in DataService so we can persist them
-            // For now, we'll update the local state which might be reset on reload if not saved
-            // Actually, let's assuming DataService has a method or we'll add one later. 
-            // For this fix, let's just make it work safely.
-            setCustomExercises(prev => [...prev, ex]);
-            // If there's a save method: await DataService.saveExercise(ex);
+            setIsSaving(true);
+            try {
+              // TODO: Add support for saving exercises to DB in DataService so we can persist them
+              // For now, we'll update the local state which might be reset on reload if not saved
+              // Actually, let's assuming DataService has a method or we'll add one later. 
+              // For this fix, let's just make it work safely.
+              setCustomExercises(prev => [...prev, ex]);
+              await DataService.saveExercise(ex, authUser?.id);
+              await reloadExercises();
+            } catch (e) {
+              console.error("Erro ao salvar exercício:", e);
+            } finally {
+              setIsSaving(false);
+            }
+          }}
+          onDelete={async (id) => {
+            setIsSaving(true);
+            try {
+              await DataService.deleteExercise(id);
+              await reloadExercises();
+            } catch (e) {
+              console.error("Erro ao remover exercício", e);
+            } finally {
+              setIsSaving(false);
+            }
           }}
           onBack={() => setActiveView('dashboard')}
         />
@@ -804,27 +806,41 @@ const App: React.FC = () => {
                     input.onchange = async (e: any) => {
                       if (e.target.files && e.target.files[0]) {
                         const file = e.target.files[0];
-                        const newFile: StudentFile = {
-                          id: Math.random().toString(36).substr(2, 9),
-                          name: file.name,
-                          type: file.name.endsWith('.pdf') ? 'pdf' : 'image',
-                          url: '#',
-                          date: new Date().toLocaleDateString('pt-BR')
-                        };
-                        const updatedFiles = [...(selectedStudent.files || []), newFile];
-                        const updatedStudent = { ...selectedStudent, files: updatedFiles };
 
-                        setIsSaving(true);
-                        try {
-                          await DataService.saveStudent(updatedStudent, authUser?.id);
-                          setSelectedStudent(updatedStudent);
-                          setStudents(prev => prev.map(s => s.id === updatedStudent.id ? updatedStudent : s));
-                          showToast("Arquivo adicionado!");
-                        } catch (err) {
-                          showToast("Erro ao adicionar arquivo", "error");
-                        } finally {
-                          setIsSaving(false);
+                        // Limit size to avoid DB issues (e.g. 5MB)
+                        if (file.size > 5 * 1024 * 1024) {
+                          alert("O arquivo é muito grande. O limite é 5MB.");
+                          return;
                         }
+
+                        const reader = new FileReader();
+                        reader.onload = async (event) => {
+                          const base64Url = event.target?.result as string;
+
+                          const newFile: StudentFile = {
+                            id: Math.random().toString(36).substr(2, 9),
+                            name: file.name,
+                            type: file.name.endsWith('.pdf') ? 'pdf' : 'image',
+                            url: base64Url,
+                            date: new Date().toLocaleDateString('pt-BR')
+                          };
+
+                          const updatedFiles = [...(selectedStudent.files || []), newFile];
+                          const updatedStudent = { ...selectedStudent, files: updatedFiles };
+
+                          setIsSaving(true);
+                          try {
+                            await DataService.saveStudent(updatedStudent, authUser?.id);
+                            setSelectedStudent(updatedStudent);
+                            setStudents(prev => prev.map(s => s.id === updatedStudent.id ? updatedStudent : s));
+                          } catch (err) {
+                            console.error("Erro ao adicionar arquivo", err);
+                            alert("Erro ao salvar arquivo.");
+                          } finally {
+                            setIsSaving(false);
+                          }
+                        };
+                        reader.readAsDataURL(file);
                       }
                     };
                     input.click();
@@ -837,24 +853,62 @@ const App: React.FC = () => {
 
                 <div className="space-y-3">
                   {(selectedStudent.files || []).map((file) => (
-                    <div key={file.id} className="bg-white dark:bg-zinc-900 p-4 rounded-2xl border border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
+                    <div
+                      key={file.id}
+                      className="bg-white dark:bg-zinc-900 p-4 rounded-2xl border border-zinc-100 dark:border-zinc-800 flex items-center justify-between cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors group"
+                      onClick={() => {
+                        if (file.url && file.url !== '#') {
+                          const newWindow = window.open();
+                          if (newWindow) {
+                            newWindow.document.write(
+                              `<iframe src="${file.url}" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>`
+                            );
+                          } else {
+                            alert("Pop-up bloqueado. Permita pop-ups para visualizar o arquivo.");
+                          }
+                        } else {
+                          alert("Visualização indisponível para este arquivo (URL inválida). Exclua e adicione novamente.");
+                        }
+                      }}
+                    >
                       <div className="flex items-center gap-4">
-                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${file.type === 'pdf' ? 'bg-red-50 text-red-500 dark:bg-red-900/20' : 'bg-blue-50 text-blue-500 dark:bg-blue-900/20'}`}>
+                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${file.type === 'pdf' ? 'bg-red-50 text-red-500 dark:bg-red-900/20' : 'bg-blue-50 text-blue-500 dark:bg-blue-900/20'}`}>
                           <FileText size={20} />
                         </div>
                         <div>
-                          <p className="font-bold text-sm text-zinc-900 dark:text-white">{file.name}</p>
-                          <p className="text-[10px] text-zinc-400 uppercase font-bold">{file.date}</p>
+                          <p className="font-bold text-sm text-zinc-900 dark:text-white mb-0.5">{file.name}</p>
+                          <p className="text-[10px] text-zinc-400 uppercase font-black tracking-wider">
+                            {file.date} • {file.type.toUpperCase()}
+                          </p>
                         </div>
                       </div>
-                      <a href={file.url} target="_blank" rel="noopener noreferrer" className="p-2 text-zinc-300 hover:text-zinc-500 transition-colors">
-                        <ArrowRight size={16} />
-                      </a>
+
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (confirm('Tem certeza que deseja excluir este arquivo?')) {
+                            const updatedFiles = (selectedStudent.files || []).filter(f => f.id !== file.id);
+                            const updatedStudent = { ...selectedStudent, files: updatedFiles };
+
+                            setIsSaving(true);
+                            DataService.saveStudent(updatedStudent, authUser?.id)
+                              .then(() => {
+                                setSelectedStudent(updatedStudent);
+                                setStudents(prev => prev.map(s => s.id === updatedStudent.id ? updatedStudent : s));
+                              })
+                              .catch(err => {
+                                console.error("Erro ao excluir arquivo", err);
+                                alert("Erro ao excluir arquivo.");
+                              })
+                              .finally(() => setIsSaving(false));
+                          }
+                        }}
+                        className="p-2 text-zinc-300 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full transition-colors"
+                      >
+                        <Trash2 size={18} />
+                      </button>
                     </div>
                   ))}
-                  {(!selectedStudent.files || selectedStudent.files.length === 0) && (
-                    <div className="text-center py-10 text-zinc-400 text-sm">Nenhum arquivo encontrado.</div>
-                  )}
                 </div>
               </div>
             </div>
@@ -867,9 +921,8 @@ const App: React.FC = () => {
                   await DataService.saveStudent(updatedStudent, authUser?.id);
                   await reloadStudents();
                   setSelectedStudent(updatedStudent);
-                  showToast("Avaliação salva com sucesso!");
                 } catch (error) {
-                  showToast("Erro ao salvar avaliação", "error");
+                  console.error("Erro ao salvar avaliação", error);
                 } finally {
                   setIsSaving(false);
                 }
@@ -1087,7 +1140,7 @@ const App: React.FC = () => {
           onLogin={(user) => handleLogin(user)}
           students={students}
         />
-        <InstallPrompt />
+
       </ThemeProvider>
     );
   }
@@ -1149,6 +1202,22 @@ const App: React.FC = () => {
 
   const loggedInStudent = students.find(s => s.id === authUser?.id);
 
+  // Check for Trial Expiration
+  // Only applies to Trainers with status 'trial'
+  if (authUser && authUser.role === UserRole.TRAINER && authUser.subscriptionStatus === 'trial') {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const endDate = authUser.subscriptionEndDate ? new Date(authUser.subscriptionEndDate) : null;
+
+    if (endDate && today > endDate) {
+      return (
+        <ThemeProvider>
+          <SubscriptionScreen />
+        </ThemeProvider>
+      );
+    }
+  }
+
   return (
     <ThemeProvider>
       <Layout
@@ -1164,18 +1233,6 @@ const App: React.FC = () => {
         } : undefined}
       >
         {authUser.role === UserRole.TRAINER ? renderTrainerContent() : renderStudentContent()}
-
-        <InstallPrompt />
-
-        {toast && (
-          <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[1000] animate-in slide-in-from-top duration-300">
-            <div className={`px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 border ${toast.type === 'success' ? 'bg-emerald-500 border-emerald-400 text-white' : 'bg-red-500 border-red-400 text-white'
-              }`}>
-              {toast.type === 'success' ? <CheckCircle2 size={20} /> : <X size={20} />}
-              <p className="font-bold text-sm">{toast.message}</p>
-            </div>
-          </div>
-        )}
 
         {/* Modal Genérico de Onboarding */}
         {isOnboardingOpen && (
@@ -1242,7 +1299,11 @@ const App: React.FC = () => {
           />
         )}
       </Layout>
-    </ThemeProvider>
+
+
+
+
+    </ThemeProvider >
   );
 };
 

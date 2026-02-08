@@ -90,6 +90,7 @@ const SubscriptionScreen: React.FC = () => {
 
     const statusMap: Record<string, { label: string; color: string; icon: any }> = {
         'active': { label: 'Assinatura Ativa', color: 'text-emerald-500 bg-emerald-50 dark:bg-emerald-900/20', icon: ShieldCheck },
+        'trial': { label: 'Período de Testes', color: 'text-blue-500 bg-blue-50 dark:bg-blue-900/20', icon: Rocket },
         'past_due': { label: 'Pagamento Pendente', color: 'text-amber-500 bg-amber-50 dark:bg-amber-900/20', icon: Zap },
         'canceled': { label: 'Assinatura Cancelada', color: 'text-red-500 bg-red-50 dark:bg-red-900/20', icon: Zap },
         'unpaid': { label: 'Aguardando Pagamento', color: 'text-zinc-500 bg-zinc-50 dark:bg-zinc-800', icon: CreditCard },

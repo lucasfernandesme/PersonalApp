@@ -187,5 +187,35 @@ export interface Assessment {
 export interface Anamnesis {
   id: string;
   date: string;
-  answers: Record<string, string>; // Pergunta -> Resposta
+  // Legacy support
+  answers?: Record<string, string>; // Pergunta -> Resposta
+
+  // New Structured Fields
+  medical?: {
+    surgeries?: string;
+    injuries?: string;
+    medications?: string;
+    cardiacIssues?: boolean;
+    highBloodPressure?: boolean;
+    diabetes?: boolean;
+    hasPain?: boolean;
+    painDescription?: string;
+    otherHealthIssues?: string;
+  };
+  lifestyle?: {
+    occupation?: string;
+    sleepHours?: string;
+    stressLevel?: 'low' | 'medium' | 'high';
+    alcohol?: boolean;
+    smoking?: boolean;
+    hydration?: string; // Liters per day
+    dietDescription?: string;
+  };
+  training?: {
+    experienceLevel?: 'beginner' | 'intermediate' | 'advanced';
+    availability?: string; // e.g. "3x week"
+    goals?: string;
+    preferences?: string; // Likes
+    dislikes?: string;
+  };
 }
