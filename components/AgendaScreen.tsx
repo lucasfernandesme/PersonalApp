@@ -130,13 +130,27 @@ const AgendaScreen: React.FC<AgendaScreenProps> = ({ events, students, onAddEven
                         </span>
 
                         <div className="mt-1 space-y-1">
-                            {dayEvents.slice(0, 2).map((event, idx) => (
-                                <div key={idx} className="bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded-md truncate border border-transparent dark:border-zinc-700">
-                                    <p className="text-[9px] font-bold text-zinc-900 dark:text-white truncate">
-                                        {format(parseISO(event.start), 'HH:mm')} {event.title}
-                                    </p>
-                                </div>
-                            ))}
+                            {dayEvents.slice(0, 2).map((event, idx) => {
+                                // Color based on status
+                                const statusColors = {
+                                    completed: 'bg-emerald-100 dark:bg-emerald-900/30 border-emerald-300 dark:border-emerald-700',
+                                    cancelled: 'bg-red-100 dark:bg-red-900/30 border-red-300 dark:border-red-700',
+                                    planned: 'bg-zinc-100 dark:bg-zinc-800 border-transparent dark:border-zinc-700'
+                                };
+                                const statusTextColors = {
+                                    completed: 'text-emerald-900 dark:text-emerald-100',
+                                    cancelled: 'text-red-900 dark:text-red-100',
+                                    planned: 'text-zinc-900 dark:text-white'
+                                };
+
+                                return (
+                                    <div key={idx} className={`px-1.5 py-0.5 rounded-md truncate border ${statusColors[event.status] || statusColors.planned}`}>
+                                        <p className={`text-[9px] font-bold truncate ${statusTextColors[event.status] || statusTextColors.planned}`}>
+                                            {format(parseISO(event.start), 'HH:mm')} {event.title}
+                                        </p>
+                                    </div>
+                                );
+                            })}
                             {dayEvents.length > 2 && (
                                 <p className="text-[9px] font-bold text-zinc-400 pl-1">+{dayEvents.length - 2} mais</p>
                             )}
@@ -193,46 +207,65 @@ const AgendaScreen: React.FC<AgendaScreenProps> = ({ events, students, onAddEven
                             <p className="text-zinc-400 dark:text-zinc-500 text-sm font-medium">Nenhum agendamento para este dia.</p>
                         </div>
                     ) : (
-                        dayEvents.map(event => (
-                            <div
-                                key={event.id}
-                                onClick={() => onEditEvent(event)}
-                                className="bg-white dark:bg-zinc-900 p-4 rounded-2xl border border-zinc-100 dark:border-zinc-800 shadow-sm hover:border-zinc-300 dark:hover:border-zinc-700 transition-all cursor-pointer group"
-                            >
-                                <div className="flex items-start justify-between">
-                                    <div className="flex items-start gap-4">
-                                        <div className="w-12 h-12 rounded-xl bg-zinc-100 dark:bg-zinc-800 flex flex-col items-center justify-center text-zinc-900 dark:text-white border border-zinc-200 dark:border-zinc-700">
-                                            <span className="text-xs font-bold">{format(parseISO(event.start), 'HH')}</span>
-                                            <span className="text-[10px] opacity-70">:{format(parseISO(event.start), 'mm')}</span>
-                                        </div>
-                                        <div>
-                                            <h4 className="font-bold text-zinc-900 dark:text-white text-base group-hover:text-zinc-950 dark:group-hover:text-white transition-colors">
-                                                {event.title}
-                                            </h4>
-                                            <div className="flex flex-col gap-1 mt-1">
-                                                {event.studentName && (
-                                                    <div className="flex items-center gap-1.5 text-zinc-500 dark:text-zinc-400">
-                                                        <User size={12} />
-                                                        <span className="text-xs font-bold">{event.studentName}</span>
-                                                    </div>
-                                                )}
-                                                {event.location && (
-                                                    <div className="flex items-center gap-1.5 text-zinc-400 dark:text-zinc-500">
-                                                        <MapPin size={12} />
-                                                        <span className="text-xs">{event.location}</span>
-                                                    </div>
-                                                )}
+                        dayEvents.map(event => {
+                            // Color based on status
+                            const statusBorderColors = {
+                                completed: 'border-emerald-300 dark:border-emerald-700 hover:border-emerald-400 dark:hover:border-emerald-600',
+                                cancelled: 'border-red-300 dark:border-red-700 hover:border-red-400 dark:hover:border-red-600',
+                                planned: 'border-zinc-100 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700'
+                            };
+                            const statusBgColors = {
+                                completed: 'bg-emerald-50/50 dark:bg-emerald-900/10',
+                                cancelled: 'bg-red-50/50 dark:bg-red-900/10',
+                                planned: 'bg-white dark:bg-zinc-900'
+                            };
+                            const statusTimeBadgeColors = {
+                                completed: 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800',
+                                cancelled: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 border-red-200 dark:border-red-800',
+                                planned: 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-white border-zinc-200 dark:border-zinc-700'
+                            };
+
+                            return (
+                                <div
+                                    key={event.id}
+                                    onClick={() => onEditEvent(event)}
+                                    className={`p-4 rounded-2xl border-2 shadow-sm transition-all cursor-pointer group ${statusBgColors[event.status] || statusBgColors.planned} ${statusBorderColors[event.status] || statusBorderColors.planned}`}
+                                >
+                                    <div className="flex items-start justify-between">
+                                        <div className="flex items-start gap-4">
+                                            <div className={`w-12 h-12 rounded-xl flex flex-col items-center justify-center border-2 ${statusTimeBadgeColors[event.status] || statusTimeBadgeColors.planned}`}>
+                                                <span className="text-xs font-bold">{format(parseISO(event.start), 'HH')}</span>
+                                                <span className="text-[10px] opacity-70">:{format(parseISO(event.start), 'mm')}</span>
+                                            </div>
+                                            <div>
+                                                <h4 className="font-bold text-zinc-900 dark:text-white text-base group-hover:text-zinc-950 dark:group-hover:text-white transition-colors">
+                                                    {event.title}
+                                                </h4>
+                                                <div className="flex flex-col gap-1 mt-1">
+                                                    {event.studentName && (
+                                                        <div className="flex items-center gap-1.5 text-zinc-500 dark:text-zinc-400">
+                                                            <User size={12} />
+                                                            <span className="text-xs font-bold">{event.studentName}</span>
+                                                        </div>
+                                                    )}
+                                                    {event.location && (
+                                                        <div className="flex items-center gap-1.5 text-zinc-400 dark:text-zinc-500">
+                                                            <MapPin size={12} />
+                                                            <span className="text-xs">{event.location}</span>
+                                                        </div>
+                                                    )}
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div className="text-right">
-                                        <span className="text-[10px] font-bold text-zinc-400 bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded-lg">
-                                            {format(parseISO(event.end), 'HH:mm')} término
-                                        </span>
+                                        <div className="text-right">
+                                            <span className={`text-[10px] font-bold px-2 py-1 rounded-lg border ${statusTimeBadgeColors[event.status] || statusTimeBadgeColors.planned}`}>
+                                                {format(parseISO(event.end), 'HH:mm')} término
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        ))
+                            );
+                        })
                     )}
                 </div>
             </div>

@@ -3,6 +3,7 @@ import { User, Calendar, Edit2, CheckCircle2, ChevronRight, X, Camera, Eye, EyeO
 import { AuthUser, ScheduleEvent } from '../types'; // Import ScheduleEvent
 import AgendaScreen from './AgendaScreen';
 import ScheduleEventModal from './ScheduleEventModal';
+import ClassDetailsModal from './ClassDetailsModal';
 import ReportsScreen from './ReportsScreen';
 import { DataService } from '../services/dataService';
 import { useAuth } from '../contexts/AuthContext';
@@ -35,6 +36,8 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, 
     const [isEventModalOpen, setIsEventModalOpen] = useState(false);
     const [selectedDateForEvent, setSelectedDateForEvent] = useState<Date>(new Date());
     const [eventToEdit, setEventToEdit] = useState<ScheduleEvent | undefined>(undefined);
+    const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+    const [selectedEvent, setSelectedEvent] = useState<ScheduleEvent | undefined>(undefined);
 
     // Load initial data for students and agenda
     useEffect(() => {
@@ -608,8 +611,8 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, 
                                 setIsEventModalOpen(true);
                             }}
                             onEditEvent={(event) => {
-                                setEventToEdit(event);
-                                setIsEventModalOpen(true);
+                                setSelectedEvent(event);
+                                setIsDetailsModalOpen(true);
                             }}
                             onClose={() => setActiveModal(null)}
                         />
@@ -622,6 +625,27 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, 
                                 onSave={handleAddEvent}
                                 onDelete={handleDeleteEvent}
                                 onClose={() => setIsEventModalOpen(false)}
+                            />
+                        )}
+
+                        {isDetailsModalOpen && selectedEvent && (
+                            <ClassDetailsModal
+                                event={selectedEvent}
+                                onUpdate={(updates) => {
+                                    const updatedEvent = { ...selectedEvent, ...updates };
+                                    setEvents(prev => prev.map(e => e.id === selectedEvent.id ? updatedEvent : e));
+                                    DataService.saveScheduleEvent(updatedEvent as ScheduleEvent).catch(err => console.error("Erro ao atualizar:", err));
+                                }}
+                                onEdit={() => {
+                                    setEventToEdit(selectedEvent);
+                                    setIsDetailsModalOpen(false);
+                                    setIsEventModalOpen(true);
+                                }}
+                                onDelete={() => {
+                                    handleDeleteEvent(selectedEvent.id);
+                                    setIsDetailsModalOpen(false);
+                                }}
+                                onClose={() => setIsDetailsModalOpen(false)}
                             />
                         )}
                     </div>

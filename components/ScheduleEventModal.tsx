@@ -226,134 +226,123 @@ const ScheduleEventModal: React.FC<ScheduleEventModalProps> = ({ initialDate, ex
                         </div>
                     </div>
 
-                    {/* Recurring Options */}
-                    <div className="space-y-4 p-4 bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800">
-                        <h4 className="font-black text-sm text-zinc-900 dark:text-white mb-2">Replicar aulas</h4>
+                    {/* Recurring Options - Only show when creating new event */}
+                    {!existingEvent && (
+                        <div className="space-y-4 p-4 bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800">
+                            <h4 className="font-black text-sm text-zinc-900 dark:text-white mb-2">Replicar aulas</h4>
 
-                        <div className="flex flex-col gap-2">
-                            <label className="flex items-center gap-2 cursor-pointer">
-                                <input
-                                    type="radio"
-                                    name="recurrence"
-                                    checked={!isRecurring}
-                                    onChange={() => setIsRecurring(false)}
-                                    className="w-4 h-4 text-zinc-900 focus:ring-zinc-900 dark:text-zinc-100 dark:focus:ring-white border-zinc-300 dark:border-zinc-600 bg-zinc-100 dark:bg-zinc-800"
-                                />
-                                <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Não replicar</span>
-                            </label>
-                            <label className="flex items-center gap-2 cursor-pointer">
-                                <input
-                                    type="radio"
-                                    name="recurrence"
-                                    checked={isRecurring}
-                                    onChange={() => setIsRecurring(true)}
-                                    className="w-4 h-4 text-zinc-900 focus:ring-zinc-900 dark:text-zinc-100 dark:focus:ring-white border-zinc-300 dark:border-zinc-600 bg-zinc-100 dark:bg-zinc-800"
-                                />
-                                <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Replicar</span>
-                            </label>
-                        </div>
-
-                        {isRecurring && (
-                            <div className="pt-2 space-y-4 animate-in slide-in-from-top-2 duration-200">
-                                {/* Days of Week */}
-                                <div>
-                                    <label className="block text-xs font-bold text-slate-500 dark:text-zinc-400 mb-2">Replicar para os seguintes dias da semana</label>
-                                    <div className="flex flex-wrap gap-2 p-2 border border-blue-400 rounded-lg min-h-[40px] bg-white dark:bg-zinc-950">
-                                        {recurringDays.length === 0 && <span className="text-xs text-zinc-400 p-1">Selecione os dias abaixo...</span>}
-                                        {recurringDays.map((dayIdx) => (
-                                            <span key={dayIdx} className="inline-flex items-center gap-1 px-2 py-1 rounded bg-slate-700 text-white text-xs font-bold">
-                                                {['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'][dayIdx]}
-                                                <button
-                                                    onClick={() => {
-                                                        setRecurringDays(prev => prev.filter(d => d !== dayIdx));
-                                                    }}
-                                                    className="hover:text-red-300"
-                                                >
-                                                    ×
-                                                </button>
-                                            </span>
-                                        ))}
-                                    </div>
-                                    {/* Day Selector Buttons */}
-                                    <div className="flex flex-wrap gap-1 mt-2">
-                                        {['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'].map((label, idx) => {
-                                            if (recurringDays.includes(idx)) return null; // Don't show if already selected (or maybe show disabled?)
-                                            // Actually typical tag UI shows available options to add.
-                                            return (
-                                                <button
-                                                    key={idx}
-                                                    onClick={() => setRecurringDays(prev => [...prev, idx].sort((a, b) => a - b))}
-                                                    className="px-2 py-1 text-[10px] font-bold uppercase rounded border border-zinc-200 dark:border-zinc-700 text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800"
-                                                >
-                                                    {label}
-                                                </button>
-                                            );
-                                        })}
-                                    </div>
-                                </div>
-
-                                {/* Months Selector */}
-                                <div>
-                                    <label className="block text-xs font-bold text-slate-500 dark:text-zinc-400 mb-2">Nos meses</label>
-                                    <div className="flex flex-wrap gap-2 p-2 border border-slate-300 dark:border-zinc-700 rounded-lg min-h-[40px] bg-white dark:bg-zinc-950">
-                                        {recurringMonths.length === 0 && <span className="text-xs text-zinc-400 p-1">Selecione os meses abaixo...</span>}
-                                        {recurringMonths.map((monthIdx) => (
-                                            <span key={monthIdx} className="inline-flex items-center gap-1 px-2 py-1 rounded bg-slate-700 text-white text-xs font-bold">
-                                                {monthNames[monthIdx]}
-                                                <button
-                                                    onClick={() => {
-                                                        setRecurringMonths(prev => prev.filter(m => m !== monthIdx));
-                                                    }}
-                                                    className="hover:text-red-300"
-                                                >
-                                                    ×
-                                                </button>
-                                            </span>
-                                        ))}
-                                    </div>
-                                    <div className="flex flex-wrap gap-1 mt-2">
-                                        {monthNames.map((label, idx) => {
-                                            if (recurringMonths.includes(idx)) return null;
-                                            return (
-                                                <button
-                                                    key={idx}
-                                                    onClick={() => {
-                                                        setRecurringMonths(prev => [...prev, idx].sort((a, b) => a - b));
-                                                    }}
-                                                    className="px-2 py-1 text-[10px] font-bold uppercase rounded border border-zinc-200 dark:border-zinc-700 text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800"
-                                                >
-                                                    {label}
-                                                </button>
-                                            );
-                                        })}
-                                    </div>
-                                </div>
-
-
-
+                            <div className="flex flex-col gap-2">
+                                <label className="flex items-center gap-2 cursor-pointer">
+                                    <input
+                                        type="radio"
+                                        name="recurrence"
+                                        checked={!isRecurring}
+                                        onChange={() => setIsRecurring(false)}
+                                        className="w-4 h-4 text-zinc-900 focus:ring-zinc-900 dark:text-zinc-100 dark:focus:ring-white border-zinc-300 dark:border-zinc-600 bg-zinc-100 dark:bg-zinc-800"
+                                    />
+                                    <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Não replicar</span>
+                                </label>
+                                <label className="flex items-center gap-2 cursor-pointer">
+                                    <input
+                                        type="radio"
+                                        name="recurrence"
+                                        checked={isRecurring}
+                                        onChange={() => setIsRecurring(true)}
+                                        className="w-4 h-4 text-zinc-900 focus:ring-zinc-900 dark:text-zinc-100 dark:focus:ring-white border-zinc-300 dark:border-zinc-600 bg-zinc-100 dark:bg-zinc-800"
+                                    />
+                                    <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Replicar</span>
+                                </label>
                             </div>
-                        )}
-                    </div>
+
+                            {isRecurring && (
+                                <div className="pt-2 space-y-4 animate-in slide-in-from-top-2 duration-200">
+                                    {/* Days of Week */}
+                                    <div>
+                                        <label className="block text-xs font-bold text-slate-500 dark:text-zinc-400 mb-2">Replicar para os seguintes dias da semana</label>
+                                        <div className="flex flex-wrap gap-2 p-2 border border-blue-400 rounded-lg min-h-[40px] bg-white dark:bg-zinc-950">
+                                            {recurringDays.length === 0 && <span className="text-xs text-zinc-400 p-1">Selecione os dias abaixo...</span>}
+                                            {recurringDays.map((dayIdx) => (
+                                                <span key={dayIdx} className="inline-flex items-center gap-1 px-2 py-1 rounded bg-slate-700 text-white text-xs font-bold">
+                                                    {['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'][dayIdx]}
+                                                    <button
+                                                        onClick={() => {
+                                                            setRecurringDays(prev => prev.filter(d => d !== dayIdx));
+                                                        }}
+                                                        className="hover:text-red-300"
+                                                    >
+                                                        ×
+                                                    </button>
+                                                </span>
+                                            ))}
+                                        </div>
+                                        {/* Day Selector Buttons */}
+                                        <div className="flex flex-wrap gap-1 mt-2">
+                                            {['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'].map((label, idx) => {
+                                                if (recurringDays.includes(idx)) return null; // Don't show if already selected (or maybe show disabled?)
+                                                // Actually typical tag UI shows available options to add.
+                                                return (
+                                                    <button
+                                                        key={idx}
+                                                        onClick={() => setRecurringDays(prev => [...prev, idx].sort((a, b) => a - b))}
+                                                        className="px-2 py-1 text-[10px] font-bold uppercase rounded border border-zinc-200 dark:border-zinc-700 text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                                                    >
+                                                        {label}
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+
+                                    {/* Months Selector */}
+                                    <div>
+                                        <label className="block text-xs font-bold text-slate-500 dark:text-zinc-400 mb-2">Nos meses</label>
+                                        <div className="flex flex-wrap gap-2 p-2 border border-slate-300 dark:border-zinc-700 rounded-lg min-h-[40px] bg-white dark:bg-zinc-950">
+                                            {recurringMonths.length === 0 && <span className="text-xs text-zinc-400 p-1">Selecione os meses abaixo...</span>}
+                                            {recurringMonths.map((monthIdx) => (
+                                                <span key={monthIdx} className="inline-flex items-center gap-1 px-2 py-1 rounded bg-slate-700 text-white text-xs font-bold">
+                                                    {monthNames[monthIdx]}
+                                                    <button
+                                                        onClick={() => {
+                                                            setRecurringMonths(prev => prev.filter(m => m !== monthIdx));
+                                                        }}
+                                                        className="hover:text-red-300"
+                                                    >
+                                                        ×
+                                                    </button>
+                                                </span>
+                                            ))}
+                                        </div>
+                                        <div className="flex flex-wrap gap-1 mt-2">
+                                            {monthNames.map((label, idx) => {
+                                                if (recurringMonths.includes(idx)) return null;
+                                                return (
+                                                    <button
+                                                        key={idx}
+                                                        onClick={() => {
+                                                            setRecurringMonths(prev => [...prev, idx].sort((a, b) => a - b));
+                                                        }}
+                                                        className="px-2 py-1 text-[10px] font-bold uppercase rounded border border-zinc-200 dark:border-zinc-700 text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                                                    >
+                                                        {label}
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+
+
+
+                                </div>
+                            )}
+                        </div>
+                    )}
 
                 </div>
 
-                <div className="pt-6 mt-2 flex gap-3">
-                    {existingEvent && onDelete && (
-                        <button
-                            onClick={() => {
-                                if (confirm("Tem certeza que deseja excluir esta aula?")) {
-                                    onDelete(existingEvent.id);
-                                }
-                            }}
-                            className="px-4 py-4 bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-2xl font-black hover:bg-red-200 dark:hover:bg-red-900/40 transition-colors"
-                        >
-                            <Trash2 size={20} />
-                        </button>
-                    )}
-
+                <div className="pt-6 mt-2">
                     <button
                         onClick={handleSave}
-                        className="flex-1 py-4 bg-zinc-900 hover:bg-zinc-800 dark:bg-white dark:hover:bg-zinc-200 text-white dark:text-zinc-900 rounded-2xl font-black uppercase text-xs tracking-widest shadow-lg shadow-zinc-900/20 dark:shadow-none active:scale-95 transition-all flex items-center justify-center gap-2"
+                        className="w-full py-4 bg-zinc-900 hover:bg-zinc-800 dark:bg-white dark:hover:bg-zinc-200 text-white dark:text-zinc-900 rounded-2xl font-black uppercase text-xs tracking-widest shadow-lg shadow-zinc-900/20 dark:shadow-none active:scale-95 transition-all flex items-center justify-center gap-2"
                     >
                         {existingEvent ? 'Salvar Alterações' : 'Agendar Aula'} <CheckCircle2 size={18} />
                     </button>
