@@ -17,6 +17,7 @@ export interface AuthUser {
   // Subscription info
   subscriptionStatus?: string;
   subscriptionEndDate?: string;
+  subscriptionSource?: 'stripe' | 'google_play' | 'ios';
 }
 
 export interface Exercise {

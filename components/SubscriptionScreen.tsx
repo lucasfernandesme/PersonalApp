@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../services/supabase';
 
 const SubscriptionScreen: React.FC = () => {
-    const { user, subscriptionStatus, subscriptionEndDate, signOut, session, refreshSubscription } = useAuth();
+    const { user, subscriptionStatus, subscriptionEndDate, signOut, session, refreshSubscription, subscriptionSource } = useAuth();
     const [isRedirecting, setIsRedirecting] = React.useState(false);
     const [isRefreshing, setIsRefreshing] = React.useState(false);
 
@@ -273,16 +273,29 @@ const SubscriptionScreen: React.FC = () => {
 
                             <button
                                 onClick={handleManageSubscription}
-                                disabled={isRefreshing}
-                                className="w-full py-4 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 font-black rounded-3xl hover:scale-[1.02] transition-all flex items-center justify-center gap-2 text-xs uppercase tracking-widest"
+                                disabled={isRefreshing || (subscriptionSource && subscriptionSource !== 'stripe')}
+                                className={`w-full py-4 font-black rounded-3xl hover:scale-[1.02] transition-all flex items-center justify-center gap-2 text-xs uppercase tracking-widest ${subscriptionSource && subscriptionSource !== 'stripe'
+                                        ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-600 cursor-not-allowed'
+                                        : 'bg-zinc-900 dark:bg-white text-white dark:text-zinc-900'
+                                    }`}
                             >
                                 {isRefreshing ? (
                                     <Loader2 size={16} className="animate-spin" />
                                 ) : (
                                     <Zap size={16} />
                                 )}
-                                {isRefreshing ? 'Abrindo...' : 'Gerenciar Assinatura'}
+                                {isRefreshing ? 'Abrindo...' : (
+                                    subscriptionSource === 'google_play' ? 'Gerenciar na Play Store' :
+                                        subscriptionSource === 'ios' ? 'Gerenciar na App Store' :
+                                            'Gerenciar Assinatura'
+                                )}
                             </button>
+                            {(subscriptionSource === 'google_play' || subscriptionSource === 'ios') && (
+                                <p className="text-[10px] text-zinc-400 text-center">
+                                    Sua assinatura foi criada via {subscriptionSource === 'google_play' ? 'Google Play' : 'App Store'}.
+                                    Gerencie-a nas configurações do seu celular.
+                                </p>
+                            )}
                         </div>
                     )}
 

@@ -25,7 +25,7 @@ const statusMap: Record<string, { label: string; color: string }> = {
 };
 
 const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, onBack }) => {
-    const { subscriptionStatus, subscriptionEndDate, refreshSubscription, session } = useAuth();
+    const { subscriptionStatus, subscriptionEndDate, refreshSubscription, session, subscriptionSource } = useAuth();
     const [activeModal, setActiveModal] = useState<'edit' | 'schedule' | 'reports' | 'subscription' | null>(null);
     const [isRedirecting, setIsRedirecting] = useState(false);
 
@@ -703,20 +703,32 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, 
                                             'ASSINAR PRO PLAN'
                                         )}
                                     </button>
-                                ) : (
+                                ) : (<>
                                     <button
                                         onClick={handleManageSubscription}
-                                        disabled={isSavingLocal}
-                                        className="w-full py-4 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 font-black rounded-2xl shadow-lg hover:opacity-90 transition-all active:scale-95 flex items-center justify-center gap-2"
+                                        disabled={isSavingLocal || (subscriptionSource && subscriptionSource !== 'stripe')}
+                                        className={`w-full py-4 font-black rounded-2xl shadow-lg hover:opacity-90 transition-all active:scale-95 flex items-center justify-center gap-2 ${subscriptionSource && subscriptionSource !== 'stripe'
+                                            ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-600 cursor-not-allowed'
+                                            : 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900'
+                                            }`}
                                     >
                                         {isSavingLocal ? (
                                             <Loader2 className="animate-spin" size={20} />
                                         ) : (
                                             <Zap size={20} />
                                         )}
-                                        {isSavingLocal ? 'Abrindo...' : 'GERENCIAR ASSINATURA'}
+                                        {isSavingLocal ? 'Abrindo...' : (
+                                            subscriptionSource === 'google_play' ? 'GERENCIAR NA PLAY STORE' :
+                                                subscriptionSource === 'ios' ? 'GERENCIAR NA APP STORE' :
+                                                    'GERENCIAR ASSINATURA'
+                                        )}
                                     </button>
-                                )}
+                                    {(subscriptionSource === 'google_play' || subscriptionSource === 'ios') && (
+                                        <p className="text-[10px] text-zinc-400 text-center mt-2">
+                                            Assinatura gerenciada pela {subscriptionSource === 'google_play' ? 'Google Play' : 'App Store'}.
+                                        </p>
+                                    )}
+                                </>)}
 
                                 <button
                                     onClick={handleRefreshStatus}

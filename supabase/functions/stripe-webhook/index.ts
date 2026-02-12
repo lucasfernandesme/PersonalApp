@@ -75,6 +75,7 @@ Deno.serve(async (req) => {
                         subscription_status: status,
                         subscription_price_id: priceId,
                         subscription_end_date: endDate,
+                        subscription_source: "stripe",
                     }).eq("id", supabaseId);
                 } else {
                     // STRATEGY B: Customer ID (Legacy/Fallback)
@@ -84,6 +85,7 @@ Deno.serve(async (req) => {
                         subscription_status: status,
                         subscription_price_id: priceId,
                         subscription_end_date: endDate,
+                        subscription_source: "stripe",
                     }).eq("stripe_customer_id", customerId);
                 }
                 break;
