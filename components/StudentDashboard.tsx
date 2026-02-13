@@ -313,6 +313,51 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
                                                 }`}>
                                                 {payment.status === 'paid' ? 'Pago' : 'Pendente'}
                                             </span>
+                                            {payment.status === 'pending' && !payment.proofUrl && (
+                                                <label className="cursor-pointer bg-zinc-100 dark:bg-zinc-700 hover:bg-zinc-200 dark:hover:bg-zinc-600 text-zinc-600 dark:text-zinc-300 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider flex items-center gap-2 transition-colors">
+                                                    <Upload size={12} />
+                                                    Enviar Comprovante
+                                                    <input
+                                                        type="file"
+                                                        accept="image/*,application/pdf"
+                                                        className="hidden"
+                                                        onChange={async (e) => {
+                                                            const file = e.target.files?.[0];
+                                                            if (file) {
+                                                                if (file.size > 3 * 1024 * 1024) {
+                                                                    alert("Arquivo muito grande. Limite: 3MB");
+                                                                    return;
+                                                                }
+
+                                                                const reader = new FileReader();
+                                                                reader.onload = async (event) => {
+                                                                    const base64 = event.target?.result as string;
+                                                                    try {
+                                                                        await DataService.recordPayment({
+                                                                            id: payment.id,
+                                                                            proofUrl: base64,
+                                                                            proofDate: new Date().toISOString()
+                                                                        });
+                                                                        await loadPayments(); // Reload list
+                                                                        alert("Comprovante enviado com sucesso! Aguarde a validação.");
+                                                                    } catch (err: any) {
+                                                                        console.error("Erro ao enviar comprovante", err);
+                                                                        alert(`Erro ao enviar comprovante: ${err.message || err.error_description || JSON.stringify(err)}`);
+                                                                    }
+                                                                };
+                                                                reader.readAsDataURL(file);
+                                                            }
+                                                        }}
+                                                    />
+                                                </label>
+                                            )}
+
+                                            {payment.proofUrl && payment.status === 'pending' && (
+                                                <div className="flex items-center gap-1.5 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 px-2 py-1 rounded-lg border border-blue-100 dark:border-blue-800">
+                                                    <Clock size={10} />
+                                                    <span className="text-[9px] font-black uppercase">Em Análise</span>
+                                                </div>
+                                            )}
                                         </div>
                                         <div className="flex items-end justify-between">
                                             <div>
@@ -326,6 +371,17 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
                                                         {format(new Date(payment.paidAt), 'dd/MM/yyyy')}
                                                     </p>
                                                 </div>
+                                            )}
+                                            {payment.proofUrl && (
+                                                <button
+                                                    onClick={() => {
+                                                        const isPdf = payment.proofUrl?.toLowerCase().includes('application/pdf') || payment.proofUrl?.toLowerCase().endsWith('.pdf');
+                                                        setFileToView({ url: payment.proofUrl!, name: 'Comprovante Terminado', type: isPdf ? 'pdf' : 'image' })
+                                                    }}
+                                                    className="pl-2 text-[10px] font-bold text-zinc-400 hover:text-zinc-600 hover:underline"
+                                                >
+                                                    Ver Comprovante
+                                                </button>
                                             )}
                                         </div>
                                     </div>

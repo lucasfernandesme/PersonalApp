@@ -236,4 +236,6 @@ export interface StudentPayment {
   type: 'revenue' | 'expense';
   category?: string;
   description?: string;
+  proofUrl?: string; // URL or Base64 of the payment proof
+  proofDate?: string; // Date when the proof was uploaded
 }

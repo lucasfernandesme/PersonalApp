@@ -228,6 +228,7 @@ const FinanceScreen: React.FC<FinanceScreenProps> = ({ user, onBack }) => {
     const [showAddModal, setShowAddModal] = useState(false);
     const [activeTab, setActiveTab] = useState<'entries' | 'revenues' | 'expenses'>('entries');
     const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
+    const [proofToView, setProofToView] = useState<{ url: string; type: string } | null>(null);
 
     useEffect(() => {
         loadData();
@@ -503,6 +504,7 @@ const FinanceScreen: React.FC<FinanceScreenProps> = ({ user, onBack }) => {
                                                                 </p>
                                                             </div>
                                                         </div>
+
                                                     ) : (
                                                         <div className="flex flex-col gap-0.5 max-w-[60%] overflow-hidden">
                                                             <p className="font-black text-sm text-zinc-800 dark:text-zinc-200 truncate">
@@ -514,6 +516,18 @@ const FinanceScreen: React.FC<FinanceScreenProps> = ({ user, onBack }) => {
                                                                 <p>Situação: <span className={`font-black ${item.status === 'paid' ? 'text-emerald-500' : 'text-amber-500'}`}>{getStatusLabel(item.status)}</span></p>
                                                                 <p>Valor: <span className={`font-black ${item.type === 'expense' ? 'text-red-500' : 'text-zinc-800 dark:text-zinc-200'}`}>{item.type === 'expense' ? '-' : ''} R$ {item.amount?.toFixed(2)}</span></p>
                                                             </div>
+                                                            {item.proofUrl && (
+                                                                <button
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        const isPdf = item.proofUrl?.toLowerCase().includes('application/pdf') || item.proofUrl?.toLowerCase().endsWith('.pdf');
+                                                                        setProofToView({ url: item.proofUrl!, type: isPdf ? 'pdf' : 'image' });
+                                                                    }}
+                                                                    className="text-[9px] font-bold text-emerald-500 hover:underline mt-1 block w-full text-left"
+                                                                >
+                                                                    Ver Comprovante
+                                                                </button>
+                                                            )}
                                                         </div>
                                                     )}
 
@@ -534,7 +548,8 @@ const FinanceScreen: React.FC<FinanceScreenProps> = ({ user, onBack }) => {
                                                 </div>
                                             ))}
                                         </div>
-                                    )}
+                                    )
+                                    }
                                 </div>
                             );
                         })
@@ -584,14 +599,49 @@ const FinanceScreen: React.FC<FinanceScreenProps> = ({ user, onBack }) => {
             </div>
 
             {/* Modal */}
-            {showAddModal && (
-                <AddPaymentModal
-                    students={data.students}
-                    onClose={handleModalClose}
-                    onSave={handleManualPayment}
-                />
-            )}
-        </div>
+            {
+                showAddModal && (
+                    <AddPaymentModal
+                        students={data.students}
+                        onClose={handleModalClose}
+                        onSave={handleManualPayment}
+                    />
+                )
+            }
+            {/* Modal de Visualização de Comprovante */}
+            {
+                proofToView && (
+                    <div className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
+                        <div className="bg-white dark:bg-zinc-900 rounded-[32px] w-full max-w-4xl h-[85vh] shadow-2xl relative flex flex-col overflow-hidden">
+                            <div className="flex items-center justify-between p-4 border-b border-zinc-100 dark:border-zinc-800">
+                                <h3 className="font-black text-zinc-900 dark:text-white">Comprovante de Pagamento</h3>
+                                <button
+                                    onClick={() => setProofToView(null)}
+                                    className="p-2 bg-zinc-100 dark:bg-zinc-800 rounded-full hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
+                                >
+                                    <X size={20} className="text-zinc-600 dark:text-zinc-400" />
+                                </button>
+                            </div>
+                            <div className="flex-1 bg-zinc-50 dark:bg-zinc-950 p-4 flex items-center justify-center overflow-auto">
+                                {proofToView.type === 'pdf' ? (
+                                    <iframe
+                                        src={proofToView.url}
+                                        className="w-full h-full rounded-xl border border-zinc-200 dark:border-zinc-800"
+                                        title="Comprovante"
+                                    />
+                                ) : (
+                                    <img
+                                        src={proofToView.url}
+                                        alt="Comprovante"
+                                        className="max-w-full max-h-full object-contain rounded-xl shadow-lg"
+                                    />
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                )
+            }
+        </div >
     );
 };
 

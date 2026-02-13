@@ -20,6 +20,11 @@ const StudentProfile: React.FC<StudentProfileProps> = ({ student, onUpdateProfil
     const [whatsapp, setWhatsapp] = useState(student.whatsapp || '');
 
     const handleSaveProfile = () => {
+        if (!name.trim() || !email.trim()) {
+            alert('Por favor, preencha os campos obrigatórios (Nome e Email).');
+            return;
+        }
+
         if (onUpdateProfile) {
             onUpdateProfile({
                 name,
@@ -124,7 +129,7 @@ const StudentProfile: React.FC<StudentProfileProps> = ({ student, onUpdateProfil
 
                         <div className="space-y-4">
                             <div>
-                                <label className="block text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase mb-2">Nome Completo</label>
+                                <label className="block text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase mb-2">Nome Completo <span className="text-red-500">*</span></label>
                                 <input
                                     type="text"
                                     value={name}
@@ -148,7 +153,7 @@ const StudentProfile: React.FC<StudentProfileProps> = ({ student, onUpdateProfil
                             </div>
 
                             <div>
-                                <label className="block text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase mb-2">Email</label>
+                                <label className="block text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase mb-2">Email <span className="text-red-500">*</span></label>
                                 <div className="relative">
                                     <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400" size={18} />
                                     <input

@@ -562,7 +562,9 @@ export const DataService = {
       createdAt: p.created_at,
       type: p.type || 'revenue',
       category: p.category,
-      description: p.description
+      description: p.description,
+      proofUrl: p.proof_url,
+      proofDate: p.proof_date
     }));
   },
 
@@ -581,12 +583,68 @@ export const DataService = {
     if (payment.type) payload.type = payment.type;
     if (payment.category) payload.category = payment.category;
     if (payment.description) payload.description = payment.description;
+    if (payment.proofUrl) payload.proof_url = payment.proofUrl;
+    if (payment.proofDate) payload.proof_date = payment.proofDate;
 
-    const { error } = await supabase
-      .from('student_payments')
-      .upsert(payload);
+    let query;
+    if (payment.id) {
+      query = supabase.from('student_payments').update(payload).eq('id', payment.id);
+    } else {
+      query = supabase.from('student_payments').insert(payload);
+    }
+
+    const { error } = await query;
 
     if (error) throw error;
+  },
+
+  async getTrainerPaymentsByDateRange(trainerId: string, startDate: string, endDate: string) {
+    if (!supabase) return [];
+
+    const { data, error } = await supabase
+      .from('student_payments')
+      .select('*')
+      .eq('trainer_id', trainerId)
+      .gte('created_at', startDate) // Assuming created_at or we could use paid_at/due date? Ideally 'created_at' for now or we filter by month/year logic manually.
+      // But wait, payments have month/year. They don't have a single date for filtering cleanly unless we use paid_at or created_at.
+      // However, a billing record is usually valid for a month.
+      // Let's use created_at as a proxy for now, OR better: filter where (year > startYear OR (year = startYear AND month >= startMonth)) ...
+      // That's complex in SQL/Supabase via API without raw query.
+      // Let's fallback to filtering by date range on `created_at` OR `paid_at`.
+      // Actually, for a financial report, we care about CASH FLOW (paid_at) or ACCRUAL (due date).
+      // Let's stick to returning ALL for the trainer and filtering client side for flexibility if dataset is small, OR use a broad Range.
+      // Given constraints, let's try a simple filter on a date field if possible, or just fetch all and filter client side.
+      // Fetching all might be heavy eventually.
+      // Let's rely on `paid_at` for realized income, and `created_at` for accrued?
+      // Let's implement a specific query range on `paid_at` for now as primary financial metric?
+      // Or just fetch all payments for the trainer? It's likely < 1000 per year.
+      .order('year', { ascending: false })
+      .order('month', { ascending: false });
+
+    if (error) throw error;
+
+    // Filter manually to allow complex Month/Year logic vs Date logic
+    return (data || []).filter(p => {
+      // Construct a date check
+      // If paid_at exists, use it. If not, maybe use year/month as 1st of month.
+      const dateToCheck = p.paid_at ? new Date(p.paid_at) : new Date(p.year, p.month - 1, 1);
+      return dateToCheck >= new Date(startDate) && dateToCheck <= new Date(endDate);
+    }).map(p => ({
+      id: p.id,
+      studentId: p.student_id,
+      trainerId: p.trainer_id,
+      month: p.month,
+      year: p.year,
+      amount: p.amount,
+      status: p.status,
+      paidAt: p.paid_at,
+      createdAt: p.created_at,
+      type: p.type || 'revenue',
+      category: p.category,
+      description: p.description,
+      proofUrl: p.proof_url,
+      proofDate: p.proof_date
+    }));
   },
 
   async getTrainerFinanceSummary(trainerId: string, month: number, year: number) {
@@ -622,7 +680,9 @@ export const DataService = {
         paidAt: p.paid_at,
         type: p.type || 'revenue',
         category: p.category,
-        description: p.description
+        description: p.description,
+        proofUrl: p.proof_url,
+        proofDate: p.proof_date
       })),
       students: students || []
     };

@@ -149,6 +149,9 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin }) => {
             <img src="/logo.jpg" alt="PersonalFlow" className="w-24 h-24 rounded-full shadow-2xl shadow-zinc-900/20 dark:shadow-white/10 mx-auto" />
           </div>
           <h1 className="text-4xl font-black text-slate-900 dark:text-white tracking-tighter transition-colors">PersonalFlow</h1>
+          <p className="text-center text-xs font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mt-2 animate-in slide-in-from-top-2">
+            {role === UserRole.TRAINER ? 'Área do Personal' : 'Área do Aluno'}
+          </p>
 
         </div>
 
@@ -181,7 +184,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin }) => {
                   <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 dark:text-zinc-600 group-focus-within:text-zinc-900 dark:group-focus-within:text-zinc-100 transition-colors" size={20} />
                   <input
                     type="email"
-                    placeholder="E-mail"
+                    placeholder={role === UserRole.TRAINER ? "E-mail profissional" : "Seu e-mail de aluno"}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
@@ -192,7 +195,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin }) => {
                   <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 dark:text-zinc-600 group-focus-within:text-zinc-900 dark:group-focus-within:text-zinc-100 transition-colors" size={20} />
                   <input
                     type="password"
-                    placeholder="Senha"
+                    placeholder={role === UserRole.TRAINER ? "Sua senha" : "Sua senha (geralmente 123456)"}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
