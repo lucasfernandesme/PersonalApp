@@ -516,7 +516,9 @@ const App: React.FC = () => {
                 program: null,
                 programs: [],
                 history: [],
-                files: []
+                files: [],
+                billingDay: studentData.billingDay,
+                monthlyFee: studentData.monthlyFee
               };
               await DataService.saveStudent(newStudent as any, authUser?.id);
               await reloadStudents();

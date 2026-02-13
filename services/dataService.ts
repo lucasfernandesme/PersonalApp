@@ -1,6 +1,6 @@
 
 import { createClient } from '@supabase/supabase-js';
-import { Student, WorkoutFolder, WorkoutTemplate, AuthUser, UserRole } from "../types";
+import { Student, WorkoutFolder, WorkoutTemplate, AuthUser, UserRole, StudentPayment } from "../types";
 import { LibraryExercise, EXERCISES_DB } from "../constants/exercises";
 
 // Estas variáveis serão injetadas pelo Vercel
@@ -137,7 +137,9 @@ export const DataService = {
       instagram: data.instagram,
       whatsapp: data.whatsapp,
       assessments: data.assessments || [],
-      anamnesis: data.anamnesis || []
+      anamnesis: data.anamnesis || [],
+      billingDay: data.billing_day,
+      monthlyFee: data.monthly_fee
     };
   },
 
@@ -174,7 +176,9 @@ export const DataService = {
       instagram: student.instagram,
       whatsapp: student.whatsapp,
       assessments: student.assessments,
-      anamnesis: student.anamnesis
+      anamnesis: student.anamnesis,
+      billing_day: student.billingDay,
+      monthly_fee: student.monthlyFee
     };
 
     if (trainerId) {
@@ -529,5 +533,88 @@ export const DataService = {
       return;
     }
     await supabase.from('schedule_events').delete().eq('id', id);
+  },
+
+  // --- FINANCEIRO ---
+  async getStudentPayments(studentId: string): Promise<StudentPayment[]> {
+    if (!supabase) return [];
+    const { data, error } = await supabase
+      .from('student_payments')
+      .select('*')
+      .eq('student_id', studentId)
+      .order('year', { ascending: false })
+      .order('month', { ascending: false });
+
+    if (error) {
+      console.error("Erro ao buscar pagamentos:", error);
+      return [];
+    }
+
+    return (data || []).map(p => ({
+      id: p.id,
+      studentId: p.student_id,
+      trainerId: p.trainer_id,
+      month: p.month,
+      year: p.year,
+      amount: p.amount,
+      status: p.status,
+      paidAt: p.paid_at,
+      createdAt: p.created_at
+    }));
+  },
+
+  async recordPayment(payment: Partial<StudentPayment>): Promise<void> {
+    if (!supabase) return;
+    const payload = {
+      id: payment.id,
+      student_id: payment.studentId,
+      trainer_id: payment.trainerId,
+      month: payment.month,
+      year: payment.year,
+      amount: payment.amount,
+      status: payment.status,
+      paid_at: payment.paidAt
+    };
+
+    const { error } = await supabase
+      .from('student_payments')
+      .upsert(payload);
+
+    if (error) throw error;
+  },
+
+  async getTrainerFinanceSummary(trainerId: string, month: number, year: number) {
+    if (!supabase) return { payments: [], students: [] };
+
+    // Buscar pagamentos do mês
+    const { data: payments, error: pError } = await supabase
+      .from('student_payments')
+      .select('*')
+      .eq('trainer_id', trainerId)
+      .eq('month', month)
+      .eq('year', year);
+
+    // Buscar todos os alunos ativos para saber quem DEVERIA pagar
+    const { data: students, error: sError } = await supabase
+      .from('students')
+      .select('id, name, monthly_fee, billing_day')
+      .eq('trainer_id', trainerId)
+      .eq('is_active', true);
+
+    if (pError || sError) throw pError || sError;
+
+    return {
+      payments: (payments || []).map(p => ({
+        id: p.id,
+        studentId: p.student_id,
+        trainerId: p.trainer_id,
+        month: p.month,
+        year: p.year,
+        amount: p.amount,
+        status: p.status,
+        paidAt: p.paid_at
+      })),
+      students: students || []
+    };
   }
 };

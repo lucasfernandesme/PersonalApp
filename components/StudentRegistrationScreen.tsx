@@ -55,7 +55,9 @@ const StudentRegistrationScreen: React.FC<StudentRegistrationScreenProps> = ({ o
         gender: initialData.gender || 'male',
         goal: initialData.goal || 'Hipertrofia',
         experience: initialData.experience || 'beginner',
-        isActive: initialData.isActive !== false
+        isActive: initialData.isActive !== false,
+        billingDay: initialData.billingDay || 10,
+        monthlyFee: initialData.monthlyFee || 0
       });
     }
   }, [initialData]);
@@ -252,6 +254,33 @@ const StudentRegistrationScreen: React.FC<StudentRegistrationScreenProps> = ({ o
                     {l.label}
                   </button>
                 ))}
+              </div>
+            </div>
+
+            <div className="pt-2">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 ml-1">Mensalidade (R$)</label>
+                  <input
+                    type="number"
+                    value={formData.monthlyFee}
+                    onChange={(e) => setFormData({ ...formData, monthlyFee: parseFloat(e.target.value) || 0 })}
+                    className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-5 py-4 font-bold text-zinc-900 dark:text-white focus:ring-2 focus:ring-zinc-900 dark:focus:ring-white transition-colors"
+                    placeholder="0.00"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 ml-1">Vencimento (Dia)</label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="31"
+                    value={formData.billingDay}
+                    onChange={(e) => setFormData({ ...formData, billingDay: parseInt(e.target.value) || 1 })}
+                    className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-5 py-4 font-bold text-zinc-900 dark:text-white focus:ring-2 focus:ring-zinc-900 dark:focus:ring-white transition-colors"
+                    placeholder="10"
+                  />
+                </div>
               </div>
             </div>
           </div>

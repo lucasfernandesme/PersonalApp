@@ -7,9 +7,14 @@ import {
     Calendar,
     X,
     Upload,
-    FileText
+    FileText,
+    Loader2,
+    Clock
 } from 'lucide-react';
-import { Student } from '../types';
+import { Student, StudentPayment } from '../types';
+import { DataService } from '../services/dataService';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 
 interface StudentDashboardProps {
     student: Student;
@@ -40,8 +45,22 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
         return 'Boa noite';
     };
 
-    const [activeModal, setActiveModal] = useState<'files' | 'assessments' | null>(null);
+    const [activeModal, setActiveModal] = useState<'files' | 'assessments' | 'payments' | null>(null);
     const [fileToView, setFileToView] = useState<{ url: string; name: string; type: string } | null>(null);
+    const [payments, setPayments] = useState<StudentPayment[]>([]);
+    const [loadingPayments, setLoadingPayments] = useState(false);
+
+    const loadPayments = async () => {
+        setLoadingPayments(true);
+        try {
+            const data = await DataService.getStudentPayments(student.id);
+            setPayments(data);
+        } catch (error) {
+            console.error("Erro ao carregar pagamentos:", error);
+        } finally {
+            setLoadingPayments(false);
+        }
+    };
 
     // Mock Avaliações
     const assessments = [
@@ -132,6 +151,10 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
 
                 {/* Faturas */}
                 <button
+                    onClick={() => {
+                        setActiveModal('payments');
+                        loadPayments();
+                    }}
                     className="bg-white dark:bg-zinc-900 p-6 rounded-[32px] border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col items-start gap-4 hover:border-amber-200 dark:hover:border-amber-800 transition-all active:scale-95 group"
                 >
                     <div className="w-12 h-12 bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 rounded-2xl flex items-center justify-center group-hover:bg-amber-600 group-hover:text-white transition-all">
@@ -249,6 +272,71 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
                                     )}
                                 </div>
                             ))}
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Modal de Pagamentos */}
+            {activeModal === 'payments' && (
+                <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
+                    <div className="bg-white dark:bg-zinc-900 rounded-[32px] w-full max-w-md shadow-2xl p-6 relative h-[60vh] flex flex-col border dark:border-zinc-800">
+                        <button onClick={() => setActiveModal(null)} className="absolute top-4 right-4 p-2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 pt-[calc(1rem+env(safe-area-inset-top))]"><X size={24} /></button>
+                        <div className="mb-6 pt-[env(safe-area-inset-top)]">
+                            <h3 className="text-xl font-black text-zinc-900 dark:text-white">Meus Pagamentos</h3>
+                            <p className="text-xs font-bold text-zinc-400 mt-1 uppercase tracking-widest">Histórico de Mensalidades</p>
+                        </div>
+
+                        <div className="flex-1 overflow-y-auto space-y-3 pr-2">
+                            {loadingPayments ? (
+                                <div className="flex flex-col items-center justify-center py-12">
+                                    <Loader2 className="animate-spin text-amber-500" size={32} />
+                                </div>
+                            ) : payments.length === 0 ? (
+                                <div className="text-center py-12">
+                                    <Clock size={40} className="mx-auto text-zinc-300 mb-4 opacity-20" />
+                                    <p className="text-sm font-bold text-zinc-400">Nenhum registro de pagamento encontrado.</p>
+                                </div>
+                            ) : (
+                                payments.map((payment) => (
+                                    <div key={payment.id} className="p-4 bg-zinc-50 dark:bg-zinc-800 rounded-2xl border border-zinc-100 dark:border-zinc-700">
+                                        <div className="flex items-center justify-between mb-3">
+                                            <div className="flex items-center gap-2">
+                                                <Calendar size={14} className="text-zinc-400" />
+                                                <span className="text-xs font-black text-zinc-700 dark:text-zinc-300 uppercase">
+                                                    {format(new Date(payment.year, payment.month - 1), 'MMMM yyyy', { locale: ptBR })}
+                                                </span>
+                                            </div>
+                                            <span className={`px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider ${payment.status === 'paid'
+                                                ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20'
+                                                : 'bg-amber-500/10 text-amber-500 border border-amber-500/20'
+                                                }`}>
+                                                {payment.status === 'paid' ? 'Pago' : 'Pendente'}
+                                            </span>
+                                        </div>
+                                        <div className="flex items-end justify-between">
+                                            <div>
+                                                <p className="text-[9px] font-bold text-zinc-400 uppercase">Valor</p>
+                                                <p className="text-lg font-black text-zinc-800 dark:text-white">R$ {payment.amount.toFixed(2)}</p>
+                                            </div>
+                                            {payment.paidAt && (
+                                                <div className="text-right">
+                                                    <p className="text-[9px] font-bold text-zinc-400 uppercase">Pago em</p>
+                                                    <p className="text-[11px] font-black text-zinc-600 dark:text-zinc-400">
+                                                        {format(new Date(payment.paidAt), 'dd/MM/yyyy')}
+                                                    </p>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+
+                        <div className="mt-6 p-4 bg-zinc-50 dark:bg-zinc-800 rounded-2xl text-center">
+                            <p className="text-[10px] text-zinc-400 font-bold uppercase leading-relaxed">
+                                Para pagamentos via PIX ou dinheiro, favor informar seu personal para atualização deste histórico.
+                            </p>
                         </div>
                     </div>
                 </div>

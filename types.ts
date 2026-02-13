@@ -109,6 +109,8 @@ export interface Student {
     completion: number;
     weights?: Record<string, string>;
   }[];
+  billingDay?: number;
+  monthlyFee?: number;
 }
 
 export interface OnboardingData {
@@ -219,4 +221,16 @@ export interface Anamnesis {
     preferences?: string; // Likes
     dislikes?: string;
   };
+}
+
+export interface StudentPayment {
+  id: string;
+  studentId: string;
+  trainerId: string;
+  month: number;
+  year: number;
+  amount: number;
+  status: 'paid' | 'pending' | 'late';
+  paidAt?: string;
+  createdAt?: string;
 }

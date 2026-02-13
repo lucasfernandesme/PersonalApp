@@ -1,10 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { User, Calendar, Edit2, CheckCircle2, ChevronRight, X, Camera, Eye, EyeOff, BarChart2, Loader2, ArrowLeft, CreditCard, RefreshCw, Zap } from 'lucide-react';
+import { User, Calendar, Edit2, CheckCircle2, ChevronRight, X, Camera, Eye, EyeOff, BarChart2, Loader2, ArrowLeft, CreditCard, RefreshCw, Zap, DollarSign } from 'lucide-react';
 import { AuthUser, ScheduleEvent } from '../types'; // Import ScheduleEvent
 import AgendaScreen from './AgendaScreen';
 import ScheduleEventModal from './ScheduleEventModal';
 import ClassDetailsModal from './ClassDetailsModal';
 import ReportsScreen from './ReportsScreen';
+import FinanceScreen from './FinanceScreen';
 import { DataService } from '../services/dataService';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../services/supabase';
@@ -29,7 +30,7 @@ const statusMap: Record<string, { label: string; color: string }> = {
 const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, onBack }) => {
     const { subscriptionStatus, subscriptionEndDate, refreshSubscription, session, subscriptionSource } = useAuth();
     const { purchasePackage, offerings } = useRevenueCat();
-    const [activeModal, setActiveModal] = useState<'edit' | 'schedule' | 'reports' | 'subscription' | null>(null);
+    const [activeModal, setActiveModal] = useState<'edit' | 'schedule' | 'reports' | 'subscription' | 'finance' | null>(null);
     const [isRedirecting, setIsRedirecting] = useState(false);
 
     // Agenda State
@@ -436,6 +437,22 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, 
                     </div>
                     <ChevronRight className="text-zinc-300 dark:text-zinc-700 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition-colors" />
                 </button>
+
+                <button
+                    onClick={() => setActiveModal('finance')}
+                    className="bg-white dark:bg-zinc-900 p-6 rounded-[28px] border border-zinc-100 dark:border-zinc-800 shadow-sm flex items-center justify-between hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all group"
+                >
+                    <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-zinc-100 dark:bg-zinc-800 rounded-2xl flex items-center justify-center text-zinc-600 dark:text-zinc-400 group-hover:bg-zinc-900 dark:group-hover:bg-zinc-100 group-hover:text-white dark:group-hover:text-zinc-900 transition-colors">
+                            <DollarSign size={24} />
+                        </div>
+                        <div className="text-left">
+                            <h3 className="font-black text-zinc-900 dark:text-white text-lg transition-colors">Financeiro</h3>
+                            <p className="text-sm font-medium text-zinc-400 dark:text-zinc-500 transition-colors">Gestão de pagamentos</p>
+                        </div>
+                    </div>
+                    <ChevronRight className="text-zinc-300 dark:text-zinc-700 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition-colors" />
+                </button>
             </div>
 
             {/* Modal Editar Perfil */}
@@ -604,6 +621,18 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, 
                                 </button>
                             </div>
                         </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Modal Financeiro */}
+            {activeModal === 'finance' && (
+                <div className="fixed inset-0 z-[60] bg-black/60 dark:bg-black/80 backdrop-blur-sm flex items-center justify-center p-0 md:p-4 animate-in fade-in duration-200">
+                    <div className="bg-white dark:bg-zinc-900 md:rounded-[32px] w-full h-full shadow-2xl relative flex flex-col border dark:border-zinc-800 transition-colors overflow-hidden">
+                        <FinanceScreen
+                            user={user}
+                            onBack={() => setActiveModal(null)}
+                        />
                     </div>
                 </div>
             )}
