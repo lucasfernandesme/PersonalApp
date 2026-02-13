@@ -2,17 +2,40 @@ import React from 'react';
 import { CreditCard, Rocket, CheckCircle2, ShieldCheck, Zap, ArrowRight, Loader2, RefreshCw } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../services/supabase';
+import { Capacitor } from '@capacitor/core';
+import { useRevenueCat } from '../hooks/useRevenueCat';
 
 const SubscriptionScreen: React.FC = () => {
     const { user, subscriptionStatus, subscriptionEndDate, signOut, session, refreshSubscription, subscriptionSource } = useAuth();
+    const { purchasePackage, offerings } = useRevenueCat();
     const [isRedirecting, setIsRedirecting] = React.useState(false);
     const [isRefreshing, setIsRefreshing] = React.useState(false);
 
-    console.log('SubscriptionScreen Debug:', { subscriptionStatus, subscriptionEndDate });
+
 
     const handleSubscribe = async () => {
-        console.log('Iniciando handleSubscribe...');
         setIsRedirecting(true);
+
+        if (Capacitor.isNativePlatform()) {
+            try {
+                if (offerings?.current?.monthly) {
+                    const result = await purchasePackage(offerings.current.monthly);
+                    if (result) {
+                        await refreshSubscription();
+                        alert("Assinatura realizada com sucesso!");
+                    }
+                } else {
+                    alert("Nenhum plano disponível na loja. Tente novamente mais tarde.");
+                }
+            } catch (e) {
+                console.error(e);
+            } finally {
+                setIsRedirecting(false);
+            }
+            return;
+        }
+
+        console.log('Iniciando handleSubscribe...');
 
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 20000); // 20s timeout
@@ -275,8 +298,8 @@ const SubscriptionScreen: React.FC = () => {
                                 onClick={handleManageSubscription}
                                 disabled={isRefreshing || (subscriptionSource && subscriptionSource !== 'stripe')}
                                 className={`w-full py-4 font-black rounded-3xl hover:scale-[1.02] transition-all flex items-center justify-center gap-2 text-xs uppercase tracking-widest ${subscriptionSource && subscriptionSource !== 'stripe'
-                                        ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-600 cursor-not-allowed'
-                                        : 'bg-zinc-900 dark:bg-white text-white dark:text-zinc-900'
+                                    ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-600 cursor-not-allowed'
+                                    : 'bg-zinc-900 dark:bg-white text-white dark:text-zinc-900'
                                     }`}
                             >
                                 {isRefreshing ? (

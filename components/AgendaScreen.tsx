@@ -116,13 +116,14 @@ const AgendaScreen: React.FC<AgendaScreenProps> = ({ events, students, onAddEven
                 const isCurrentMonth = isSameMonth(day, monthStart);
 
                 days.push(
-                    <div
-                        className={`min-h-[80px] p-2 border border-zinc-100 dark:border-zinc-800 relative transition-colors cursor-pointer group hover:bg-zinc-50 dark:hover:bg-zinc-800/50
+                    <button
+                        type="button"
+                        className={`min-h-[80px] p-2 border border-zinc-100 dark:border-zinc-800 relative transition-colors cursor-pointer group hover:bg-zinc-50 dark:hover:bg-zinc-800/50 text-left w-full
               ${!isCurrentMonth ? "bg-zinc-50/50 dark:bg-zinc-900/50 text-zinc-300 dark:text-zinc-700" : "bg-white dark:bg-zinc-900"}
               ${isSelected ? "ring-2 ring-zinc-900 dark:ring-white ring-inset z-10" : ""}
               ${i === 0 ? "rounded-l-2xl" : ""} ${i === 6 ? "rounded-r-2xl" : ""}
             `}
-                        key={day.toString()}
+                        key={day.toISOString()}
                         onClick={() => setSelectedDate(cloneDay)}
                     >
                         <span className={`text-sm font-bold ${!isCurrentMonth ? "text-zinc-300 dark:text-zinc-600" : "text-zinc-700 dark:text-zinc-300"}`}>
@@ -157,16 +158,17 @@ const AgendaScreen: React.FC<AgendaScreenProps> = ({ events, students, onAddEven
                         </div>
 
                         {/* Hover Add Button */}
-                        <button
+                        <div
                             onClick={(e) => {
                                 e.stopPropagation();
                                 onAddEvent(cloneDay);
                             }}
-                            className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 p-1 bg-zinc-900 dark:bg-white text-white dark:text-black rounded-lg shadow-sm hover:scale-110 transition-all"
+                            role="button"
+                            className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 p-1 bg-zinc-900 dark:bg-white text-white dark:text-black rounded-lg shadow-sm hover:scale-110 transition-all z-20"
                         >
                             <Plus size={12} />
-                        </button>
-                    </div>
+                        </div>
+                    </button>
                 );
                 day = addDays(day, 1);
             }

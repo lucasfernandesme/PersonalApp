@@ -9,6 +9,8 @@ import { DataService } from '../services/dataService';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../services/supabase';
 import { formatPhone } from '../utils/formatters';
+import { Capacitor } from '@capacitor/core';
+import { useRevenueCat } from '../hooks/useRevenueCat';
 
 interface TrainerProfileProps {
     user: AuthUser;
@@ -26,6 +28,7 @@ const statusMap: Record<string, { label: string; color: string }> = {
 
 const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, onBack }) => {
     const { subscriptionStatus, subscriptionEndDate, refreshSubscription, session, subscriptionSource } = useAuth();
+    const { purchasePackage, offerings } = useRevenueCat();
     const [activeModal, setActiveModal] = useState<'edit' | 'schedule' | 'reports' | 'subscription' | null>(null);
     const [isRedirecting, setIsRedirecting] = useState(false);
 
@@ -139,6 +142,27 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, 
 
     const handleSubscribe = async () => {
         setIsRedirecting(true);
+
+        if (Capacitor.isNativePlatform()) {
+            console.log('Iniciando compra via RevenueCat (Native)...');
+            try {
+                if (offerings?.current?.monthly) {
+                    const result = await purchasePackage(offerings.current.monthly);
+                    if (result) {
+                        await refreshSubscription();
+                        alert("Assinatura realizada com sucesso!");
+                    }
+                } else {
+                    alert("Nenhum plano disponível para compra no momento. Tente novamente mais tarde.");
+                }
+            } catch (error) {
+                console.error("Erro na compra:", error);
+            } finally {
+                setIsRedirecting(false);
+            }
+            return;
+        }
+
         console.log('Iniciando handleSubscribe via Direct Fetch...');
 
         try {

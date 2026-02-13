@@ -8,6 +8,7 @@ interface AuthContextType {
     loading: boolean;
     subscriptionStatus: string | null;
     subscriptionEndDate: string | null;
+    subscriptionSource: 'stripe' | 'google_play' | 'ios' | null;
     refreshSubscription: (email?: string) => Promise<any>;
     signOut: () => Promise<void>;
 }
@@ -20,6 +21,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [loading, setLoading] = useState(true);
     const [subscriptionStatus, setSubscriptionStatus] = useState<string | null>(null);
     const [subscriptionEndDate, setSubscriptionEndDate] = useState<string | null>(null);
+    const [subscriptionSource, setSubscriptionSource] = useState<'stripe' | 'google_play' | 'ios' | null>(null);
 
     const refreshSubscription = async (email?: string) => {
         try {
@@ -27,7 +29,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             if (targetEmail) {
                 const subscriptionPromise = supabase
                     .from('trainers')
-                    .select('subscription_status, subscription_end_date')
+                    .select('subscription_status, subscription_end_date, subscription_source')
                     .ilike('email', targetEmail)
                     .single();
 
@@ -48,6 +50,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 if (data) {
                     setSubscriptionStatus(data.subscription_status);
                     setSubscriptionEndDate(data.subscription_end_date);
+                    setSubscriptionSource(data.subscription_source);
                     return data;
                 }
             }
@@ -100,6 +103,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 } else {
                     setSubscriptionStatus(null);
                     setSubscriptionEndDate(null);
+                    setSubscriptionSource(null);
                 }
             } catch (err) {
                 console.error('Auth change error:', err);
@@ -123,6 +127,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             // Limpa estados locais imediatamente para UI responder rápido
             setSubscriptionStatus(null);
             setSubscriptionEndDate(null);
+            setSubscriptionSource(null);
             setUser(null);
             setSession(null);
 
@@ -133,6 +138,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             // Fallback: se o signOut do Supabase falhar, pelo menos limpamos o estado local
             setSubscriptionStatus(null);
             setSubscriptionEndDate(null);
+            setSubscriptionSource(null);
             setUser(null);
             setSession(null);
         }
@@ -144,6 +150,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         loading,
         subscriptionStatus,
         subscriptionEndDate,
+        subscriptionSource,
         refreshSubscription,
         signOut,
     };
