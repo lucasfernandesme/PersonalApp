@@ -1,9 +1,9 @@
-
 import React, { useState } from 'react';
 import { UserRole, AuthUser, Student } from '../types';
-import { Dumbbell, Mail, Lock, ChevronRight, UserCircle, Users, Loader2, Sparkles, UserPlus, ArrowLeft, Cloud } from 'lucide-react';
+import { Mail, Lock, ChevronRight, UserCircle, Users, Loader2, UserPlus, ArrowLeft } from 'lucide-react';
 import { DataService } from '../services/dataService';
 import { supabase } from '../services/supabase';
+import { formatPhone } from '../utils/formatters';
 
 interface LoginScreenProps {
   students: Student[];
@@ -12,14 +12,16 @@ interface LoginScreenProps {
 
 const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin }) => {
   const [role, setRole] = useState<UserRole>(UserRole.TRAINER);
-  const [isRegistering, setIsRegistering] = useState(false);
+  const [view, setView] = useState<'login' | 'register' | 'forgot_password'>('login');
+
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [confirmEmail, setConfirmEmail] = useState('');
+  const [whatsapp, setWhatsapp] = useState('');
   const [password, setPassword] = useState('');
+
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-
-  const isCloud = DataService.isCloudActive();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -70,11 +72,8 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin }) => {
           });
         } else {
           // Log detalhado para debug se necessário
-          if (!student) {
-            console.log("Tentativa de login: Aluno não encontrado.", inputEmail);
-          } else {
-            console.log("Tentativa de login: Senha incorreta.");
-          }
+          const status = !student ? "Aluno não encontrado" : "Senha incorreta";
+          console.log(`Tentativa de login: ${status} (${inputEmail})`);
           setError(`Aluno não encontrado ou senha incorreta. (Alunos carregados: ${students.length})`);
         }
       }
@@ -91,6 +90,16 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin }) => {
     setError('');
 
     try {
+      if (email !== confirmEmail) {
+        setError('Os e-mails não coincidem.');
+        return;
+      }
+
+      if (!whatsapp) {
+        setError('O telefone é obrigatório.');
+        return;
+      }
+
       const { data, error: signUpError } = await supabase.auth.signUp({
         email: email.toLowerCase(),
         password,
@@ -98,7 +107,8 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin }) => {
           data: {
             name,
             role: UserRole.TRAINER,
-            avatar: `https://picsum.photos/seed/${email.toLowerCase()}/100`
+            avatar: `https://picsum.photos/seed/${email.toLowerCase()}/100`,
+            whatsapp // Add phone to metadata just in case
           }
         }
       });
@@ -119,10 +129,8 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin }) => {
           email: email.toLowerCase(),
           role: UserRole.TRAINER,
           avatar: `https://picsum.photos/seed/${email.toLowerCase()}/100`,
+          whatsapp: whatsapp,
           subscriptionStatus: 'trial',
-          // Use full ISO string to avoid timezone confusion, handled by DB as TIMESTAMPTZ or parsed
-          // Actually, App.tsx parses it as Date. 
-          // Let's set it to 7 days from now.
           subscriptionEndDate: trialEndDate.toISOString()
         };
 
@@ -141,6 +149,27 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin }) => {
     }
   };
 
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) {
+      alert("Por favor, preencha seu e-mail para recuperar a senha.");
+      return;
+    }
+    setIsLoading(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.origin + '/reset-password',
+      });
+      if (error) throw error;
+      alert("E-mail de recuperação enviado! Verifique sua caixa de entrada.");
+      setView('login');
+    } catch (err: any) {
+      alert(`Erro ao enviar e-mail: ${err.message}`);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 flex flex-col items-center justify-center p-6 transition-colors">
       <div className="w-full max-w-md space-y-8 animate-in fade-in duration-500">
@@ -152,10 +181,9 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin }) => {
           <p className="text-center text-xs font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mt-2 animate-in slide-in-from-top-2">
             {role === UserRole.TRAINER ? 'Área do Personal' : 'Área do Aluno'}
           </p>
-
         </div>
 
-        {!isRegistering ? (
+        {view === 'login' && (
           <>
             <div className="bg-white dark:bg-zinc-900 p-2 rounded-[32px] shadow-sm border border-slate-100 dark:border-zinc-800 flex gap-1 transition-colors">
               <button
@@ -178,6 +206,8 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin }) => {
               </button>
             </div>
 
+
+
             <form onSubmit={handleLogin} className="space-y-4">
               <div className="space-y-2">
                 <div className="relative group">
@@ -195,7 +225,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin }) => {
                   <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 dark:text-zinc-600 group-focus-within:text-zinc-900 dark:group-focus-within:text-zinc-100 transition-colors" size={20} />
                   <input
                     type="password"
-                    placeholder={role === UserRole.TRAINER ? "Sua senha" : "Sua senha (geralmente 123456)"}
+                    placeholder={role === UserRole.TRAINER ? "Sua senha" : "Sua senha"}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
@@ -207,6 +237,18 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin }) => {
               {error && (
                 <p className="text-center text-red-500 text-[10px] font-black uppercase tracking-widest animate-in shake transition-colors">{error}</p>
               )}
+
+              <div className="flex justify-end">
+                {role === UserRole.TRAINER && (
+                  <button
+                    type="button"
+                    onClick={() => setView('forgot_password')}
+                    className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors uppercase tracking-wide"
+                  >
+                    Esqueceu a senha?
+                  </button>
+                )}
+              </div>
 
               <button
                 type="submit"
@@ -221,23 +263,27 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin }) => {
             </form>
 
             <div className="text-center">
-              {role === UserRole.TRAINER ? (
+              {role === UserRole.TRAINER && (
                 <button
-                  onClick={() => setIsRegistering(true)}
+                  onClick={() => setView('register')}
                   className="text-[10px] font-black uppercase tracking-widest text-zinc-900 dark:text-white hover:underline transition-colors"
                 >
-                  Criar Conta Personal
+                  Não tenho uma conta
                 </button>
-              ) : (
-                <p className="text-[9px] font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-widest px-8 leading-relaxed transition-colors">
-                  Senha padrão: 123456 <span className="opacity-50">(até que você mude no cadastro do aluno)</span>
+              )}
+              {role === UserRole.STUDENT && (
+                <p className="text-xs font-medium text-slate-500 dark:text-zinc-400 text-center max-w-[280px] mx-auto leading-relaxed animate-in fade-in slide-in-from-top-2 duration-500">
+                  Para acessar, utilize os dados de login fornecidos pelo seu <span className="text-zinc-900 dark:text-zinc-300 font-extrabold">Personal Trainer</span>.
                 </p>
               )}
+
             </div>
           </>
-        ) : (
+        )}
+
+        {view === 'register' && (
           <div className="space-y-6 animate-in slide-in-from-right duration-300">
-            <button onClick={() => setIsRegistering(false)} className="flex items-center gap-2 text-slate-400 dark:text-zinc-500 hover:text-slate-600 dark:hover:text-zinc-300 font-bold text-xs uppercase tracking-widest transition-colors">
+            <button onClick={() => setView('login')} className="flex items-center gap-2 text-slate-400 dark:text-zinc-500 hover:text-slate-600 dark:hover:text-zinc-300 font-bold text-xs uppercase tracking-widest transition-colors">
               <ArrowLeft size={16} /> Voltar
             </button>
 
@@ -264,6 +310,22 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin }) => {
                   className="w-full bg-white dark:bg-zinc-800 border-2 border-slate-50 dark:border-zinc-800 rounded-[24px] px-6 py-4 font-bold text-slate-900 dark:text-white focus:border-zinc-900 dark:focus:border-white transition-all outline-none placeholder:text-slate-300 dark:placeholder:text-zinc-600"
                 />
                 <input
+                  type="email"
+                  placeholder="Confirme seu e-mail"
+                  value={confirmEmail}
+                  onChange={(e) => setConfirmEmail(e.target.value)}
+                  required
+                  className="w-full bg-white dark:bg-zinc-800 border-2 border-slate-50 dark:border-zinc-800 rounded-[24px] px-6 py-4 font-bold text-slate-900 dark:text-white focus:border-zinc-900 dark:focus:border-white transition-all outline-none placeholder:text-slate-300 dark:placeholder:text-zinc-600"
+                />
+                <input
+                  type="tel"
+                  placeholder="Telefone (WhatsApp)"
+                  value={whatsapp}
+                  onChange={(e) => setWhatsapp(formatPhone(e.target.value))}
+                  required
+                  className="w-full bg-white dark:bg-zinc-800 border-2 border-slate-50 dark:border-zinc-800 rounded-[24px] px-6 py-4 font-bold text-slate-900 dark:text-white focus:border-zinc-900 dark:focus:border-white transition-all outline-none placeholder:text-slate-300 dark:placeholder:text-zinc-600"
+                />
+                <input
                   type="password"
                   placeholder="Crie sua senha"
                   value={password}
@@ -285,7 +347,44 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin }) => {
             </form>
           </div>
         )}
-        {/* DEBUG INFO */}
+
+        {view === 'forgot_password' && (
+          <div className="space-y-6 animate-in slide-in-from-right duration-300">
+            <button onClick={() => setView('login')} className="flex items-center gap-2 text-slate-400 dark:text-zinc-500 hover:text-slate-600 dark:hover:text-zinc-300 font-bold text-xs uppercase tracking-widest transition-colors">
+              <ArrowLeft size={16} /> Voltar
+            </button>
+
+            <div className="space-y-2">
+              <h2 className="text-2xl font-black text-slate-900 dark:text-white transition-colors">Recuperar Senha</h2>
+              <p className="text-sm text-slate-500 dark:text-zinc-400">
+                Digite seu e-mail para receber o link de redefinição de senha.
+              </p>
+            </div>
+
+            <form onSubmit={handleForgotPassword} className="space-y-4">
+              <div className="space-y-3">
+                <input
+                  type="email"
+                  placeholder="Seu e-mail cadastrado"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="w-full bg-white dark:bg-zinc-800 border-2 border-slate-50 dark:border-zinc-800 rounded-[24px] px-6 py-4 font-bold text-slate-900 dark:text-white focus:border-zinc-900 dark:focus:border-white transition-all outline-none placeholder:text-slate-300 dark:placeholder:text-zinc-600"
+                />
+              </div>
+
+              {error && <p className="text-center text-red-500 text-[10px] font-black uppercase tracking-widest animate-in shake transition-colors">{error}</p>}
+
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full py-5 rounded-[24px] font-black uppercase text-xs tracking-[0.2em] flex items-center justify-center gap-3 shadow-2xl transition-all active:scale-95 bg-zinc-900 dark:bg-white shadow-zinc-900/20 dark:shadow-white/10 text-white dark:text-zinc-900 disabled:opacity-50"
+              >
+                {isLoading ? <Loader2 className="animate-spin" size={20} /> : <>Enviar Link <Mail size={18} /></>}
+              </button>
+            </form>
+          </div>
+        )}
       </div>
     </div>
   );

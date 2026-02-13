@@ -313,6 +313,21 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, 
     };
 
     const handleSaveProfile = async () => {
+        if (!formData.name.trim()) {
+            alert("Por favor, informe seu nome.");
+            return;
+        }
+
+        if (!formData.surname.trim()) {
+            alert("Por favor, informe seu sobrenome.");
+            return;
+        }
+
+        if (!formData.email.trim()) {
+            alert("Por favor, informe seu email.");
+            return;
+        }
+
         if (formData.password && formData.password !== formData.confirmPassword) {
             alert("As senhas não coincidem!");
             return;

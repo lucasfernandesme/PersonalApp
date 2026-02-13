@@ -28,6 +28,8 @@ import { TrainingFrequencyCard } from './components/TrainingFrequencyCard';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { useAuth } from './contexts/AuthContext';
 import SubscriptionScreen from './components/SubscriptionScreen';
+import ResetPasswordScreen from './components/ResetPasswordScreen';
+import { supabase } from './services/supabase';
 
 const STORAGE_KEY_AUTH = 'fitai_pro_auth_session';
 
@@ -64,7 +66,9 @@ const App: React.FC = () => {
   const [showLoginInfo, setShowLoginInfo] = useState(false);
   const [studentView, setStudentView] = useState<'dashboard' | 'workout' | 'assessments'>('dashboard');
   const [expandedWorkoutId, setExpandedWorkoutId] = useState<string | null>(null);
+
   const [fileToView, setFileToView] = useState<{ url: string; name: string; type: string } | null>(null);
+  const [isPasswordReset, setIsPasswordReset] = useState(false);
 
   const reloadStudents = useCallback(async () => {
     try {
@@ -250,6 +254,26 @@ const App: React.FC = () => {
       return () => clearTimeout(timer);
     }
   }, [supabaseUser, authLoading, authUser]);
+
+  // Listen for Password Recovery event
+  useEffect(() => {
+    // Check URL manually on mount to handle cases where event might be missed
+    // or if the user is redirected to a specific path
+    const isRecovery = window.location.hash.includes('type=recovery') || window.location.pathname === '/reset-password';
+    if (isRecovery) {
+      setIsPasswordReset(true);
+    }
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'PASSWORD_RECOVERY') {
+        setIsPasswordReset(true);
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
 
   const handleLogin = (user: AuthUser) => {
     setIsLoading(true); // Garante que ao logar, o useEffect de loadData seja "notado"
@@ -1185,6 +1209,27 @@ const App: React.FC = () => {
     );
   };
 
+  if (isPasswordReset) {
+    return (
+      <ThemeProvider>
+        <ResetPasswordScreen
+          onSuccess={() => {
+            setIsPasswordReset(false);
+            // Optionally force logout or redirect to login if not auto-logged in
+            // But usually updatePassword keeps session.
+            // Let's just go to dashboard or stay logged in.
+            // If we want to force login:
+            // handleLogout();
+          }}
+          onCancel={() => {
+            setIsPasswordReset(false);
+            handleLogout();
+          }}
+        />
+      </ThemeProvider>
+    );
+  }
+
   if (isLoading || (authUser && authLoading)) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 dark:bg-zinc-950 p-6 text-center">
@@ -1360,6 +1405,10 @@ const App: React.FC = () => {
       );
     }
   }
+
+
+
+
 
   return (
     <ThemeProvider>
