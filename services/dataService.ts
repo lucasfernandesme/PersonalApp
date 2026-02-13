@@ -559,22 +559,28 @@ export const DataService = {
       amount: p.amount,
       status: p.status,
       paidAt: p.paid_at,
-      createdAt: p.created_at
+      createdAt: p.created_at,
+      type: p.type || 'revenue',
+      category: p.category,
+      description: p.description
     }));
   },
 
   async recordPayment(payment: Partial<StudentPayment>): Promise<void> {
     if (!supabase) return;
-    const payload = {
-      id: payment.id,
-      student_id: payment.studentId,
-      trainer_id: payment.trainerId,
-      month: payment.month,
-      year: payment.year,
-      amount: payment.amount,
-      status: payment.status,
-      paid_at: payment.paidAt
-    };
+    const payload: any = {};
+
+    if (payment.id) payload.id = payment.id;
+    if (payment.studentId) payload.student_id = payment.studentId;
+    if (payment.trainerId) payload.trainer_id = payment.trainerId;
+    if (payment.month !== undefined) payload.month = payment.month;
+    if (payment.year !== undefined) payload.year = payment.year;
+    if (payment.amount !== undefined) payload.amount = payment.amount;
+    if (payment.status) payload.status = payment.status;
+    if (payment.paidAt !== undefined) payload.paid_at = payment.paidAt;
+    if (payment.type) payload.type = payment.type;
+    if (payment.category) payload.category = payment.category;
+    if (payment.description) payload.description = payment.description;
 
     const { error } = await supabase
       .from('student_payments')
@@ -595,6 +601,7 @@ export const DataService = {
       .eq('year', year);
 
     // Buscar todos os alunos ativos para saber quem DEVERIA pagar
+    // Nota: Se removemos monthly_fee do aluno, totalExpected no UI precisará mudar
     const { data: students, error: sError } = await supabase
       .from('students')
       .select('id, name, monthly_fee, billing_day')
@@ -612,7 +619,10 @@ export const DataService = {
         year: p.year,
         amount: p.amount,
         status: p.status,
-        paidAt: p.paid_at
+        paidAt: p.paid_at,
+        type: p.type || 'revenue',
+        category: p.category,
+        description: p.description
       })),
       students: students || []
     };

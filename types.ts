@@ -233,4 +233,7 @@ export interface StudentPayment {
   status: 'paid' | 'pending' | 'late';
   paidAt?: string;
   createdAt?: string;
+  type: 'revenue' | 'expense';
+  category?: string;
+  description?: string;
 }
