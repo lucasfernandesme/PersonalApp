@@ -26,8 +26,23 @@ const AddPaymentModal: React.FC<AddPaymentModalProps> = ({ students, onClose, on
     const [saving, setSaving] = useState(false);
 
     const handleSave = async () => {
-        if (!amount) {
-            alert("Por favor, informe o valor.");
+        if (!amount || parseFloat(amount) <= 0) {
+            alert("Por favor, informe um valor válido.");
+            return;
+        }
+
+        if (!description.trim()) {
+            alert("Por favor, informe uma descrição para o lançamento.");
+            return;
+        }
+
+        if (type === 'revenue' && !selectedStudentId) {
+            alert("Por favor, selecione um aluno para registrar a receita.");
+            return;
+        }
+
+        if (!date) {
+            alert("Por favor, informe a data do vencimento/pagamento.");
             return;
         }
 
@@ -508,7 +523,7 @@ const FinanceScreen: React.FC<FinanceScreenProps> = ({ user, onBack }) => {
                                                     ) : (
                                                         <div className="flex flex-col gap-0.5 max-w-[60%] overflow-hidden">
                                                             <p className="font-black text-sm text-zinc-800 dark:text-zinc-200 truncate">
-                                                                {item.id?.substring(0, 6) || 'N/A'} | {item.description || 'Sem descrição'}
+                                                                {item.description || 'Sem descrição'}
                                                             </p>
                                                             <p className="text-zinc-500 dark:text-zinc-400 text-xs font-bold truncate">{getStudentName(item.studentId)}</p>
                                                             <div className="flex flex-col text-zinc-400 dark:text-zinc-500 text-[10px] mt-0.5">
