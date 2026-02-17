@@ -523,6 +523,13 @@ const App: React.FC = () => {
         <StudentRegistrationScreen
           onBack={() => setActiveView('dashboard')}
           onSave={async (studentData) => {
+            // Validate unique email
+            const emailExists = students.some(s => s.email.toLowerCase() === studentData.email.toLowerCase());
+            if (emailExists) {
+              alert('Este email já está sendo usado por outro aluno. Por favor, use um email diferente.');
+              return;
+            }
+
             setIsSaving(true);
             try {
               // Create new student
@@ -581,6 +588,17 @@ const App: React.FC = () => {
             }
           }}
           onSave={async (studentData) => {
+            // Validate unique email (excluding current student)
+            const emailExists = students.some(s =>
+              s.id !== selectedStudent.id &&
+              s.email.toLowerCase() === studentData.email.toLowerCase()
+            );
+
+            if (emailExists) {
+              alert('Este email já está sendo usado por outro aluno. Por favor, use um email diferente.');
+              return;
+            }
+
             setIsSaving(true);
             try {
               const updated = { ...selectedStudent, ...studentData };
