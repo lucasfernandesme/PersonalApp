@@ -549,7 +549,8 @@ const App: React.FC = () => {
                 history: [],
                 files: [],
                 billingDay: studentData.billingDay,
-                monthlyFee: studentData.monthlyFee
+                monthlyFee: studentData.monthlyFee,
+                password: studentData.password // Include generated password
               };
               await DataService.saveStudent(newStudent as any, authUser?.id);
               await reloadStudents();

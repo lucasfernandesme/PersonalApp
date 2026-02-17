@@ -334,14 +334,15 @@ const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
                       <div className="relative">
                         <input
                           type="text"
+                          readOnly
                           placeholder="Nome do exercício"
                           value={ex.name}
-                          onChange={(e) => updateExercise(dIdx, eIdx, 'name', e.target.value)}
-                          className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl pl-4 pr-10 py-2.5 text-sm font-bold text-zinc-900 dark:text-white focus:ring-2 focus:ring-zinc-900 dark:focus:ring-white shadow-sm placeholder:text-zinc-400 dark:placeholder:text-zinc-600 transition-colors"
+                          onClick={() => openLibraryForEdit(dIdx, eIdx)}
+                          className="w-full bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-xl pl-4 pr-10 py-2.5 text-sm font-bold text-zinc-900 dark:text-white focus:ring-2 focus:ring-zinc-900 dark:focus:ring-white shadow-sm placeholder:text-zinc-400 dark:placeholder:text-zinc-600 transition-colors cursor-pointer select-none"
                         />
                         <button
                           onClick={() => openLibraryForEdit(dIdx, eIdx)}
-                          className="absolute right-3 top-1/2 -tranzinc-y-1/2 text-zinc-400 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
                         >
                           <Search size={16} />
                         </button>

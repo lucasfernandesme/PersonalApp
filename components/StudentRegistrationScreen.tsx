@@ -83,7 +83,7 @@ const StudentRegistrationScreen: React.FC<StudentRegistrationScreenProps> = ({ o
 
     const studentData = initialData ? { ...formData, id: initialData.id } : {
       ...formData,
-      password: cpfDigits.slice(-6)
+      password: `flow${Math.floor(1000 + Math.random() * 9000)}`
     };
 
     onSave(studentData);

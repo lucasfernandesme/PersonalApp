@@ -178,7 +178,8 @@ export const DataService = {
       assessments: student.assessments,
       anamnesis: student.anamnesis,
       billing_day: student.billingDay,
-      monthly_fee: student.monthlyFee
+      monthly_fee: student.monthlyFee,
+      password: student.password // Ensure password is sent to DB
     };
 
     if (trainerId) {

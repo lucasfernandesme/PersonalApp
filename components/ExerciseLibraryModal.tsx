@@ -23,7 +23,7 @@ const ExerciseLibraryModal: React.FC<ExerciseLibraryModalProps> = ({ onSelect, o
 
   return (
     <div className="fixed inset-0 z-[80] bg-white dark:bg-slate-900 flex flex-col animate-in slide-in-from-bottom duration-300 transition-colors">
-      <header className="bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between px-4 pt-4 pb-4 transition-all duration-300 relative flex-shrink-0 mb-6">
+      <header className="bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between px-4 pt-[calc(1.5rem+env(safe-area-inset-top))] pb-4 transition-all duration-300 relative flex-shrink-0 mb-6">
         <div className="w-10"></div> {/* Placeholder for symmetry */}
 
         <div className="flex items-center gap-2">

@@ -77,21 +77,95 @@ const StudentApp: React.FC<StudentAppProps> = ({
   const [restSeconds, setRestSeconds] = useState<number | null>(null);
   const restTimerRef = useRef<number | null>(null);
 
+  // Retrieve student from props or by ID
   const student = students.find(s => s.id === currentStudentId);
+  const STORAGE_KEY = `workout_state_${currentStudentId}_${program?.id}`;
 
+  // Restore state on mount
   useEffect(() => {
-    setCurrentDayIndex(0);
-    setActiveExerciseIndex(null);
-    setCompletedExercises(new Set());
-    setCompletedExercises(new Set());
-    setCompletedSets({});
-    setExerciseDetails({});
-    setIsFinished(false);
-    stopTimer();
-    setSeconds(0);
-    setIsWorkoutActive(false);
-    setRestSeconds(null);
-  }, [currentStudentId, program]);
+    const savedState = localStorage.getItem(STORAGE_KEY);
+    if (savedState) {
+      try {
+        const parsed = JSON.parse(savedState);
+        // Only restore if the saved state is for the same program and recent enough (optional: e.g. < 24h)
+        // For now, simpler is better: always restore if key matches
+        if (parsed.programId === program?.id) {
+          setIsWorkoutActive(parsed.isWorkoutActive);
+
+          let secondsToAdd = 0;
+          if (parsed.lastUpdated && parsed.isWorkoutActive) {
+            const now = Date.now();
+            const elapsed = Math.floor((now - parsed.lastUpdated) / 1000);
+            if (elapsed > 0) {
+              secondsToAdd = elapsed;
+            }
+          }
+
+          setSeconds((parsed.seconds || 0) + secondsToAdd);
+          setCurrentDayIndex(parsed.currentDayIndex || 0);
+          setCompletedExercises(new Set(parsed.completedExercises)); // Rehydrate Set from Array
+          setCompletedSets(parsed.completedSets || {});
+          setExerciseDetails(parsed.exerciseDetails || {});
+
+          // Restore rest timer ensuring it reflects elapsed time
+          if (parsed.restSeconds !== null && parsed.restSeconds > 0) {
+            const remainingRest = Math.max(0, parsed.restSeconds - secondsToAdd);
+            setRestSeconds(remainingRest > 0 ? remainingRest : null);
+          } else {
+            setRestSeconds(null);
+          }
+
+          // If restoring an active workout, ensure timer starts
+          if (parsed.isWorkoutActive) {
+            // Timer effect below will pick up isWorkoutActive change
+          }
+        }
+      } catch (e) {
+        console.error("Failed to restore workout state", e);
+      }
+    } else {
+      // Reset if no saved state
+      setCurrentDayIndex(0);
+      setActiveExerciseIndex(null);
+      setCompletedExercises(new Set());
+      setCompletedSets({});
+      setExerciseDetails({});
+      setIsFinished(false);
+      stopTimer();
+      setSeconds(0);
+      setIsWorkoutActive(false);
+      setRestSeconds(null);
+    }
+  }, [currentStudentId, program?.id]); // Depend on program ID to reset when switching programs
+
+  // Persist state on changes
+  useEffect(() => {
+    if (!program?.id || !currentStudentId) return;
+
+    // Only save if workout has started or we have some progress
+    if (isWorkoutActive || seconds > 0 || completedExercises.size > 0) {
+      const stateToSave = {
+        programId: program.id,
+        isWorkoutActive,
+        seconds,
+        currentDayIndex,
+        completedExercises: Array.from(completedExercises), // Serialize Set
+        completedSets,
+        exerciseDetails,
+        restSeconds,
+        lastUpdated: Date.now()
+      };
+
+      // Debounce saving slightly? Actually, local storage is fast enough for this frequency (seconds update every 1s)
+      // To optimize, maybe don't save 'seconds' on every tick, but save on unmount/visibility change?
+      // For simplicity and reliability against crashes/refresh: save constantly.
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
+    } else if (!isWorkoutActive && seconds === 0 && completedExercises.size === 0) {
+      // If clean state, maybe remove key?
+      // localStorage.removeItem(STORAGE_KEY); 
+      // Better to keep it until explicit finish or manual reset
+    }
+  }, [isWorkoutActive, seconds, currentDayIndex, completedExercises, completedSets, exerciseDetails, restSeconds, program?.id, currentStudentId]);
 
   useEffect(() => {
     if (isWorkoutActive) {
@@ -239,6 +313,9 @@ const StudentApp: React.FC<StudentAppProps> = ({
     setIsWorkoutActive(false);
     setIsFinished(true);
     stopTimer();
+
+    // Clear saved state
+    localStorage.removeItem(STORAGE_KEY);
 
     setTimeout(() => {
       onFinishWorkout({ rpe_avg, completion, weights, duration: seconds });
