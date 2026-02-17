@@ -74,7 +74,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin }) => {
           // Log detalhado para debug se necessário
           const status = !student ? "Aluno não encontrado" : "Senha incorreta";
           console.log(`Tentativa de login: ${status} (${inputEmail})`);
-          setError(`Aluno não encontrado ou senha incorreta. (Alunos carregados: ${students.length})`);
+          setError(`Aluno não encontrado ou senha incorreta.`);
         }
       }
     } catch (err) {
