@@ -1,6 +1,6 @@
 
 import React, { useState, useMemo } from 'react';
-import { Search, X, ChevronRight, Dumbbell, Eye, ChevronDown, Filter } from 'lucide-react';
+import { Search, X, ChevronRight, Dumbbell, Eye, ChevronDown, Filter, PlayCircle } from 'lucide-react';
 import { EXERCISES_DB, CATEGORIES, LibraryExercise } from '../constants/exercises';
 
 interface ExerciseLibraryModalProps {
@@ -8,10 +8,34 @@ interface ExerciseLibraryModalProps {
   onClose: () => void;
 }
 
+const getEmbedUrl = (url: string) => {
+  if (!url) return '';
+
+  // Handle YouTube URLs
+  if (url.includes('youtube.com') || url.includes('youtu.be')) {
+    let videoId = '';
+
+    if (url.includes('youtu.be')) {
+      videoId = url.split('/').pop() || '';
+    } else if (url.includes('v=')) {
+      videoId = url.split('v=')[1]?.split('&')[0] || '';
+    } else if (url.includes('/embed/')) {
+      return url;
+    }
+
+    if (videoId) {
+      return `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&controls=1&showinfo=0&loop=1`;
+    }
+  }
+
+  return url;
+};
+
 const ExerciseLibraryModal: React.FC<ExerciseLibraryModalProps> = ({ onSelect, onClose }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Todos');
   const [isComboOpen, setIsComboOpen] = useState(false);
+  const [previewExercise, setPreviewExercise] = useState<LibraryExercise | null>(null);
 
   const filteredExercises = useMemo(() => {
     return EXERCISES_DB.filter(ex => {
@@ -105,10 +129,10 @@ const ExerciseLibraryModal: React.FC<ExerciseLibraryModalProps> = ({ onSelect, o
       <div className="flex-1 overflow-y-auto p-4 space-y-2 no-scrollbar">
         {filteredExercises.length > 0 ? (
           filteredExercises.map((ex, idx) => (
-            <button
+            <div
               key={idx}
+              className="w-full p-4 bg-white dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800/50 rounded-2xl flex items-center justify-between group cursor-pointer hover:border-zinc-300 dark:hover:border-zinc-600 transition-all"
               onClick={() => onSelect(ex)}
-              className="w-full p-4 bg-white dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800/50 rounded-2xl flex items-center justify-between active:bg-slate-50 dark:active:bg-slate-800 active:scale-[0.98] transition-all group"
             >
               <div className="flex items-center gap-4">
                 <div className="w-10 h-10 bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 rounded-xl flex items-center justify-center group-hover:bg-zinc-900 dark:group-hover:bg-zinc-100 group-hover:text-white dark:group-hover:text-zinc-900 transition-colors">
@@ -126,8 +150,27 @@ const ExerciseLibraryModal: React.FC<ExerciseLibraryModalProps> = ({ onSelect, o
                   <p className="text-[10px] font-black uppercase text-slate-400 dark:text-slate-500 transition-colors">{ex.category}</p>
                 </div>
               </div>
-              <ChevronRight size={18} className="text-slate-300 dark:text-slate-700" />
-            </button>
+              <div className="flex items-center gap-2">
+                {ex.videoUrl && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setPreviewExercise(ex);
+                    }}
+                    className="p-3 mr-[-8px] text-zinc-400 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-700/50 rounded-full transition-all"
+                    title="Visualizar execução"
+                  >
+                    <Eye size={20} />
+                  </button>
+                )}
+                <button
+                  onClick={() => onSelect(ex)}
+                  className="p-2 -mr-2 text-zinc-300 dark:text-zinc-600 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors"
+                >
+                  <ChevronRight size={20} />
+                </button>
+              </div>
+            </div>
           ))
         ) : (
           <div className="py-20 text-center space-y-2 transition-colors">
@@ -136,6 +179,63 @@ const ExerciseLibraryModal: React.FC<ExerciseLibraryModalProps> = ({ onSelect, o
           </div>
         )}
       </div>
+      {/* Video Preview Modal */}
+      {previewExercise && (
+        <div className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200" onClick={() => setPreviewExercise(null)}>
+          <div
+            className="w-full max-w-3xl bg-black rounded-3xl overflow-hidden relative shadow-2xl animate-in zoom-in-95 duration-200"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between p-4 absolute top-0 left-0 right-0 z-10 bg-gradient-to-b from-black/80 to-transparent">
+              <h3 className="text-white font-bold text-shadow-sm truncate flex-1 mr-4">{previewExercise.name}</h3>
+              <button
+                onClick={() => setPreviewExercise(null)}
+                className="p-2 bg-black/50 hover:bg-white/20 text-white rounded-full backdrop-blur-md transition-all"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="aspect-video w-full bg-zinc-900 flex items-center justify-center">
+              {previewExercise.videoUrl ? (
+                previewExercise.videoUrl.includes('youtube.com') || previewExercise.videoUrl.includes('youtu.be') ? (
+                  <iframe
+                    src={getEmbedUrl(previewExercise.videoUrl)}
+                    title={previewExercise.name}
+                    className="w-full h-full"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                ) : (
+                  <video
+                    src={previewExercise.videoUrl}
+                    controls
+                    autoPlay
+                    className="w-full h-full object-contain"
+                  />
+                )
+              ) : (
+                <div className="flex flex-col items-center gap-4 text-zinc-500">
+                  <PlayCircle size={48} />
+                  <p className="font-bold">Vídeo não disponível</p>
+                </div>
+              )}
+            </div>
+
+            <div className="p-4 bg-zinc-900 border-t border-zinc-800 flex justify-end">
+              <button
+                onClick={() => {
+                  onSelect(previewExercise);
+                  setPreviewExercise(null);
+                }}
+                className="bg-white text-zinc-900 px-6 py-3 rounded-xl font-black text-sm uppercase tracking-wide hover:scale-105 transition-transform"
+              >
+                Selecionar Exercício
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

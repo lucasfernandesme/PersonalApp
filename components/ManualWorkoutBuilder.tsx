@@ -19,6 +19,30 @@ import {
 import { TrainingProgram, WorkoutDay, Exercise } from '../types';
 import ExerciseLibraryModal from './ExerciseLibraryModal';
 import { LibraryExercise } from '../constants/exercises';
+import { PlayCircle, X } from 'lucide-react';
+
+const getEmbedUrl = (url: string) => {
+  if (!url) return '';
+
+  // Handle YouTube URLs
+  if (url.includes('youtube.com') || url.includes('youtu.be')) {
+    let videoId = '';
+
+    if (url.includes('youtu.be')) {
+      videoId = url.split('/').pop() || '';
+    } else if (url.includes('v=')) {
+      videoId = url.split('v=')[1]?.split('&')[0] || '';
+    } else if (url.includes('/embed/')) {
+      return url;
+    }
+
+    if (videoId) {
+      return `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&controls=1&showinfo=0&loop=1`;
+    }
+  }
+
+  return url;
+};
 
 interface ManualWorkoutBuilderProps {
   studentName: string;
@@ -54,6 +78,7 @@ const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
   const [isLibraryOpen, setIsLibraryOpen] = useState(false);
   const [activeDayIdx, setActiveDayIdx] = useState<number | null>(null);
   const [activeExIdx, setActiveExIdx] = useState<number | null>(null);
+  const [previewExercise, setPreviewExercise] = useState<Exercise | null>(null);
 
   const addDay = () => {
     const nextLetter = String.fromCharCode(65 + days.length);
@@ -346,6 +371,16 @@ const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
                         >
                           <Search size={16} />
                         </button>
+
+                        {ex.videoUrl && (
+                          <button
+                            onClick={() => setPreviewExercise(ex)}
+                            className="absolute right-10 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-zinc-500 hover:text-emerald-500 transition-colors p-1"
+                            title="Ver vídeo"
+                          >
+                            <Eye size={18} />
+                          </button>
+                        )}
                       </div>
 
                       <div className="grid grid-cols-3 gap-2">
@@ -404,6 +439,52 @@ const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
 
         {isLibraryOpen && (
           <ExerciseLibraryModal onSelect={handleLibrarySelect} onClose={() => setIsLibraryOpen(false)} />
+        )}
+
+        {/* Video Preview Modal */}
+        {previewExercise && (
+          <div className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200" onClick={() => setPreviewExercise(null)}>
+            <div
+              className="w-full max-w-3xl bg-black rounded-3xl overflow-hidden relative shadow-2xl animate-in zoom-in-95 duration-200"
+              onClick={e => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between p-4 absolute top-0 left-0 right-0 z-10 bg-gradient-to-b from-black/80 to-transparent">
+                <h3 className="text-white font-bold text-shadow-sm truncate flex-1 mr-4">{previewExercise.name}</h3>
+                <button
+                  onClick={() => setPreviewExercise(null)}
+                  className="p-2 bg-black/50 hover:bg-white/20 text-white rounded-full backdrop-blur-md transition-all"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              <div className="aspect-video w-full bg-zinc-900 flex items-center justify-center">
+                {previewExercise.videoUrl ? (
+                  previewExercise.videoUrl.includes('youtube.com') || previewExercise.videoUrl.includes('youtu.be') ? (
+                    <iframe
+                      src={getEmbedUrl(previewExercise.videoUrl)}
+                      title={previewExercise.name}
+                      className="w-full h-full"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
+                  ) : (
+                    <video
+                      src={previewExercise.videoUrl}
+                      controls
+                      autoPlay
+                      className="w-full h-full object-contain"
+                    />
+                  )
+                ) : (
+                  <div className="flex flex-col items-center gap-4 text-zinc-500">
+                    <PlayCircle size={48} />
+                    <p className="font-bold">Vídeo não disponível</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
         )}
       </div>
     </div>
