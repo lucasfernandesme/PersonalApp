@@ -99,6 +99,8 @@ const AgendaScreen: React.FC<AgendaScreenProps> = ({ events, students, onAddEven
         const startDate = startOfWeek(monthStart);
         const endDate = endOfWeek(monthEnd);
 
+        console.log('[AgendaScreen] renderCells. Total events:', events.length);
+
         const dateFormat = "d";
         const rows = [];
         let days = [];
@@ -111,7 +113,15 @@ const AgendaScreen: React.FC<AgendaScreenProps> = ({ events, students, onAddEven
                 const cloneDay = day;
 
                 // Find events for this day
-                const dayEvents = events.filter(e => isSameDay(parseISO(e.start), cloneDay));
+                const dayEvents = events.filter(e => {
+                    const eventDate = parseISO(e.start);
+                    const match = isSameDay(eventDate, cloneDay);
+                    // Log only if it's the target date (e.g. 18th) and event is the one being edited (roughly check time)
+                    if (cloneDay.getDate() === 18) {
+                        console.log(`[AgendaScreen] Checking event ${e.title} (${e.start}) against ${cloneDay.toISOString()}: ${match}`);
+                    }
+                    return match;
+                });
                 const isSelected = isSameDay(day, selectedDate);
                 const isCurrentMonth = isSameMonth(day, monthStart);
 

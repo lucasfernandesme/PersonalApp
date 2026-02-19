@@ -55,9 +55,12 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, 
     }, [user?.id]);
 
     const handleAddEvent = (eventData: Partial<ScheduleEvent> & { recurringDays?: number[], recurrenceDuration?: number }) => {
+        console.log('[TrainerProfile] handleAddEvent called with:', eventData);
         let newEvents: ScheduleEvent[] = [];
 
-        if (eventData.isRecurring && eventData.recurringDays && eventData.recurrenceDuration) {
+        // Check for recurrence.
+        // If editing (has ID), treat as single event to avoid regenerating/resetting status.
+        if (!eventData.id && eventData.isRecurring && eventData.recurringDays && eventData.recurrenceDuration) {
             // Generate recurring events
             const startDate = new Date(eventData.start!);
             const durationMonths = eventData.recurrenceDuration;
@@ -112,14 +115,64 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, 
             // Single event logic
             if (eventData.id) {
                 // Edit existing
-                console.log('[TrainerProfile] Updating existing event:', eventData);
-                const updatedEvent = { ...eventData, trainerId: user.id } as ScheduleEvent;
+                console.log('[TrainerProfile] Editing single event. ID match check:', eventData.id);
+
                 setEvents(prev => {
-                    const next = prev.map(e => e.id === eventData.id ? { ...e, ...updatedEvent } : e);
-                    console.log('[TrainerProfile] New events list:', next);
+                    console.log('[TrainerProfile] Reducer IDs check. Target:', eventData.id);
+                    // Check if ID exists in prev
+                    const exists = prev.some(e => e.id === eventData.id);
+                    if (!exists) {
+                        console.error('[TrainerProfile] ID NOT FOUND in current state:', eventData.id, 'Available IDs:', prev.map(e => e.id));
+                    }
+
+                    const next = prev.map(e => {
+                        if (e.id === eventData.id) {
+                            // Safe merge: Spread 'e' first, then 'eventData'.
+                            // Explicitly handle studentName to avoid overwriting with undefined if not provided
+                            const studentName = eventData.studentName !== undefined ? eventData.studentName : e.studentName;
+                            const studentId = eventData.studentId !== undefined ? eventData.studentId : e.studentId;
+
+                            const updated = {
+                                ...e,
+                                ...eventData,
+                                studentName, // Ensure specific fields are preserved if needed
+                                studentId,
+                                trainerId: user.id // Force trainerId
+                            };
+                            console.log('[TrainerProfile] Event updated inside reducer:', updated);
+                            // Also trigger save side-effect here? No, better outside reducer or purely side-effect.
+                            // But we need the 'updated' object for save.
+                            // Since map runs for every item, we can't easily side-effect ONCE.
+                            // We will construct the object for save outside or assuming logic holds.
+                            return updated;
+                        }
+                        return e;
+                    });
+                    // We need to construct the exact same object for the DataService save
+                    // Since we can't tap into the map easily to extract the *result*, 
+                    // we should reconstruct it similarly or trust optimistic update.
+                    // IMPORTANT: 'eventData' might be partial. DataService.saveScheduleEvent typically upserts.
+                    // If we send partial data to Supabase .upsert, it might replace the row or patch it depending on config.
+                    // Supabase .upsert NEEDS all non-nullable fields if it's a new row, or PK for update.
+                    // If we overwrite with minimal data, we might lose columns not in eventData.
+                    // So we should find the ORIGINAL event first to merge for DataService too.
+                    const originalEvent = prev.find(e => e.id === eventData.id);
+                    if (originalEvent) {
+                        const studentName = eventData.studentName !== undefined ? eventData.studentName : originalEvent.studentName;
+                        const studentId = eventData.studentId !== undefined ? eventData.studentId : originalEvent.studentId;
+
+                        const finalPayload = {
+                            ...originalEvent,
+                            ...eventData,
+                            studentName,
+                            studentId,
+                            trainerId: user.id
+                        };
+                        DataService.saveScheduleEvent(finalPayload).catch(err => console.error("Erro ao atualizar evento:", err));
+                    }
+
                     return next;
                 });
-                DataService.saveScheduleEvent(updatedEvent).catch(err => console.error("Erro ao atualizar evento:", err));
             } else {
                 // Add new
                 const newEvent: ScheduleEvent = {
