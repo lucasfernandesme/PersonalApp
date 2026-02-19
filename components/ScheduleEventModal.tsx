@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Calendar, Clock, MapPin, User, CheckCircle2, Repeat, Trash2 } from 'lucide-react';
 import { ScheduleEvent, Student } from '../types';
-import { format, addHours } from 'date-fns';
+import { format, addHours, parse } from 'date-fns';
 
 interface ScheduleEventModalProps {
     initialDate: Date;
@@ -80,8 +80,9 @@ const ScheduleEventModal: React.FC<ScheduleEventModalProps> = ({ initialDate, ex
         }
 
         // Create Date objects from local input values to ensure correct timezone handling
-        const startDateTime = new Date(`${date}T${startTime}`);
-        const endDateTime = new Date(`${date}T${endTime}`);
+        // Use parse from date-fns to explicitly parse as local time
+        const startDateTime = parse(`${date} ${startTime}`, 'yyyy-MM-dd HH:mm', new Date());
+        const endDateTime = parse(`${date} ${endTime}`, 'yyyy-MM-dd HH:mm', new Date());
 
         const startISO = startDateTime.toISOString();
         const endISO = endDateTime.toISOString();

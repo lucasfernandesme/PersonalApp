@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
 import { ScheduleEvent } from '../types';
+import { parse, format } from 'date-fns';
 
 interface ClassDetailsModalProps {
     event: ScheduleEvent;
@@ -29,9 +30,14 @@ const ClassDetailsModal: React.FC<ClassDetailsModalProps> = ({ event, onUpdate, 
                 location: location || undefined,
                 description: observation || undefined,
                 // If status is completed, update the start time to execution date
-                ...(status === 'completed' && executionDate ? {
-                    start: `${executionDate}T${new Date(event.start).toISOString().split('T')[1]}`
-                } : {})
+                ...(status === 'completed' && executionDate ? (() => {
+                    const originalDate = new Date(event.start);
+                    // Parse executionDate as local date
+                    const newDate = parse(executionDate, 'yyyy-MM-dd', new Date());
+                    // Set hours/minutes from original
+                    newDate.setHours(originalDate.getHours(), originalDate.getMinutes(), 0);
+                    return { start: newDate.toISOString() };
+                })() : {})
             });
             onClose();
         } catch (error) {
