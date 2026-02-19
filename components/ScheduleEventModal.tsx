@@ -79,10 +79,14 @@ const ScheduleEventModal: React.FC<ScheduleEventModalProps> = ({ initialDate, ex
             }
         }
 
-        const startISO = `${date}T${startTime}:00`;
-        const endISO = `${date}T${endTime}:00`;
+        // Create Date objects from local input values to ensure correct timezone handling
+        const startDateTime = new Date(`${date}T${startTime}`);
+        const endDateTime = new Date(`${date}T${endTime}`);
 
-        if (startISO >= endISO) {
+        const startISO = startDateTime.toISOString();
+        const endISO = endDateTime.toISOString();
+
+        if (startDateTime >= endDateTime) {
             alert("O horário de término deve ser depois do início.");
             return;
         }
