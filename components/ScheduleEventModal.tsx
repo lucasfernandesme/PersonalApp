@@ -87,6 +87,13 @@ const ScheduleEventModal: React.FC<ScheduleEventModalProps> = ({ initialDate, ex
         const startISO = startDateTime.toISOString();
         const endISO = endDateTime.toISOString();
 
+        console.log('[ScheduleEventModal] Saving event:', {
+            originalStart: existingEvent?.start,
+            newStart: startISO,
+            dateInput: date,
+            timeInput: startTime
+        });
+
         if (startDateTime >= endDateTime) {
             alert("O horário de término deve ser depois do início.");
             return;

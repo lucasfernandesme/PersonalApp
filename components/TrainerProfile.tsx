@@ -112,8 +112,13 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, 
             // Single event logic
             if (eventData.id) {
                 // Edit existing
+                console.log('[TrainerProfile] Updating existing event:', eventData);
                 const updatedEvent = { ...eventData, trainerId: user.id } as ScheduleEvent;
-                setEvents(prev => prev.map(e => e.id === eventData.id ? { ...e, ...updatedEvent } : e));
+                setEvents(prev => {
+                    const next = prev.map(e => e.id === eventData.id ? { ...e, ...updatedEvent } : e);
+                    console.log('[TrainerProfile] New events list:', next);
+                    return next;
+                });
                 DataService.saveScheduleEvent(updatedEvent).catch(err => console.error("Erro ao atualizar evento:", err));
             } else {
                 // Add new
