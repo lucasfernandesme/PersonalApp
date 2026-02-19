@@ -32,9 +32,15 @@ const ScheduleEventModal: React.FC<ScheduleEventModalProps> = ({ initialDate, ex
         if (existingEvent) {
             setTitle(existingEvent.title);
             setSelectedStudentId(existingEvent.studentId || '');
-            setDate(existingEvent.start.split('T')[0]);
-            setStartTime(existingEvent.start.split('T')[1].substring(0, 5));
-            setEndTime(existingEvent.end.split('T')[1].substring(0, 5));
+
+            // Fix: Parse ISO string to Date object to handle timezone correctly
+            const startDate = new Date(existingEvent.start);
+            const endDate = new Date(existingEvent.end);
+
+            setDate(format(startDate, 'yyyy-MM-dd'));
+            setStartTime(format(startDate, 'HH:mm'));
+            setEndTime(format(endDate, 'HH:mm'));
+
             setLocation(existingEvent.location || '');
             setDescription(existingEvent.description || '');
             setIsRecurring(existingEvent.isRecurring || false);
