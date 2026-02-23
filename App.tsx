@@ -521,6 +521,7 @@ const App: React.FC = () => {
     if (activeView === 'register') {
       return (
         <StudentRegistrationScreen
+          isLoading={isSaving}
           onBack={() => setActiveView('dashboard')}
           onSave={async (studentData) => {
             // Validate unique email
@@ -571,6 +572,7 @@ const App: React.FC = () => {
       return (
         <StudentRegistrationScreen
           initialData={selectedStudent}
+          isLoading={isSaving}
           onBack={() => setActiveView('dashboard')}
           onDelete={async (id) => {
             if (confirm('Tem certeza?')) {

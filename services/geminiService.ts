@@ -23,7 +23,7 @@ const workoutSchema = {
                 sets: { type: Type.NUMBER },
                 reps: { type: Type.STRING },
                 rest: { type: Type.STRING },
-                notes: { type: Type.STRING, description: "Dica técnica curta sobre biomecânica e segurança" }
+                notes: { type: Type.STRING, description: "Observação técnica curta sobre biomecânica e segurança" }
               }
             }
           }
@@ -48,11 +48,11 @@ export const generateWorkout = async (data: OnboardingData) => {
     
     BIBLIOTECA: ${libraryNames}
 
-    REQUISITOS OBRIGATÓRIOS PARA O CAMPO 'NOTES' (Dica do Personal):
-    - Crie uma dica técnica de execução para CADA exercício.
+    REQUISITOS OBRIGATÓRIOS PARA O CAMPO 'NOTES' (Observações):
+    - Crie uma observação técnica de execução para CADA exercício.
     - Foque em biomecânica (ex: 'mantenha o cotovelo em 45º') e segurança.
-    - Se o aluno tiver lesão, adapte a dica para proteger a região.
-    - Máximo de 120 caracteres por dica.
+    - Se o aluno tiver lesão, adapte a observação para proteger a região.
+    - Máximo de 120 caracteres por observação.
 
     Responda APENAS o JSON conforme o schema.
   `;
@@ -89,10 +89,10 @@ export const generateSingleExerciseTip = async (exerciseName: string, studentDat
 
   const prompt = `
     Aja como um Personal Trainer especialista. 
-    Gere uma "Dica do Personal" curta (máx 100 caracteres) para o exercício: "${exerciseName}".
+    Gere uma "Observação" curta (máx 100 caracteres) para o exercício: "${exerciseName}".
     Considere que o aluno busca "${studentData.goal}" e tem as seguintes restrições: "${studentData.injuries || 'Nenhuma'}".
     Foque em execução perfeita e biomecânica.
-    Responda apenas o texto da dica, sem aspas.
+    Responda apenas o texto da observação, sem aspas.
   `;
 
   try {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, User, Mail, Phone, Calendar, Ruler, Weight, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, User, Mail, Phone, Calendar, Ruler, Weight, CheckCircle2, Loader2 } from 'lucide-react';
 import { formatPhone } from '../utils/formatters';
 
 interface StudentRegistrationScreenProps {
@@ -7,9 +7,10 @@ interface StudentRegistrationScreenProps {
   onDelete?: (id: string) => void;
   onBack: () => void;
   initialData?: any;
+  isLoading?: boolean;
 }
 
-const StudentRegistrationScreen: React.FC<StudentRegistrationScreenProps> = ({ onSave, onBack, initialData, onDelete }) => {
+const StudentRegistrationScreen: React.FC<StudentRegistrationScreenProps> = ({ onSave, onBack, initialData, onDelete, isLoading }) => {
 
   const formatCPF = (value: string) => {
     const numbers = value.replace(/\D/g, '');
@@ -298,10 +299,20 @@ const StudentRegistrationScreen: React.FC<StudentRegistrationScreenProps> = ({ o
           )}
           <button
             onClick={handleSubmit}
-            className="flex-[2] bg-zinc-900 dark:bg-zinc-100 hover:bg-zinc-800 dark:hover:bg-white text-white dark:text-zinc-900 font-black uppercase text-xs tracking-widest py-5 rounded-2xl shadow-xl shadow-zinc-900/30 dark:shadow-zinc-100/10 flex items-center justify-center gap-2 transition-all"
+            disabled={isLoading}
+            className={`flex-[2] ${isLoading ? 'bg-zinc-400 dark:bg-zinc-700 cursor-not-allowed' : 'bg-zinc-900 dark:bg-zinc-100 hover:bg-zinc-800 dark:hover:bg-white'} text-white dark:text-zinc-900 font-black uppercase text-xs tracking-widest py-5 rounded-2xl shadow-xl shadow-zinc-900/30 dark:shadow-zinc-100/10 flex items-center justify-center gap-2 transition-all`}
           >
-            {initialData ? 'Atualizar Aluno' : 'Salvar Aluno'}
-            <CheckCircle2 size={18} />
+            {isLoading ? (
+              <>
+                Salvando...
+                <Loader2 size={18} className="animate-spin" />
+              </>
+            ) : (
+              <>
+                {initialData ? 'Atualizar Aluno' : 'Salvar Aluno'}
+                <CheckCircle2 size={18} />
+              </>
+            )}
           </button>
         </div>
       </div>

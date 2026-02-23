@@ -402,12 +402,12 @@ const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
                         <div className="flex items-center justify-between px-1">
                           <label className="text-[9px] font-black uppercase text-zinc-400 dark:text-zinc-500 flex items-center gap-1">
                             <MessageSquareQuote size={10} />
-                            Dica do Personal
+                            Observações
                           </label>
 
                         </div>
                         <textarea
-                          placeholder="Dica de biomecânica ou segurança..."
+                          placeholder="Dicas de execução, biomecânica ou segurança..."
                           value={ex.notes || ''}
                           onChange={(e) => updateExercise(dIdx, eIdx, 'notes', e.target.value)}
                           className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs font-medium text-zinc-700 dark:text-white min-h-[60px] focus:ring-2 focus:ring-zinc-900 dark:focus:ring-white shadow-sm transition-colors placeholder:text-zinc-400 dark:placeholder:text-zinc-600"

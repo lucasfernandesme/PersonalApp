@@ -621,7 +621,7 @@ const StudentApp: React.FC<StudentAppProps> = ({
 
                   {ex.notes && (
                     <div className="p-4 bg-zinc-50 dark:bg-zinc-800/40 rounded-2xl border border-zinc-100 dark:border-zinc-700">
-                      <p className="text-[10px] font-black text-zinc-900 dark:text-zinc-100 uppercase mb-1">Dica do Personal</p>
+                      <p className="text-[10px] font-black text-zinc-900 dark:text-zinc-100 uppercase mb-1">Observações</p>
                       <p className="text-xs text-zinc-800 dark:text-zinc-300 font-medium leading-relaxed italic">"{ex.notes}"</p>
                     </div>
                   )}
