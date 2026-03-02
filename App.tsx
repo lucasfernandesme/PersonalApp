@@ -43,7 +43,8 @@ const App: React.FC = () => {
 
   const [showLanding, setShowLanding] = useState(() => {
     const saved = localStorage.getItem(STORAGE_KEY_AUTH);
-    return !saved;
+    const isLoginForce = window.location.search.includes('login=true');
+    return !saved && !isLoginForce;
   });
 
   const [isLoading, setIsLoading] = useState(() => {
