@@ -85,7 +85,7 @@ const ResetPasswordScreen: React.FC<ResetPasswordScreenProps> = ({ onSuccess, on
             <div className="w-full max-w-md space-y-8 animate-in fade-in duration-500">
                 <div className="text-center space-y-2">
                     <div className="mb-6 hover:scale-105 transition-transform duration-300">
-                        <img src="/logo.png" alt="PersonalFlow" className="w-24 h-24 rounded-full shadow-2xl shadow-zinc-900/20 dark:shadow-white/10 mx-auto" />
+                        <img src="/logo.png" alt="PersonalFlow" className="w-24 h-24 object-contain mx-auto" />
                     </div>
                     <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tighter transition-colors">Nova Senha</h1>
                     <p className="text-center text-xs font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mt-2">

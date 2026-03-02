@@ -12,7 +12,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
             <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-black/80 backdrop-blur-xl border-b border-zinc-200 dark:border-zinc-800 transition-colors">
                 <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                        <img src="/logo.png" alt="PersonalFlow" className="w-10 h-10 rounded-full shadow-sm" />
+                        <img src="/logo.png" alt="PersonalFlow" className="w-10 h-10 object-contain" />
                         <span className="font-extrabold text-xl text-slate-900 dark:text-white tracking-tight">PersonalFlow</span>
                     </div>
                     <div className="flex items-center gap-4">
@@ -219,7 +219,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
             <footer className="bg-white dark:bg-zinc-950 py-12 px-6 border-t border-zinc-200 dark:border-zinc-800">
                 <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
                     <div className="flex items-center gap-3">
-                        <img src="/logo.png" alt="PersonalFlow" className="w-8 h-8 rounded-full shadow-sm grayscale opacity-70" />
+                        <img src="/logo.png" alt="PersonalFlow" className="w-8 h-8 object-contain grayscale opacity-70" />
                         <span className="font-bold text-zinc-500 dark:text-zinc-400 tracking-tight">© {new Date().getFullYear()} PersonalFlow.</span>
                     </div>
 
