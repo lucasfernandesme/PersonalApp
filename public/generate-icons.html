@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Icon Generator</title>
+</head>
+
+<body>
+    <canvas id="canvas" width="512" height="512"></canvas>
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const img = new Image();
+        img.crossOrigin = "Anonymous";
+        img.onload = () => {
+            ctx.fillStyle = "white";
+            ctx.fillRect(0, 0, 512, 512);
+            ctx.drawImage(img, 0, 0, 512, 512);
+            const dataURL = canvas.toDataURL("image/png");
+
+            // Create download link
+            const a = document.createElement('a');
+            a.href = dataURL;
+            a.download = 'icon-bg.png';
+            document.body.appendChild(a);
+            a.innerHTML = "Click here to download icon-bg.png";
+
+            // Also create apple touch icon
+            const canvas180 = document.createElement('canvas');
+            canvas180.width = 180;
+            canvas180.height = 180;
+            const ctx180 = canvas180.getContext('2d');
+            ctx180.fillStyle = "white";
+            ctx180.fillRect(0, 0, 180, 180);
+            ctx180.drawImage(img, 0, 0, 180, 180);
+
+            const a2 = document.createElement('a');
+            a2.href = canvas180.toDataURL("image/png");
+            a2.download = 'apple-touch-icon.png';
+            document.body.appendChild(a2);
+            a2.innerHTML = "<br>Click here to download apple-touch-icon.png";
+        };
+        img.src = "/logo.png";
+    </script>
+</body>
+
+</html>
