@@ -3,21 +3,21 @@
   "name": "PersonalFlow",
   "icons": [
     {
-      "src": "/logo.png",
+      "src": "/icon-bg.png",
       "sizes": "192x192",
-      "type": "image/jpeg",
+      "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/logo.png",
+      "src": "/icon-bg.png",
       "sizes": "512x512",
-      "type": "image/jpeg"
+      "type": "image/png"
     }
   ],
   "start_url": ".",
   "display": "standalone",
   "theme_color": "#4f46e5",
-  "background_color": "#f8fafc",
+  "background_color": "#ffffff",
   "orientation": "portrait",
   "scope": "/",
   "description": "Plataforma inteligente para gestão de treinos com IA."
