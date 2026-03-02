@@ -176,9 +176,9 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, 
             } else {
                 // Add new
                 const newEvent: ScheduleEvent = {
-                    id: Math.random().toString(36).substr(2, 9),
                     trainerId: user.id,
                     ...eventData,
+                    id: Math.random().toString(36).substr(2, 9),
                     status: eventData.status || 'planned'
                 } as ScheduleEvent;
                 setEvents(prev => [...prev, newEvent]);
