@@ -29,6 +29,7 @@ import { ThemeProvider } from './contexts/ThemeContext';
 import { useAuth } from './contexts/AuthContext';
 import SubscriptionScreen from './components/SubscriptionScreen';
 import ResetPasswordScreen from './components/ResetPasswordScreen';
+import LandingPage from './components/LandingPage';
 import { supabase } from './services/supabase';
 
 const STORAGE_KEY_AUTH = 'fitai_pro_auth_session';
@@ -38,6 +39,11 @@ const App: React.FC = () => {
   const [authUser, setAuthUser] = useState<AuthUser | null>(() => {
     const saved = localStorage.getItem(STORAGE_KEY_AUTH);
     return saved ? JSON.parse(saved) : null;
+  });
+
+  const [showLanding, setShowLanding] = useState(() => {
+    const saved = localStorage.getItem(STORAGE_KEY_AUTH);
+    return !saved;
   });
 
   const [isLoading, setIsLoading] = useState(() => {
@@ -1256,7 +1262,7 @@ const App: React.FC = () => {
       <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 dark:bg-zinc-950 p-6 text-center">
         <div className="relative mb-8">
           <img
-            src="/logo.jpg"
+            src="/logo.png"
             alt="PersonalFlow"
             className="w-24 h-24 rounded-full shadow-2xl shadow-zinc-900/20 dark:shadow-white/10 animate-pulse"
           />
@@ -1300,6 +1306,14 @@ const App: React.FC = () => {
   }
 
   if (!authUser) {
+    if (showLanding) {
+      return (
+        <ThemeProvider>
+          <LandingPage onEnterApp={() => setShowLanding(false)} />
+        </ThemeProvider>
+      );
+    }
+
     return (
       <ThemeProvider>
         <LoginScreen

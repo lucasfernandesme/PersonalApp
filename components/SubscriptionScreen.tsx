@@ -35,33 +35,25 @@ const SubscriptionScreen: React.FC = () => {
             return;
         }
 
-        console.log('Iniciando handleSubscribe...');
-
+        console.log('Iniciando handleSubscribe via Direct Fetch...');
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 20000); // 20s timeout
 
         try {
-            console.log('Garantindo sessão fresca...');
-            // Tenta dar um refresh na sessão para evitar 401 (token expirado)
+            // Força a atualização da sessão para garantir token válido
             const { data: { session: freshSession }, error: refreshError } = await supabase.auth.refreshSession();
 
             if (refreshError) {
-                console.warn('Não foi possível dar refresh na sessão, tentando usar a atual:', refreshError);
+                console.warn('Falha no refreshSession, buscando getSession...', refreshError);
             }
 
-            const sessionToUse = freshSession || session;
+            const { data: { session: currentSession } } = await supabase.auth.getSession();
+            const sessionToUse = freshSession || currentSession || session;
 
-            if (!sessionToUse) {
-                throw new Error('Sessão não encontrada. Por favor, saia e entre novamente no app.');
-            }
+            if (!sessionToUse) throw new Error('Sessão expirada. Por favor, saia e entre novamente.');
 
-            console.log('Invocando função create-checkout-session via Direct Fetch...');
             const functionUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-checkout-session`;
             const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-            console.log('[DEBUG] URL:', functionUrl);
-            console.log('[DEBUG] Key Prefix:', anonKey?.substring(0, 10));
-            console.log('[DEBUG] Token Prefix:', sessionToUse.access_token.substring(0, 10));
 
             const response = await fetch(functionUrl, {
                 method: 'POST',
@@ -70,26 +62,20 @@ const SubscriptionScreen: React.FC = () => {
                     'Authorization': `Bearer ${sessionToUse.access_token}`,
                     'apikey': anonKey
                 },
-                body: JSON.stringify({ priceId: 'price_1SxYEd2ZxwvErFzHuO5bLQLA' })
+                body: JSON.stringify({ priceId: 'price_1SxYEd2ZxwvErFzHuO5bLQLA' }),
+                signal: controller.signal
             });
 
             clearTimeout(timeoutId);
-            console.log('Status da resposta:', response.status);
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
-                console.error('Erro na resposta:', errorData);
                 throw new Error(errorData.error || `Erro do servidor (Status: ${response.status})`);
             }
 
             const data = await response.json();
-            console.log('Resposta completa:', data);
-
             if (data?.url) {
-                console.log('Redirecionando para Stripe:', data.url);
                 window.location.href = data.url;
-            } else if (data?.error) {
-                throw new Error(data.error);
             } else {
                 throw new Error('Não recebi o link de pagamento do servidor.');
             }
@@ -101,14 +87,14 @@ const SubscriptionScreen: React.FC = () => {
             if (err.name === 'AbortError') {
                 message = 'A conexão demorou muito. Verifique sua internet.';
             } else if (err.message) {
-                if (err.message.includes('401')) {
+                if (err.message.includes('401') || err.message.includes('Sessão expirada')) {
                     message = 'Sua sessão expirou (Erro 401). Por favor, clique em "Sair da conta" e entre novamente.';
                 } else {
                     message = err.message;
                 }
             }
 
-            alert(`[DIRECT FETCH] ${message}`);
+            alert(`[ERRO] ${message}`);
             setIsRedirecting(false);
         }
     };
@@ -128,9 +114,10 @@ const SubscriptionScreen: React.FC = () => {
         setIsRefreshing(true);
         try {
             const { data: { session: freshSession } } = await supabase.auth.refreshSession();
-            const sessionToUse = freshSession || session;
+            const { data: { session: currentSession } } = await supabase.auth.getSession();
+            const sessionToUse = freshSession || currentSession || session;
 
-            if (!sessionToUse) throw new Error('Sessão não encontrada');
+            if (!sessionToUse) throw new Error('Sessão expirada. Por favor, saia e faça login novamente.');
 
             const functionUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-portal-session`;
             const response = await fetch(functionUrl, {
@@ -152,7 +139,7 @@ const SubscriptionScreen: React.FC = () => {
                 window.location.href = data.url;
             }
         } catch (err: any) {
-            alert(err.message);
+            alert(`[ERRO] ${err.message || 'Erro ao abrir portal'}`);
         } finally {
             setIsRefreshing(false);
         }
@@ -202,91 +189,60 @@ const SubscriptionScreen: React.FC = () => {
 
                     {subscriptionStatus === 'trial' && subscriptionEndDate && (
                         <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/10 rounded-2xl border border-blue-100 dark:border-blue-800/50">
-                            <p className="text-sm text-blue-600 dark:text-blue-400 font-bold mb-1">Seu teste expira em</p>
-                            <div className="text-3xl font-black text-blue-700 dark:text-blue-300">
-                                {Math.ceil((new Date(subscriptionEndDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} dias
-                            </div>
-                            <p className="text-[10px] text-blue-500/70 dark:text-blue-400/70 mt-1 font-bold uppercase tracking-widest">Aproveite todos os recursos</p>
+                            {(() => {
+                                const daysRemaining = Math.ceil((new Date(subscriptionEndDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+                                if (daysRemaining <= 0) {
+                                    return (
+                                        <>
+                                            <p className="text-sm text-red-600 dark:text-red-400 font-bold mb-1">Seu teste grátis expirou</p>
+                                            <div className="text-3xl font-black text-red-700 dark:text-red-300">
+                                                0 dias
+                                            </div>
+                                            <p className="text-[10px] text-red-500/70 dark:text-red-400/70 mt-1 font-bold uppercase tracking-widest">Assine agora para continuar usando</p>
+                                        </>
+                                    );
+                                }
+                                return (
+                                    <>
+                                        <p className="text-sm text-blue-600 dark:text-blue-400 font-bold mb-1">Seu teste expira em</p>
+                                        <div className="text-3xl font-black text-blue-700 dark:text-blue-300">
+                                            {daysRemaining} dias
+                                        </div>
+                                        <p className="text-[10px] text-blue-500/70 dark:text-blue-400/70 mt-1 font-bold uppercase tracking-widest">Aproveite todos os recursos</p>
+                                    </>
+                                );
+                            })()}
                         </div>
                     )}
 
                     {(!subscriptionStatus || subscriptionStatus !== 'active') ? (
                         <>
-                            <button
-                                onClick={handleSubscribe}
-                                disabled={isRedirecting}
-                                className="w-full py-5 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 font-black rounded-3xl shadow-xl shadow-zinc-900/20 dark:shadow-white/10 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 group"
-                            >
-                                {isRedirecting ? (
-                                    <>
-                                        <Loader2 size={24} className="animate-spin" />
-                                        Redirecionando...
-                                    </>
-                                ) : (
-                                    <>
-                                        ASSINAR POR R$ 10,90/MÊS
-                                        <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
-                                    </>
-                                )}
-                            </button>
+                            {/* Hide the direct Stripe subscribe button on native platforms to comply with Apple/Google guidelines */}
+                            {!Capacitor.isNativePlatform() ? (
+                                <button
+                                    onClick={handleSubscribe}
+                                    disabled={isRedirecting}
+                                    className="w-full py-5 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 font-black rounded-3xl shadow-xl shadow-zinc-900/20 dark:shadow-white/10 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 group"
+                                >
+                                    {isRedirecting ? (
+                                        <>
+                                            <Loader2 size={24} className="animate-spin" />
+                                            Redirecionando...
+                                        </>
+                                    ) : (
+                                        <>
+                                            ASSINAR POR R$ 10,90/MÊS
+                                            <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                                        </>
+                                    )}
+                                </button>
+                            ) : (
+                                <div className="p-4 bg-zinc-100 dark:bg-zinc-800 rounded-2xl mb-4 text-sm text-zinc-600 dark:text-zinc-400 font-medium text-center">
+                                    Para assinar o PersonalFlow Pro, por favor, acesse nosso site oficial pelo navegador do seu computador.
+                                </div>
+                            )}
 
-                            <button
-                                onClick={async () => {
-                                    if (isRefreshing) return;
-                                    console.log('Verificando status manualmente...');
-                                    setIsRefreshing(true);
-                                    try {
-                                        let data = await refreshSubscription();
 
-                                        if (data?.subscription_status === 'active') {
-                                            alert('Sucesso! Sua assinatura Pro está ativa. Aproveite!');
-                                        } else {
-                                            // SELF-HEALING: Tenta forçar a sincronização via Edge Function
-                                            console.log('Status local inativo. Tentando Self-Healing com Stripe...');
-
-                                            const { data: { session: currentSession } } = await supabase.auth.getSession();
-                                            if (currentSession) {
-                                                const syncResponse = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/sync-subscription`, {
-                                                    method: 'POST',
-                                                    headers: {
-                                                        'Content-Type': 'application/json',
-                                                        'Authorization': `Bearer ${currentSession.access_token}`,
-                                                        'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY
-                                                    }
-                                                });
-
-                                                const syncData = await syncResponse.json();
-                                                console.log('Self-Healing result:', syncData);
-
-                                                if (syncData.fixed && syncData.status === 'active') {
-                                                    // Sincronização forçada funcionou! Atualiza local.
-                                                    data = await refreshSubscription();
-                                                    if (data?.subscription_status === 'active') {
-                                                        alert('Sucesso! Pagamento confirmado e ativado automaticamente.');
-                                                        return;
-                                                    }
-                                                }
-                                            }
-
-                                            alert('Status verificado, mas o pagamento ainda não foi processado pelo Stripe. Se você já pagou, pode levar alguns minutos para atualizar automaticamente.');
-                                        }
-                                    } catch (err) {
-                                        console.error(err);
-                                        alert('Não conseguimos verificar o status agora. Tente novamente em alguns instantes.');
-                                    } finally {
-                                        setIsRefreshing(false);
-                                    }
-                                }}
-                                disabled={isRefreshing || isRedirecting}
-                                className="w-full mt-4 py-4 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 font-black rounded-3xl hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all flex items-center justify-center gap-2 text-xs uppercase tracking-widest disabled:opacity-50"
-                            >
-                                {isRefreshing ? (
-                                    <Loader2 size={16} className="animate-spin" />
-                                ) : (
-                                    <RefreshCw size={16} />
-                                )}
-                                {isRefreshing ? 'Verificando...' : 'Já paguei, verificar status'}
-                            </button>
                         </>
                     ) : (
                         <div className="space-y-4">
@@ -296,29 +252,16 @@ const SubscriptionScreen: React.FC = () => {
 
                             <button
                                 onClick={handleManageSubscription}
-                                disabled={isRefreshing || (subscriptionSource && subscriptionSource !== 'stripe')}
-                                className={`w-full py-4 font-black rounded-3xl hover:scale-[1.02] transition-all flex items-center justify-center gap-2 text-xs uppercase tracking-widest ${subscriptionSource && subscriptionSource !== 'stripe'
-                                    ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-600 cursor-not-allowed'
-                                    : 'bg-zinc-900 dark:bg-white text-white dark:text-zinc-900'
-                                    }`}
+                                disabled={isRefreshing}
+                                className="w-full py-4 font-black rounded-3xl hover:scale-[1.02] transition-all flex items-center justify-center gap-2 text-xs uppercase tracking-widest bg-zinc-900 dark:bg-white text-white dark:text-zinc-900"
                             >
                                 {isRefreshing ? (
                                     <Loader2 size={16} className="animate-spin" />
                                 ) : (
                                     <Zap size={16} />
                                 )}
-                                {isRefreshing ? 'Abrindo...' : (
-                                    subscriptionSource === 'google_play' ? 'Gerenciar na Play Store' :
-                                        subscriptionSource === 'ios' ? 'Gerenciar na App Store' :
-                                            'Gerenciar Assinatura'
-                                )}
+                                {isRefreshing ? 'Abrindo...' : 'GERENCIAR ASSINATURA'}
                             </button>
-                            {(subscriptionSource === 'google_play' || subscriptionSource === 'ios') && (
-                                <p className="text-[10px] text-zinc-400 text-center">
-                                    Sua assinatura foi criada via {subscriptionSource === 'google_play' ? 'Google Play' : 'App Store'}.
-                                    Gerencie-a nas configurações do seu celular.
-                                </p>
-                            )}
                         </div>
                     )}
 
@@ -330,10 +273,19 @@ const SubscriptionScreen: React.FC = () => {
                     </button>
                 </div>
             </div>
-
-            <p className="mt-8 text-zinc-400 dark:text-zinc-600 text-[10px] font-bold uppercase tracking-widest">
-                PersonalFlow App © 2026 • Seguro via Stripe
-            </p>
+            <div className="mt-8 max-w-md w-full">
+                <div className="bg-zinc-50 dark:bg-zinc-950 rounded-[32px] p-6 border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col justify-center items-center text-center space-y-4">
+                    <div className="w-12 h-12 bg-white dark:bg-zinc-900 rounded-full flex items-center justify-center mb-2 shadow-sm border border-zinc-100 dark:border-zinc-800">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-zinc-500"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
+                    </div>
+                    <h4 className="font-black text-zinc-950 dark:text-white uppercase tracking-tight">
+                        Pagamento Seguro
+                    </h4>
+                    <p className="text-sm font-bold text-zinc-500 dark:text-zinc-400 leading-relaxed">
+                        A gestão da assinatura é processada em ambiente seguro do Stripe. O aplicativo não armazena dados de cartão de crédito.
+                    </p>
+                </div>
+            </div>
         </div>
     );
 };

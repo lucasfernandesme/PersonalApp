@@ -224,17 +224,24 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, 
 
         console.log('Iniciando handleSubscribe via Direct Fetch...');
 
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 20000); // 20s timeout
+
         try {
-            // Garante sessão fresca
-            const { data: { session: freshSession } } = await supabase.auth.refreshSession();
-            const sessionToUse = freshSession || session;
-            if (!sessionToUse) throw new Error('Sessão não encontrada. Por favor, saia e entre novamente.');
+            // Força a atualização da sessão para garantir token válido
+            const { data: { session: freshSession }, error: refreshError } = await supabase.auth.refreshSession();
+
+            if (refreshError) {
+                console.warn('Falha no refreshSession, buscando getSession...', refreshError);
+            }
+
+            const { data: { session: currentSession } } = await supabase.auth.getSession();
+            const sessionToUse = freshSession || currentSession || session;
+
+            if (!sessionToUse) throw new Error('Sessão expirada. Por favor, saia e entre novamente.');
 
             const functionUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-checkout-session`;
             const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-            console.log('[DEBUG] URL:', functionUrl);
-            console.log('[DEBUG] Key Prefix:', anonKey?.substring(0, 10));
-            console.log('[DEBUG] Token Prefix:', sessionToUse.access_token.substring(0, 10));
 
             const response = await fetch(functionUrl, {
                 method: 'POST',
@@ -243,10 +250,11 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, 
                     'Authorization': `Bearer ${sessionToUse.access_token}`,
                     'apikey': anonKey
                 },
-                body: JSON.stringify({ priceId: 'price_1SxYEd2ZxwvErFzHuO5bLQLA' })
+                body: JSON.stringify({ priceId: 'price_1SxYEd2ZxwvErFzHuO5bLQLA' }),
+                signal: controller.signal
             });
 
-            console.log('Status da resposta:', response.status);
+            clearTimeout(timeoutId);
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
@@ -260,8 +268,20 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, 
                 throw new Error('Não recebi o link de pagamento do servidor.');
             }
         } catch (err: any) {
+            clearTimeout(timeoutId);
             console.error('Erro detalhado no checkout:', err);
-            alert(`[DIRECT FETCH] Erro ao iniciar pagamento: ${err.message}`);
+
+            let message = 'Não conseguimos iniciar o pagamento.';
+            if (err.name === 'AbortError') {
+                message = 'A conexão demorou muito. Verifique sua internet.';
+            } else if (err.message) {
+                if (err.message.includes('401') || err.message.includes('Sessão expirada')) {
+                    message = 'Sua sessão expirou (Erro 401). Por favor, clique em "Sair da conta" e entre novamente.';
+                } else {
+                    message = err.message;
+                }
+            }
+            alert(`[ERRO] ${message}`);
         } finally {
             setIsRedirecting(false);
         }
@@ -271,8 +291,10 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, 
         setIsSavingLocal(true);
         try {
             const { data: { session: freshSession } } = await supabase.auth.refreshSession();
-            const sessionToUse = freshSession || session;
-            if (!sessionToUse) throw new Error('Sessão não encontrada');
+            const { data: { session: currentSession } } = await supabase.auth.getSession();
+            const sessionToUse = freshSession || currentSession || session;
+
+            if (!sessionToUse) throw new Error('Sessão expirada. Por favor, saia e faça login novamente.');
 
             const functionUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-portal-session`;
             const response = await fetch(functionUrl, {
@@ -294,7 +316,7 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, 
                 window.location.href = data.url;
             }
         } catch (err: any) {
-            alert(err.message);
+            alert(`[ERRO] ${err.message || 'Erro ao abrir portal'}`);
         } finally {
             setIsSavingLocal(false);
         }
@@ -495,21 +517,24 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, 
                     <ChevronRight className="text-zinc-300 dark:text-zinc-700 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition-colors" />
                 </button>
 
-                <button
-                    onClick={() => setActiveModal('subscription')}
-                    className="bg-white dark:bg-zinc-900 p-6 rounded-[28px] border border-zinc-100 dark:border-zinc-800 shadow-sm flex items-center justify-between hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all group"
-                >
-                    <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-zinc-100 dark:bg-zinc-800 rounded-2xl flex items-center justify-center text-zinc-600 dark:text-zinc-400 group-hover:bg-zinc-900 dark:group-hover:bg-zinc-100 group-hover:text-white dark:group-hover:text-zinc-900 transition-colors">
-                            <CreditCard size={24} />
+                {/* Only show subscription option on Web/PWA, hiding on Native iOS/Android to comply with store guidelines */}
+                {!Capacitor.isNativePlatform() && (
+                    <button
+                        onClick={() => setActiveModal('subscription')}
+                        className="bg-white dark:bg-zinc-900 p-6 rounded-[28px] border border-zinc-100 dark:border-zinc-800 shadow-sm flex items-center justify-between hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all group"
+                    >
+                        <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 bg-zinc-100 dark:bg-zinc-800 rounded-2xl flex items-center justify-center text-zinc-600 dark:text-zinc-400 group-hover:bg-zinc-900 dark:group-hover:bg-zinc-100 group-hover:text-white dark:group-hover:text-zinc-900 transition-colors">
+                                <CreditCard size={24} />
+                            </div>
+                            <div className="text-left">
+                                <h3 className="font-black text-zinc-900 dark:text-white text-lg transition-colors">Assinatura</h3>
+                                <p className="text-sm font-medium text-zinc-400 dark:text-zinc-500 transition-colors">Plano Pro</p>
+                            </div>
                         </div>
-                        <div className="text-left">
-                            <h3 className="font-black text-zinc-900 dark:text-white text-lg transition-colors">Assinatura</h3>
-                            <p className="text-sm font-medium text-zinc-400 dark:text-zinc-500 transition-colors">Plano Pro</p>
-                        </div>
-                    </div>
-                    <ChevronRight className="text-zinc-300 dark:text-zinc-700 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition-colors" />
-                </button>
+                        <ChevronRight className="text-zinc-300 dark:text-zinc-700 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition-colors" />
+                    </button>
+                )}
 
                 <button
                     onClick={() => setActiveModal('finance')}
@@ -805,11 +830,29 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, 
 
                             {subscriptionStatus === 'trial' && subscriptionEndDate && (
                                 <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/10 rounded-2xl border border-blue-100 dark:border-blue-800/50 text-center">
-                                    <p className="text-sm text-blue-600 dark:text-blue-400 font-bold mb-1">Seu teste expira em</p>
-                                    <div className="text-3xl font-black text-blue-700 dark:text-blue-300">
-                                        {Math.ceil((new Date(subscriptionEndDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} dias
-                                    </div>
-                                    <p className="text-[10px] text-blue-500/70 dark:text-blue-400/70 mt-1 font-bold uppercase tracking-widest">Aproveite todos os recursos</p>
+                                    {(() => {
+                                        const daysRemaining = Math.ceil((new Date(subscriptionEndDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+                                        if (daysRemaining <= 0) {
+                                            return (
+                                                <>
+                                                    <p className="text-sm text-red-600 dark:text-red-400 font-bold mb-1">Seu teste grátis expirou</p>
+                                                    <div className="text-3xl font-black text-red-700 dark:text-red-300">
+                                                        0 dias
+                                                    </div>
+                                                    <p className="text-[10px] text-red-500/70 dark:text-red-400/70 mt-1 font-bold uppercase tracking-widest">Assine agora para continuar usando</p>
+                                                </>
+                                            );
+                                        }
+                                        return (
+                                            <>
+                                                <p className="text-sm text-blue-600 dark:text-blue-400 font-bold mb-1">Seu teste expira em</p>
+                                                <div className="text-3xl font-black text-blue-700 dark:text-blue-300">
+                                                    {daysRemaining} dias
+                                                </div>
+                                                <p className="text-[10px] text-blue-500/70 dark:text-blue-400/70 mt-1 font-bold uppercase tracking-widest">Aproveite todos os recursos</p>
+                                            </>
+                                        );
+                                    })()}
                                 </div>
                             )}
 
@@ -829,41 +872,32 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, 
                                             'ASSINAR PRO PLAN'
                                         )}
                                     </button>
-                                ) : (<>
+                                ) : (
                                     <button
                                         onClick={handleManageSubscription}
-                                        disabled={isSavingLocal || (subscriptionSource && subscriptionSource !== 'stripe')}
-                                        className={`w-full py-4 font-black rounded-2xl shadow-lg hover:opacity-90 transition-all active:scale-95 flex items-center justify-center gap-2 ${subscriptionSource && subscriptionSource !== 'stripe'
-                                            ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-600 cursor-not-allowed'
-                                            : 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900'
-                                            }`}
+                                        disabled={isSavingLocal}
+                                        className="w-full py-4 font-black rounded-2xl shadow-lg hover:opacity-90 transition-all active:scale-95 flex items-center justify-center gap-2 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900"
                                     >
                                         {isSavingLocal ? (
                                             <Loader2 className="animate-spin" size={20} />
                                         ) : (
                                             <Zap size={20} />
                                         )}
-                                        {isSavingLocal ? 'Abrindo...' : (
-                                            subscriptionSource === 'google_play' ? 'GERENCIAR NA PLAY STORE' :
-                                                subscriptionSource === 'ios' ? 'GERENCIAR NA APP STORE' :
-                                                    'GERENCIAR ASSINATURA'
-                                        )}
+                                        {isSavingLocal ? 'Abrindo...' : 'GERENCIAR ASSINATURA'}
                                     </button>
-                                    {(subscriptionSource === 'google_play' || subscriptionSource === 'ios') && (
-                                        <p className="text-[10px] text-zinc-400 text-center mt-2">
-                                            Assinatura gerenciada pela {subscriptionSource === 'google_play' ? 'Google Play' : 'App Store'}.
-                                        </p>
-                                    )}
-                                </>)}
+                                )}
+                            </div>
 
-                                <button
-                                    onClick={handleRefreshStatus}
-                                    disabled={isSavingLocal}
-                                    className="w-full py-3 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 font-bold rounded-2xl hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all flex items-center justify-center gap-2 text-xs uppercase"
-                                >
-                                    {isSavingLocal ? <Loader2 className="animate-spin" size={14} /> : <RefreshCw size={14} />}
-                                    Atualizar Status
-                                </button>
+                            <div className="mt-8 w-full">
+                                <div className="bg-zinc-50 dark:bg-zinc-800/50 rounded-[28px] p-6 border border-zinc-100 dark:border-zinc-800/50 flex flex-col items-center text-center space-y-3">
+                                    <div className="w-12 h-12 bg-white dark:bg-zinc-900 rounded-full flex items-center justify-center shadow-sm border border-zinc-100 dark:border-zinc-800">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-zinc-500"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
+                                    </div>
+                                    <h4 className="font-black text-zinc-900 dark:text-white uppercase tracking-tight text-sm">Pagamento Seguro</h4>
+                                    <p className="text-xs font-bold text-zinc-500 dark:text-zinc-400 leading-relaxed">
+                                        A gestão da assinatura é processada em ambiente seguro do Stripe. O aplicativo não armazena dados de cartão de crédito.
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>

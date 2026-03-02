@@ -37,7 +37,7 @@ const AgendaScreen: React.FC<AgendaScreenProps> = ({ events, students, onAddEven
                     <div className="w-10"></div> {/* Placeholder for symmetry */}
 
                     <div className="flex items-center gap-2">
-                        <img src="/logo.jpg" alt="PersonalFlow" className="w-8 h-8 rounded-full shadow-sm" />
+                        <img src="/logo.png" alt="PersonalFlow" className="w-8 h-8 rounded-full shadow-sm" />
                         <span className="font-extrabold text-slate-900 dark:text-white tracking-tight">PersonalFlow</span>
                     </div>
 
@@ -174,7 +174,7 @@ const AgendaScreen: React.FC<AgendaScreenProps> = ({ events, students, onAddEven
                                 onAddEvent(cloneDay);
                             }}
                             role="button"
-                            className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 p-1 bg-zinc-900 dark:bg-white text-white dark:text-black rounded-lg shadow-sm hover:scale-110 transition-all z-20"
+                            className="hidden md:block absolute top-1 right-1 md:opacity-0 md:group-hover:opacity-100 p-1 bg-zinc-900 dark:bg-white text-white dark:text-black rounded-lg shadow-sm hover:scale-110 transition-all z-20"
                         >
                             <Plus size={12} />
                         </div>
