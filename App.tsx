@@ -1262,7 +1262,8 @@ const App: React.FC = () => {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 dark:bg-zinc-950 p-6 text-center">
         <div className="relative mb-8">
-          <img src="/logo.png" alt="PersonalFlow" className="w-24 h-24 object-contain mx-auto animate-pulse" />
+          <img src="/logo.png" alt="PersonalFlow" className="w-24 h-24 object-contain mx-auto animate-pulse dark:hidden" />
+          <img src="/logo-dark.png" alt="PersonalFlow" className="w-24 h-24 object-contain mx-auto animate-pulse hidden dark:block" />
         </div>
 
         {loadingTakingTooLong && (

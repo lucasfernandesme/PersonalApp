@@ -52,7 +52,8 @@ const Layout: React.FC<LayoutProps> = ({ children, role, onSwitchRole, onNavigat
       {/* Desktop Sidebar */}
       <aside className="w-64 bg-zinc-900 dark:bg-zinc-900 text-white flex-shrink-0 flex-col hidden md:flex h-screen sticky top-0 border-r border-transparent dark:border-zinc-800">
         <div className="p-6 flex items-center gap-3">
-          <img src="/logo.png" alt="PersonalFlow" className="w-10 h-10 object-contain" />
+          <img src="/logo.png" alt="PersonalFlow" className="w-10 h-10 object-contain dark:hidden" />
+          <img src="/logo-dark.png" alt="PersonalFlow" className="w-10 h-10 object-contain hidden dark:block" />
           <span className="text-xl font-bold tracking-tight">PersonalFlow</span>
         </div>
 
@@ -119,7 +120,8 @@ const Layout: React.FC<LayoutProps> = ({ children, role, onSwitchRole, onNavigat
         </button>
 
         <div className="flex items-center gap-2">
-          <img src="/logo.png" alt="PersonalFlow" className="w-8 h-8 object-contain" />
+          <img src="/logo.png" alt="PersonalFlow" className="w-8 h-8 object-contain dark:hidden" />
+          <img src="/logo-dark.png" alt="PersonalFlow" className="w-8 h-8 object-contain hidden dark:block" />
           <span className="font-extrabold text-slate-900 dark:text-white tracking-tight">PersonalFlow</span>
         </div>
 

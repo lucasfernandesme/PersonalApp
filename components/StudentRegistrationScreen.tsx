@@ -99,7 +99,8 @@ const StudentRegistrationScreen: React.FC<StudentRegistrationScreenProps> = ({ o
         </button>
 
         <div className="flex items-center gap-2">
-          <img src="/logo.png" alt="PersonalFlow" className="w-8 h-8 object-contain" />
+          <img src="/logo.png" alt="PersonalFlow" className="w-8 h-8 object-contain dark:hidden" />
+          <img src="/logo-dark.png" alt="PersonalFlow" className="w-8 h-8 object-contain hidden dark:block" />
           <span className="font-extrabold text-slate-900 dark:text-white tracking-tight">PersonalFlow</span>
         </div>
 
