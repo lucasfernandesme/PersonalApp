@@ -57,7 +57,7 @@ const Layout: React.FC<LayoutProps> = ({ children, role, onSwitchRole, onNavigat
             {/* Desktop Sidebar */}
             <aside className="hidden lg:flex w-64 bg-zinc-950 dark:bg-white flex-col fixed inset-y-0 left-0 z-50 shadow-2xl">
                 <div className="p-8 flex flex-col items-center justify-center text-center gap-3">
-                    <img src="/logo.png" alt="PersonalFlow" className="w-16 h-16 object-contain drop-shadow-md dark:bg-white dark:rounded-full dark:px-2" />
+                    <img src={theme === 'dark' ? "/logo10.png" : "/logo9.png"} alt="PersonalFlow" className="w-16 h-16 object-contain drop-shadow-md dark:bg-white dark:rounded-full dark:px-2" />
                     <span className="font-outfit font-black italic tracking-tighter text-2xl bg-clip-text text-transparent bg-gradient-to-r from-zinc-100 to-zinc-400 dark:from-zinc-950 dark:to-zinc-500">PersonalFlow</span>
                 </div>
 
@@ -117,7 +117,7 @@ const Layout: React.FC<LayoutProps> = ({ children, role, onSwitchRole, onNavigat
                 </div>
 
                 <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2">
-                    <img src="/logo.png" alt="PersonalFlow" className="h-8 w-auto object-contain drop-shadow-sm dark:bg-white dark:rounded-full dark:px-1" />
+                    <img src={theme === 'dark' ? "/logo10.png" : "/logo9.png"} alt="PersonalFlow" className="h-8 w-auto object-contain drop-shadow-sm dark:bg-white dark:rounded-full dark:px-1" />
                     <span className="font-outfit font-black italic tracking-tighter text-xl bg-clip-text text-transparent bg-gradient-to-r from-zinc-900 to-zinc-600 dark:from-white dark:to-zinc-400 uppercase">PersonalFlow</span>
                 </div>
 
