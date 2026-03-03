@@ -174,14 +174,6 @@ const Layout: React.FC<LayoutProps> = ({ children, role, onSwitchRole, onNavigat
                                             <MenuButton
                                                 onClick={() => {
                                                     setShowProfileMenu(false);
-                                                    onNavigate('students');
-                                                }}
-                                                icon={<Users size={16} strokeWidth={2.5} />}
-                                                label="Meus Alunos"
-                                            />
-                                            <MenuButton
-                                                onClick={() => {
-                                                    setShowProfileMenu(false);
                                                     onNavigate('reports');
                                                 }}
                                                 icon={<FileText size={16} strokeWidth={2.5} />}
