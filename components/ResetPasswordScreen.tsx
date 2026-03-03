@@ -23,11 +23,11 @@ const ResetPasswordScreen: React.FC<ResetPasswordScreenProps> = ({ onSuccess, on
             const errorDescription = params.get('error_description');
 
             if (errorCode === 'otp_expired') {
-                setError('O link de recuperaÁ„o expirou. Por favor, solicite um novo.');
+                setError('O link de recupera√ß√£o expirou. Por favor, solicite um novo.');
             } else if (errorDescription) {
                 setError(errorDescription.replace(/\+/g, ' '));
             } else {
-                setError('Link inv·lido ou expirado.');
+                setError('Link inv√°lido ou expirado.');
             }
         }
     }, []);
@@ -42,7 +42,7 @@ const ResetPasswordScreen: React.FC<ResetPasswordScreenProps> = ({ onSuccess, on
         }
 
         if (password !== confirmPassword) {
-            setError('As senhas n„o coincidem.');
+            setError('As senhas n√£o coincidem.');
             return;
         }
 
@@ -73,7 +73,7 @@ const ResetPasswordScreen: React.FC<ResetPasswordScreenProps> = ({ onSuccess, on
                     </div>
                     <h2 className="text-2xl font-black text-zinc-900 dark:text-white">Senha Atualizada!</h2>
                     <p className="text-zinc-500 dark:text-zinc-400">
-                        Sua senha foi alterada com sucesso. VocÍ ser· redirecionado para o login.
+                        Sua senha foi alterada com sucesso. Voc√™ ser√° redirecionado para o login.
                     </p>
                 </div>
             </div>

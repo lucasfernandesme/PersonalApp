@@ -106,8 +106,8 @@ const StudentAssessmentsScreen: React.FC<StudentAssessmentsScreenProps> = ({ stu
                 notes: ''
             });
         } catch (error) {
-            console.error("Erro ao salvar avaliaÁ„o:", error);
-            alert("Erro ao salvar avaliaÁ„o.");
+            console.error("Erro ao salvar avalia√ß√£o:", error);
+            alert("Erro ao salvar avalia√ß√£o.");
         } finally {
             setIsSaving(false);
         }
@@ -188,7 +188,7 @@ const StudentAssessmentsScreen: React.FC<StudentAssessmentsScreenProps> = ({ stu
 
     const handleDeleteAssessment = async (id: string, e: React.MouseEvent) => {
         e.stopPropagation();
-        if (!window.confirm('Tem certeza que deseja excluir esta avaliaÁ„o?')) return;
+        if (!window.confirm('Tem certeza que deseja excluir esta avalia√ß√£o?')) return;
 
         const updatedStudent = {
             ...student,
@@ -200,8 +200,8 @@ const StudentAssessmentsScreen: React.FC<StudentAssessmentsScreenProps> = ({ stu
         try {
             await DataService.saveStudent(updatedStudent);
         } catch (error) {
-            console.error("Erro ao excluir avaliaÁ„o:", error);
-            alert("Erro ao excluir avaliaÁ„o.");
+            console.error("Erro ao excluir avalia√ß√£o:", error);
+            alert("Erro ao excluir avalia√ß√£o.");
         }
     };
 
@@ -257,25 +257,25 @@ const StudentAssessmentsScreen: React.FC<StudentAssessmentsScreenProps> = ({ stu
         thigh: 'Coxa',
         triceps: 'Tricipital',
         subscapular: 'Subescapular',
-        iliacCrest: 'Supra-ilÌaca',
-        suprailiac: 'Supra-ilÌaca', // mapping for safety
+        iliacCrest: 'Supra-il√≠aca',
+        suprailiac: 'Supra-il√≠aca', // mapping for safety
         supraspinale: 'Supra-espinhal',
-        axilla: 'Axilar MÈdia',
-        biceps: 'BÌceps',
+        axilla: 'Axilar M√©dia',
+        biceps: 'B√≠ceps',
         calf: 'Panturrilha Medial'
     };
 
     const circumferenceLabels: Record<string, string> = {
-        neck: 'PescoÁo',
+        neck: 'Pesco√ßo',
         shoulders: 'Ombro',
-        chest: 'TÛrax',
+        chest: 'T√≥rax',
         waist: 'Cintura',
-        abdomen: 'AbdÙmen',
+        abdomen: 'Abd√¥men',
         hips: 'Quadril',
-        rightArm: 'BraÁo Direito',
-        leftArm: 'BraÁo Esquerdo',
-        rightForearm: 'AntebraÁo Direito',
-        leftForearm: 'AntebraÁo Esquerdo',
+        rightArm: 'Bra√ßo Direito',
+        leftArm: 'Bra√ßo Esquerdo',
+        rightForearm: 'Antebra√ßo Direito',
+        leftForearm: 'Antebra√ßo Esquerdo',
         rightThigh: 'Coxa Direita',
         leftThigh: 'Coxa Esquerda',
         rightCalf: 'Perna Direita',
@@ -341,13 +341,13 @@ const StudentAssessmentsScreen: React.FC<StudentAssessmentsScreenProps> = ({ stu
     };
 
     const standardQuestions = [
-        "Possui alguma restriÁ„o mÈdica?",
-        "Toma algum medicamento de uso contÌnuo?",
-        "J· realizou cirurgias? Quais?",
+        "Possui alguma restri√ß√£o m√©dica?",
+        "Toma algum medicamento de uso cont√≠nuo?",
+        "J√° realizou cirurgias? Quais?",
         "Sente dores articulares?",
         "Qual seu objetivo principal?",
-        "Como È sua rotina de sono?",
-        "Como È sua alimentaÁ„o atual?"
+        "Como √© sua rotina de sono?",
+        "Como √© sua alimenta√ß√£o atual?"
     ];
 
     return (
@@ -361,14 +361,14 @@ const StudentAssessmentsScreen: React.FC<StudentAssessmentsScreenProps> = ({ stu
                     <ArrowLeft size={20} />
                 </button>
                 <div>
-                    <h2 className="text-2xl font-black text-zinc-900 dark:text-white">AvaliaÁıes</h2>
-                    <p className="text-zinc-500 text-sm font-medium">Gerencie avaliaÁıes e anamneses</p>
+                    <h2 className="text-2xl font-black text-zinc-900 dark:text-white">Avalia√ß√µes</h2>
+                    <p className="text-zinc-500 text-sm font-medium">Gerencie avalia√ß√µes e anamneses</p>
                 </div>
             </div>
 
             {/* Content - Vertical Layout */}
             <div className="space-y-4">
-                {/* AvaliaÁ„o MorfolÛgica */}
+                {/* Avalia√ß√£o Morfol√≥gica */}
                 <div className="bg-white dark:bg-zinc-900 rounded-[32px] border border-zinc-100 dark:border-zinc-800 overflow-hidden transition-all duration-300">
                     <button
                         onClick={() => setExpandedSection(expandedSection === 'morphological' ? null : 'morphological')}
@@ -379,8 +379,8 @@ const StudentAssessmentsScreen: React.FC<StudentAssessmentsScreenProps> = ({ stu
                                 <Ruler size={24} />
                             </div>
                             <div>
-                                <h3 className="text-lg font-black text-zinc-900 dark:text-white leading-tight">MorfolÛgica</h3>
-                                <p className="text-zinc-400 text-[10px] font-bold uppercase tracking-wider">ComposiÁ„o Corporal</p>
+                                <h3 className="text-lg font-black text-zinc-900 dark:text-white leading-tight">Morfol√≥gica</h3>
+                                <p className="text-zinc-400 text-[10px] font-bold uppercase tracking-wider">Composi√ß√£o Corporal</p>
                             </div>
                         </div>
                         <ChevronRight
@@ -414,7 +414,7 @@ const StudentAssessmentsScreen: React.FC<StudentAssessmentsScreenProps> = ({ stu
                                         className="w-full py-4 bg-emerald-50 dark:bg-emerald-900/10 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800 rounded-2xl font-black flex items-center justify-center gap-2 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 transition-colors shadow-sm"
                                     >
                                         <Plus size={18} />
-                                        NOVA AVALIA«√O DE DOBRAS
+                                        NOVA AVALIA√á√ÉO DE DOBRAS
                                     </button>
                                 </div>
                             )}
@@ -448,7 +448,7 @@ const StudentAssessmentsScreen: React.FC<StudentAssessmentsScreenProps> = ({ stu
                                                     <button
                                                         onClick={(e) => handleDeleteAssessment(assessment.id, e)}
                                                         className="p-2 text-zinc-300 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-full transition-colors"
-                                                        title="Excluir AvaliaÁ„o"
+                                                        title="Excluir Avalia√ß√£o"
                                                     >
                                                         <Trash2 size={16} />
                                                     </button>
@@ -458,14 +458,14 @@ const StudentAssessmentsScreen: React.FC<StudentAssessmentsScreenProps> = ({ stu
                                     </div>
                                 ))}
                                 {(!student.assessments || student.assessments.length === 0) && (
-                                    <p className="text-zinc-400 text-xs pl-6 py-2 font-medium">Nenhuma avaliaÁ„o registrada.</p>
+                                    <p className="text-zinc-400 text-xs pl-6 py-2 font-medium">Nenhuma avalia√ß√£o registrada.</p>
                                 )}
                             </div>
                         </div>
                     )}
                 </div>
 
-                {/* AvaliaÁ„o Anamnese */}
+                {/* Avalia√ß√£o Anamnese */}
                 <div className="bg-white dark:bg-zinc-900 rounded-[32px] border border-zinc-100 dark:border-zinc-800 overflow-hidden transition-all duration-300">
                     <button
                         onClick={() => setExpandedSection(expandedSection === 'anamnesis' ? null : 'anamnesis')}
@@ -477,7 +477,7 @@ const StudentAssessmentsScreen: React.FC<StudentAssessmentsScreenProps> = ({ stu
                             </div>
                             <div>
                                 <h3 className="text-lg font-black text-zinc-900 dark:text-white leading-tight">Anamnese</h3>
-                                <p className="text-zinc-400 text-[10px] font-bold uppercase tracking-wider">HistÛrico e Sa˙de</p>
+                                <p className="text-zinc-400 text-[10px] font-bold uppercase tracking-wider">Hist√≥rico e Sa√∫de</p>
                             </div>
                         </div>
                         <ChevronRight
@@ -495,7 +495,7 @@ const StudentAssessmentsScreen: React.FC<StudentAssessmentsScreenProps> = ({ stu
                                         className="w-full py-4 bg-purple-50 dark:bg-purple-900/10 text-purple-700 dark:text-purple-400 border border-purple-100 dark:border-purple-800 rounded-2xl font-black flex items-center justify-center gap-2 hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-colors shadow-sm"
                                     >
                                         <Plus size={18} />
-                                        NOVA ANAMNESE PADR√O
+                                        NOVA ANAMNESE PADR√ÉO
                                     </button>
                                 </div>
                             )}
@@ -525,15 +525,15 @@ const StudentAssessmentsScreen: React.FC<StudentAssessmentsScreenProps> = ({ stu
                                                     // Structured Data Preview
                                                     <div className="grid grid-cols-2 gap-2">
                                                         <div className="p-3 bg-white dark:bg-zinc-900 rounded-xl border border-zinc-100 dark:border-zinc-800">
-                                                            <p className="text-[9px] font-bold text-zinc-400 uppercase mb-1">MÈdico</p>
+                                                            <p className="text-[9px] font-bold text-zinc-400 uppercase mb-1">M√©dico</p>
                                                             <p className="text-xs text-zinc-800 dark:text-zinc-300 font-medium truncate">
-                                                                {anam.medical?.hasPain ? 'Com Dor' : 'Sem Dor'} ï {anam.medical?.cardiacIssues ? 'CardÌaco' : 'Saud·vel'}
+                                                                {anam.medical?.hasPain ? 'Com Dor' : 'Sem Dor'} ¬ï {anam.medical?.cardiacIssues ? 'Card√≠aco' : 'Saud√°vel'}
                                                             </p>
                                                         </div>
                                                         <div className="p-3 bg-white dark:bg-zinc-900 rounded-xl border border-zinc-100 dark:border-zinc-800">
                                                             <p className="text-[9px] font-bold text-zinc-400 uppercase">Objetivo</p>
                                                             <p className="text-xs text-zinc-800 dark:text-zinc-300 font-medium truncate">
-                                                                {anam.training?.goals || 'N„o definido'}
+                                                                {anam.training?.goals || 'N√£o definido'}
                                                             </p>
                                                         </div>
                                                     </div>
@@ -563,12 +563,12 @@ const StudentAssessmentsScreen: React.FC<StudentAssessmentsScreenProps> = ({ stu
                 </div>
             </div>
 
-            {/* Modal Nova AvaliaÁ„o */}
+            {/* Modal Nova Avalia√ß√£o */}
             {showNewAssessmentModal && (
                 <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
                     <div className="bg-white dark:bg-zinc-900 w-full max-w-lg rounded-[32px] p-6 max-h-[90vh] overflow-y-auto custom-scrollbar">
                         <div className="flex items-center justify-between mb-6">
-                            <h3 className="text-xl font-black text-zinc-900 dark:text-white">{editingAssessmentId ? 'Editar AvaliaÁ„o' : 'Nova AvaliaÁ„o'}</h3>
+                            <h3 className="text-xl font-black text-zinc-900 dark:text-white">{editingAssessmentId ? 'Editar Avalia√ß√£o' : 'Nova Avalia√ß√£o'}</h3>
                             <button onClick={() => {
                                 setShowNewAssessmentModal(false);
                                 setEditingAssessmentId(null);
@@ -608,7 +608,7 @@ const StudentAssessmentsScreen: React.FC<StudentAssessmentsScreenProps> = ({ stu
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">GÍnero</label>
+                                    <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">G√™nero</label>
                                     <select
                                         value={student.gender}
                                         onChange={async (e) => {
@@ -642,7 +642,7 @@ const StudentAssessmentsScreen: React.FC<StudentAssessmentsScreenProps> = ({ stu
                             <div className="border-t border-zinc-100 dark:border-zinc-800 pt-4">
                                 <h4 className="font-black text-zinc-900 dark:text-white mb-4 flex items-center gap-2">
                                     <Ruler size={16} className="text-emerald-500" />
-                                    Dobras Cut‚neas (mm)
+                                    Dobras Cut√¢neas (mm)
                                 </h4>
                                 {renderProtocolInputs()}
                             </div>
@@ -651,7 +651,7 @@ const StudentAssessmentsScreen: React.FC<StudentAssessmentsScreenProps> = ({ stu
                             <div className="border-t border-zinc-100 dark:border-zinc-800 pt-4">
                                 <h4 className="font-black text-zinc-900 dark:text-white mb-4 flex items-center gap-2">
                                     <Activity size={16} className="text-blue-500" />
-                                    PerÌmetros (cm)
+                                    Per√≠metros (cm)
                                 </h4>
                                 {renderCircumferenceInputs()}
                             </div>
@@ -660,7 +660,7 @@ const StudentAssessmentsScreen: React.FC<StudentAssessmentsScreenProps> = ({ stu
                             <div className="border-t border-zinc-100 dark:border-zinc-800 pt-4">
                                 <h4 className="font-black text-zinc-900 dark:text-white mb-4 flex items-center gap-2">
                                     <BrainCircuit size={16} className="text-purple-500" />
-                                    Metas e ProjeÁıes
+                                    Metas e Proje√ß√µes
                                 </h4>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
@@ -687,12 +687,12 @@ const StudentAssessmentsScreen: React.FC<StudentAssessmentsScreenProps> = ({ stu
                             </div>
 
                             <div>
-                                <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">ObservaÁıes</label>
+                                <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Observa√ß√µes</label>
                                 <textarea
                                     value={newAssessment.notes || ''}
                                     onChange={e => setNewAssessment({ ...newAssessment, notes: e.target.value })}
                                     className="w-full p-3 rounded-xl bg-zinc-50 border-none font-medium text-zinc-900 min-h-[80px]"
-                                    placeholder="Alguma observaÁ„o sobre a avaliaÁ„o?"
+                                    placeholder="Alguma observa√ß√£o sobre a avalia√ß√£o?"
                                 />
                             </div>
 
@@ -744,7 +744,7 @@ const StudentAssessmentsScreen: React.FC<StudentAssessmentsScreenProps> = ({ stu
                                         SALVANDO...
                                     </>
                                 ) : (
-                                    'SALVAR AVALIA«√O'
+                                    'SALVAR AVALIA√á√ÉO'
                                 )}
                             </button>
                         </div>
@@ -771,7 +771,7 @@ const StudentAssessmentsScreen: React.FC<StudentAssessmentsScreenProps> = ({ stu
                                         : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300'
                                         }`}
                                 >
-                                    {tab === 'medical' ? 'MÈdico' : tab === 'lifestyle' ? 'Estilo de Vida' : 'Treino'}
+                                    {tab === 'medical' ? 'M√©dico' : tab === 'lifestyle' ? 'Estilo de Vida' : 'Treino'}
                                 </button>
                             ))}
                         </div>
@@ -792,8 +792,8 @@ const StudentAssessmentsScreen: React.FC<StudentAssessmentsScreenProps> = ({ stu
                                 <div className="space-y-4 animate-in slide-in-from-right-4 duration-300">
                                     <div className="grid grid-cols-3 gap-2">
                                         {[
-                                            { key: 'cardiacIssues', label: 'CardÌaco?' },
-                                            { key: 'highBloodPressure', label: 'Hipertens„o?' },
+                                            { key: 'cardiacIssues', label: 'Card√≠aco?' },
+                                            { key: 'highBloodPressure', label: 'Hipertens√£o?' },
                                             { key: 'diabetes', label: 'Diabetes?' },
                                             { key: 'hasPain', label: 'Sente Dor?' }
                                         ].map(({ key, label }) => (
@@ -810,7 +810,7 @@ const StudentAssessmentsScreen: React.FC<StudentAssessmentsScreenProps> = ({ stu
                                                     }`}
                                             >
                                                 <span className="text-[10px] font-black uppercase text-center">{label}</span>
-                                                <span className="text-sm font-bold">{newAnamnesis.medical?.[key as keyof typeof newAnamnesis.medical] ? 'SIM' : 'N√O'}</span>
+                                                <span className="text-sm font-bold">{newAnamnesis.medical?.[key as keyof typeof newAnamnesis.medical] ? 'SIM' : 'N√ÉO'}</span>
                                             </button>
                                         ))}
                                     </div>
@@ -822,7 +822,7 @@ const StudentAssessmentsScreen: React.FC<StudentAssessmentsScreenProps> = ({ stu
                                             value={newAnamnesis.medical?.medications || ''}
                                             onChange={e => setNewAnamnesis({ ...newAnamnesis, medical: { ...newAnamnesis.medical, medications: e.target.value } })}
                                             className="w-full p-3 rounded-xl bg-zinc-50 dark:bg-zinc-950 border-none font-medium text-zinc-900 dark:text-white"
-                                            placeholder="Uso contÌnuo..."
+                                            placeholder="Uso cont√≠nuo..."
                                         />
                                     </div>
                                     <div>
@@ -836,23 +836,23 @@ const StudentAssessmentsScreen: React.FC<StudentAssessmentsScreenProps> = ({ stu
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Lesıes</label>
+                                        <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Les√µes</label>
                                         <input
                                             type="text"
                                             value={newAnamnesis.medical?.injuries || ''}
                                             onChange={e => setNewAnamnesis({ ...newAnamnesis, medical: { ...newAnamnesis.medical, injuries: e.target.value } })}
                                             className="w-full p-3 rounded-xl bg-zinc-50 dark:bg-zinc-950 border-none font-medium text-zinc-900 dark:text-white"
-                                            placeholder="HistÛrico de lesıes..."
+                                            placeholder="Hist√≥rico de les√µes..."
                                         />
                                     </div>
                                     {newAnamnesis.medical?.hasPain && (
                                         <div>
-                                            <label className="block text-xs font-bold text-red-500 uppercase mb-1">DescriÁ„o da Dor</label>
+                                            <label className="block text-xs font-bold text-red-500 uppercase mb-1">Descri√ß√£o da Dor</label>
                                             <textarea
                                                 value={newAnamnesis.medical?.painDescription || ''}
                                                 onChange={e => setNewAnamnesis({ ...newAnamnesis, medical: { ...newAnamnesis.medical, painDescription: e.target.value } })}
                                                 className="w-full p-3 rounded-xl bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/30 font-medium text-red-900 dark:text-red-200"
-                                                placeholder="Onde dÛi? Qual tipo?"
+                                                placeholder="Onde d√≥i? Qual tipo?"
                                             />
                                         </div>
                                     )}
@@ -862,13 +862,13 @@ const StudentAssessmentsScreen: React.FC<StudentAssessmentsScreenProps> = ({ stu
                             {anamnesisTab === 'lifestyle' && (
                                 <div className="space-y-4 animate-in slide-in-from-right-4 duration-300">
                                     <div>
-                                        <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Profiss„o / Rotina</label>
+                                        <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Profiss√£o / Rotina</label>
                                         <input
                                             type="text"
                                             value={newAnamnesis.lifestyle?.occupation || ''}
                                             onChange={e => setNewAnamnesis({ ...newAnamnesis, lifestyle: { ...newAnamnesis.lifestyle, occupation: e.target.value } })}
                                             className="w-full p-3 rounded-xl bg-zinc-50 dark:bg-zinc-950 border-none font-medium text-zinc-900 dark:text-white"
-                                            placeholder="Ex: EscritÛrio, 8h sentado..."
+                                            placeholder="Ex: Escrit√≥rio, 8h sentado..."
                                         />
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
@@ -883,7 +883,7 @@ const StudentAssessmentsScreen: React.FC<StudentAssessmentsScreenProps> = ({ stu
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">HidrataÁ„o (L)</label>
+                                            <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Hidrata√ß√£o (L)</label>
                                             <input
                                                 type="text"
                                                 value={newAnamnesis.lifestyle?.hydration || ''}
@@ -894,14 +894,14 @@ const StudentAssessmentsScreen: React.FC<StudentAssessmentsScreenProps> = ({ stu
                                         </div>
                                     </div>
                                     <div>
-                                        <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">NÌvel de Estresse</label>
+                                        <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">N√≠vel de Estresse</label>
                                         <select
                                             value={newAnamnesis.lifestyle?.stressLevel || 'medium'}
                                             onChange={e => setNewAnamnesis({ ...newAnamnesis, lifestyle: { ...newAnamnesis.lifestyle, stressLevel: e.target.value as any } })}
                                             className="w-full p-3 rounded-xl bg-zinc-50 dark:bg-zinc-950 border-none font-medium text-zinc-900 dark:text-white"
                                         >
                                             <option value="low">Baixo</option>
-                                            <option value="medium">MÈdio</option>
+                                            <option value="medium">M√©dio</option>
                                             <option value="high">Alto</option>
                                         </select>
                                     </div>
@@ -922,11 +922,11 @@ const StudentAssessmentsScreen: React.FC<StudentAssessmentsScreenProps> = ({ stu
                                                 onChange={e => setNewAnamnesis({ ...newAnamnesis, lifestyle: { ...newAnamnesis.lifestyle, alcohol: e.target.checked } })}
                                                 className="rounded text-emerald-600 focus:ring-emerald-500"
                                             />
-                                            <span className="text-sm font-bold text-zinc-700 dark:text-zinc-300">¡lcool</span>
+                                            <span className="text-sm font-bold text-zinc-700 dark:text-zinc-300">√Ålcool</span>
                                         </label>
                                     </div>
                                     <div>
-                                        <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">AlimentaÁ„o</label>
+                                        <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Alimenta√ß√£o</label>
                                         <textarea
                                             value={newAnamnesis.lifestyle?.dietDescription || ''}
                                             onChange={e => setNewAnamnesis({ ...newAnamnesis, lifestyle: { ...newAnamnesis.lifestyle, dietDescription: e.target.value } })}
@@ -940,15 +940,15 @@ const StudentAssessmentsScreen: React.FC<StudentAssessmentsScreenProps> = ({ stu
                             {anamnesisTab === 'training' && (
                                 <div className="space-y-4 animate-in slide-in-from-right-4 duration-300">
                                     <div>
-                                        <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">NÌvel de ExperiÍncia</label>
+                                        <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">N√≠vel de Experi√™ncia</label>
                                         <select
                                             value={newAnamnesis.training?.experienceLevel || 'beginner'}
                                             onChange={e => setNewAnamnesis({ ...newAnamnesis, training: { ...newAnamnesis.training, experienceLevel: e.target.value as any } })}
                                             className="w-full p-3 rounded-xl bg-zinc-50 dark:bg-zinc-950 border-none font-medium text-zinc-900 dark:text-white"
                                         >
                                             <option value="beginner">Iniciante</option>
-                                            <option value="intermediate">Intermedi·rio</option>
-                                            <option value="advanced">AvanÁado</option>
+                                            <option value="intermediate">Intermedi√°rio</option>
+                                            <option value="advanced">Avan√ßado</option>
                                         </select>
                                     </div>
                                     <div>
@@ -967,21 +967,21 @@ const StudentAssessmentsScreen: React.FC<StudentAssessmentsScreenProps> = ({ stu
                                             value={newAnamnesis.training?.goals || ''}
                                             onChange={e => setNewAnamnesis({ ...newAnamnesis, training: { ...newAnamnesis.training, goals: e.target.value } })}
                                             className="w-full p-3 rounded-xl bg-zinc-50 dark:bg-zinc-950 border-none font-medium text-zinc-900 dark:text-white"
-                                            placeholder="O que o aluno deseja alcanÁar?"
+                                            placeholder="O que o aluno deseja alcan√ßar?"
                                         />
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div>
-                                            <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">PreferÍncias (Gosta)</label>
+                                            <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Prefer√™ncias (Gosta)</label>
                                             <textarea
                                                 value={newAnamnesis.training?.preferences || ''}
                                                 onChange={e => setNewAnamnesis({ ...newAnamnesis, training: { ...newAnamnesis.training, preferences: e.target.value } })}
                                                 className="w-full p-3 rounded-xl bg-green-50 dark:bg-green-900/10 border border-green-100 dark:border-green-900/20 font-medium text-zinc-900 dark:text-white"
-                                                placeholder="ExercÌcios favoritos..."
+                                                placeholder="Exerc√≠cios favoritos..."
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">RestriÁıes (N„o Gosta)</label>
+                                            <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Restri√ß√µes (N√£o Gosta)</label>
                                             <textarea
                                                 value={newAnamnesis.training?.dislikes || ''}
                                                 onChange={e => setNewAnamnesis({ ...newAnamnesis, training: { ...newAnamnesis.training, dislikes: e.target.value } })}
@@ -1030,7 +1030,7 @@ const StudentAssessmentsScreen: React.FC<StudentAssessmentsScreenProps> = ({ stu
                             {(selectedAnamnesis.medical || selectedAnamnesis.answers) && (
                                 <div className="bg-zinc-50 dark:bg-zinc-950 p-4 rounded-2xl border border-zinc-100 dark:border-zinc-800">
                                     <h4 className="flex items-center gap-2 font-black text-rose-500 mb-4 uppercase text-xs tracking-wider">
-                                        <Activity size={14} /> MÈdico
+                                        <Activity size={14} /> M√©dico
                                     </h4>
 
                                     {/* Legacy Answers */}
@@ -1049,12 +1049,12 @@ const StudentAssessmentsScreen: React.FC<StudentAssessmentsScreenProps> = ({ stu
                                                 <p className="text-sm font-medium text-zinc-800 dark:text-zinc-200">{selectedAnamnesis.medical.medications || '-'}</p>
                                             </div>
                                             <div>
-                                                <p className="text-[10px] font-bold text-zinc-400 uppercase">Lesıes</p>
+                                                <p className="text-[10px] font-bold text-zinc-400 uppercase">Les√µes</p>
                                                 <p className="text-sm font-medium text-zinc-800 dark:text-zinc-200">{selectedAnamnesis.medical.injuries || '-'}</p>
                                             </div>
                                             <div className="col-span-2 flex gap-2 flex-wrap">
-                                                {selectedAnamnesis.medical.cardiacIssues && <span className="px-2 py-1 bg-red-100 text-red-700 text-[10px] font-bold rounded uppercase">CardÌaco</span>}
-                                                {selectedAnamnesis.medical.highBloodPressure && <span className="px-2 py-1 bg-red-100 text-red-700 text-[10px] font-bold rounded uppercase">Hipertens„o</span>}
+                                                {selectedAnamnesis.medical.cardiacIssues && <span className="px-2 py-1 bg-red-100 text-red-700 text-[10px] font-bold rounded uppercase">Card√≠aco</span>}
+                                                {selectedAnamnesis.medical.highBloodPressure && <span className="px-2 py-1 bg-red-100 text-red-700 text-[10px] font-bold rounded uppercase">Hipertens√£o</span>}
                                                 {selectedAnamnesis.medical.diabetes && <span className="px-2 py-1 bg-red-100 text-red-700 text-[10px] font-bold rounded uppercase">Diabetes</span>}
                                                 {selectedAnamnesis.medical.hasPain && <span className="px-2 py-1 bg-red-100 text-red-700 text-[10px] font-bold rounded uppercase">Dor: {selectedAnamnesis.medical.painDescription}</span>}
                                             </div>
@@ -1071,7 +1071,7 @@ const StudentAssessmentsScreen: React.FC<StudentAssessmentsScreenProps> = ({ stu
                                     </h4>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div>
-                                            <p className="text-[10px] font-bold text-zinc-400 uppercase">Profiss„o</p>
+                                            <p className="text-[10px] font-bold text-zinc-400 uppercase">Profiss√£o</p>
                                             <p className="text-sm font-medium text-zinc-800 dark:text-zinc-200">{selectedAnamnesis.lifestyle.occupation || '-'}</p>
                                         </div>
                                         <div>
@@ -1084,7 +1084,7 @@ const StudentAssessmentsScreen: React.FC<StudentAssessmentsScreenProps> = ({ stu
                                         </div>
                                         <div className="flex gap-2">
                                             {selectedAnamnesis.lifestyle.smoking && <span className="px-2 py-1 bg-zinc-200 text-zinc-700 text-[10px] font-bold rounded uppercase">Fumante</span>}
-                                            {selectedAnamnesis.lifestyle.alcohol && <span className="px-2 py-1 bg-zinc-200 text-zinc-700 text-[10px] font-bold rounded uppercase">¡lcool</span>}
+                                            {selectedAnamnesis.lifestyle.alcohol && <span className="px-2 py-1 bg-zinc-200 text-zinc-700 text-[10px] font-bold rounded uppercase">√Ålcool</span>}
                                         </div>
                                         <div className="col-span-2">
                                             <p className="text-[10px] font-bold text-zinc-400 uppercase">Dieta</p>
@@ -1102,10 +1102,10 @@ const StudentAssessmentsScreen: React.FC<StudentAssessmentsScreenProps> = ({ stu
                                     </h4>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div>
-                                            <p className="text-[10px] font-bold text-zinc-400 uppercase">ExperiÍncia</p>
+                                            <p className="text-[10px] font-bold text-zinc-400 uppercase">Experi√™ncia</p>
                                             <p className="text-sm font-medium text-zinc-800 dark:text-zinc-200 capitalize w-full">{
                                                 selectedAnamnesis.training.experienceLevel === 'beginner' ? 'Iniciante' :
-                                                    selectedAnamnesis.training.experienceLevel === 'intermediate' ? 'Intermedi·rio' : 'AvanÁado'
+                                                    selectedAnamnesis.training.experienceLevel === 'intermediate' ? 'Intermedi√°rio' : 'Avan√ßado'
                                             }</p>
                                         </div>
                                         <div>
@@ -1122,7 +1122,7 @@ const StudentAssessmentsScreen: React.FC<StudentAssessmentsScreenProps> = ({ stu
                                                 <p className="text-sm font-medium text-zinc-800 dark:text-zinc-200">{selectedAnamnesis.training.preferences || '-'}</p>
                                             </div>
                                             <div>
-                                                <p className="text-[10px] font-bold text-red-500 uppercase">N„o Gosta</p>
+                                                <p className="text-[10px] font-bold text-red-500 uppercase">N√£o Gosta</p>
                                                 <p className="text-sm font-medium text-zinc-800 dark:text-zinc-200">{selectedAnamnesis.training.dislikes || '-'}</p>
                                             </div>
                                         </div>
@@ -1134,13 +1134,13 @@ const StudentAssessmentsScreen: React.FC<StudentAssessmentsScreenProps> = ({ stu
                 </div>
             )}
 
-            {/* Modal Detalhes da AvaliaÁ„o */}
+            {/* Modal Detalhes da Avalia√ß√£o */}
             {selectedAssessment && (
                 <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
                     <div className="bg-white dark:bg-zinc-900 w-full max-w-lg rounded-[32px] p-6 max-h-[90vh] overflow-y-auto custom-scrollbar">
                         <div className="flex items-center justify-between mb-6">
                             <div>
-                                <h3 className="text-xl font-black text-zinc-900 dark:text-white">Detalhes da AvaliaÁ„o</h3>
+                                <h3 className="text-xl font-black text-zinc-900 dark:text-white">Detalhes da Avalia√ß√£o</h3>
                                 <p className="text-zinc-500 text-xs font-bold">{selectedAssessment.date}</p>
                             </div>
                             <div className="flex items-center gap-2">
@@ -1148,7 +1148,7 @@ const StudentAssessmentsScreen: React.FC<StudentAssessmentsScreenProps> = ({ stu
                                     <button
                                         onClick={() => handleEditAssessment(selectedAssessment)}
                                         className="p-2 text-zinc-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-full transition-colors"
-                                        title="Editar AvaliaÁ„o"
+                                        title="Editar Avalia√ß√£o"
                                     >
                                         <Pencil size={20} />
                                     </button>
@@ -1180,7 +1180,7 @@ const StudentAssessmentsScreen: React.FC<StudentAssessmentsScreenProps> = ({ stu
                             <div>
                                 <h4 className="font-black text-zinc-900 dark:text-white mb-2 flex items-center gap-2 text-sm">
                                     <Ruler size={14} className="text-emerald-500" />
-                                    Dobras Cut‚neas
+                                    Dobras Cut√¢neas
                                 </h4>
                                 <div className="grid grid-cols-2 gap-2">
                                     {Object.entries(selectedAssessment.skinfolds).map(([key, value]) => (
@@ -1197,7 +1197,7 @@ const StudentAssessmentsScreen: React.FC<StudentAssessmentsScreenProps> = ({ stu
                                 <div>
                                     <h4 className="font-black text-zinc-900 dark:text-white mb-2 flex items-center gap-2 text-sm">
                                         <Activity size={14} className="text-blue-500" />
-                                        PerÌmetros
+                                        Per√≠metros
                                     </h4>
                                     <div className="grid grid-cols-2 gap-2">
                                         {Object.entries(selectedAssessment.circumferences).map(([key, value]) => (
@@ -1239,7 +1239,7 @@ const StudentAssessmentsScreen: React.FC<StudentAssessmentsScreenProps> = ({ stu
                             {/* Notes */}
                             {selectedAssessment.notes && (
                                 <div>
-                                    <h4 className="font-black text-zinc-900 dark:text-white mb-2 text-sm">ObservaÁıes</h4>
+                                    <h4 className="font-black text-zinc-900 dark:text-white mb-2 text-sm">Observa√ß√µes</h4>
                                     <p className="text-sm text-zinc-600 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-950 p-4 rounded-2xl italic">
                                         "{selectedAssessment.notes}"
                                     </p>
@@ -1272,7 +1272,7 @@ const StudentAssessmentsScreen: React.FC<StudentAssessmentsScreenProps> = ({ stu
                                                     <p className="font-black text-zinc-900 dark:text-white">{calculateRCQ(selectedAssessment.circumferences?.waist || 0, selectedAssessment.circumferences?.hips || 0) || '-'}</p>
                                                 </div>
                                                 <div className="bg-zinc-50 dark:bg-zinc-950 p-3 rounded-xl">
-                                                    <p className="text-[10px] font-bold text-zinc-400 uppercase">Soma PerÌmetros</p>
+                                                    <p className="text-[10px] font-bold text-zinc-400 uppercase">Soma Per√≠metros</p>
                                                     <p className="font-black text-zinc-900 dark:text-white">{sumCircumferences(selectedAssessment.circumferences || {}).toFixed(1)} cm</p>
                                                 </div>
                                                 <div className="bg-zinc-50 dark:bg-zinc-950 p-3 rounded-xl">
@@ -1317,7 +1317,7 @@ const StudentAssessmentsScreen: React.FC<StudentAssessmentsScreenProps> = ({ stu
                                                 <div className="space-y-8">
                                                     <h4 className="font-black text-zinc-900 dark:text-white text-center mb-6 flex items-center justify-center gap-2">
                                                         <BarChart2 size={20} className="text-blue-500" />
-                                                        Gr·ficos
+                                                        Gr√°ficos
                                                     </h4>
 
                                                     {/* Donut Chart - Body Fat % */}
@@ -1430,7 +1430,7 @@ const StudentAssessmentsScreen: React.FC<StudentAssessmentsScreenProps> = ({ stu
                 </div>
             )}
 
-            {/* Modal de VisualizaÁ„o de Foto */}
+            {/* Modal de Visualiza√ß√£o de Foto */}
             {viewingPhoto && (
                 <div
                     className="fixed inset-0 z-[60] bg-black/90 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200"
@@ -1444,7 +1444,7 @@ const StudentAssessmentsScreen: React.FC<StudentAssessmentsScreenProps> = ({ stu
                     </button>
                     <img
                         src={viewingPhoto}
-                        alt="VisualizaÁ„o"
+                        alt="Visualiza√ß√£o"
                         className="max-w-full max-h-[90vh] rounded-lg shadow-2xl object-contain animate-in zoom-in-95 duration-200"
                         onClick={(e) => e.stopPropagation()} // Prevent close when clicking the image
                     />

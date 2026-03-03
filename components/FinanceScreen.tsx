@@ -27,12 +27,12 @@ const AddPaymentModal: React.FC<AddPaymentModalProps> = ({ students, onClose, on
 
     const handleSave = async () => {
         if (!amount || parseFloat(amount) <= 0) {
-            alert("Por favor, informe um valor v·lido.");
+            alert("Por favor, informe um valor v√°lido.");
             return;
         }
 
         if (!description.trim()) {
-            alert("Por favor, informe uma descriÁ„o para o lanÁamento.");
+            alert("Por favor, informe uma descri√ß√£o para o lan√ßamento.");
             return;
         }
 
@@ -84,8 +84,8 @@ const AddPaymentModal: React.FC<AddPaymentModalProps> = ({ students, onClose, on
 
             onClose();
         } catch (error: any) {
-            console.error("Erro ao salvar lanÁamento:", error);
-            alert(`Erro ao salvar lanÁamento: ${error.message || 'Verifique o console para mais detalhes'}`);
+            console.error("Erro ao salvar lan√ßamento:", error);
+            alert(`Erro ao salvar lan√ßamento: ${error.message || 'Verifique o console para mais detalhes'}`);
         } finally {
             setSaving(false);
         }
@@ -98,7 +98,7 @@ const AddPaymentModal: React.FC<AddPaymentModalProps> = ({ students, onClose, on
                     <X size={24} />
                 </button>
 
-                <h3 className="text-xl font-black text-zinc-900 dark:text-white mb-6 text-center">LanÁamento</h3>
+                <h3 className="text-xl font-black text-zinc-900 dark:text-white mb-6 text-center">Lan√ßamento</h3>
 
                 <div className="flex-1 overflow-y-auto pr-2 space-y-6">
                     {/* Toggle Receita/Despesa */}
@@ -186,7 +186,7 @@ const AddPaymentModal: React.FC<AddPaymentModalProps> = ({ students, onClose, on
 
 
                         <div>
-                            <label className="block text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase mb-1 ml-1">DescriÁ„o</label>
+                            <label className="block text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase mb-1 ml-1">Descri√ß√£o</label>
                             <textarea
                                 value={description}
                                 onChange={(e) => setDescription(e.target.value)}
@@ -315,12 +315,12 @@ const FinanceScreen: React.FC<FinanceScreenProps> = ({ user, onBack }) => {
     };
 
     const monthNames = [
-        "Janeiro", "Fevereiro", "MarÁo", "Abril", "Maio", "Junho",
+        "Janeiro", "Fevereiro", "Mar√ßo", "Abril", "Maio", "Junho",
         "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
     ];
 
     const getStudentName = (id?: string) => {
-        if (!id) return 'LanÁamento Avulso';
+        if (!id) return 'Lan√ßamento Avulso';
         const student = data.students.find(s => s.id === id);
         return student ? student.name : 'Aluno Removido';
     };
@@ -395,8 +395,8 @@ const FinanceScreen: React.FC<FinanceScreenProps> = ({ user, onBack }) => {
             });
             await loadData();
         } catch (error: any) {
-            console.error("Erro ao baixar tÌtulo:", error);
-            alert(`Erro ao baixar tÌtulo: ${error.message || 'Erro desconhecido'}`);
+            console.error("Erro ao baixar t√≠tulo:", error);
+            alert(`Erro ao baixar t√≠tulo: ${error.message || 'Erro desconhecido'}`);
         } finally {
             setSaving(null);
         }
@@ -428,7 +428,7 @@ const FinanceScreen: React.FC<FinanceScreenProps> = ({ user, onBack }) => {
                             <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
                                 <DollarSign size={48} className="text-emerald-500" />
                             </div>
-                            <p className="text-[10px] font-black text-zinc-400 uppercase tracking-wider mb-1">Resultado (LÌquido)</p>
+                            <p className="text-[10px] font-black text-zinc-400 uppercase tracking-wider mb-1">Resultado (L√≠quido)</p>
                             <p className={`text-2xl font-black ${(totalReceived - totalExpenses) >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600'}`}>
                                 R$ {(totalReceived - totalExpenses).toFixed(2)}
                             </p>
@@ -471,15 +471,15 @@ const FinanceScreen: React.FC<FinanceScreenProps> = ({ user, onBack }) => {
                     {loading ? (
                         <div className="flex flex-col items-center justify-center py-12 space-y-4">
                             <Loader2 className="animate-spin text-emerald-500" size={32} />
-                            <p className="text-sm font-bold text-zinc-400 animate-pulse">Carregando lanÁamentos...</p>
+                            <p className="text-sm font-bold text-zinc-400 animate-pulse">Carregando lan√ßamentos...</p>
                         </div>
                     ) : Object.keys(groupedPayments).length === 0 ? (
                         <div className="bg-white dark:bg-zinc-900 p-12 rounded-[32px] border border-dashed border-zinc-200 dark:border-zinc-800 flex flex-col items-center justify-center text-center">
                             <div className="w-16 h-16 bg-zinc-50 dark:bg-zinc-800 rounded-2xl flex items-center justify-center text-zinc-300 dark:text-zinc-600 mb-4">
                                 <DollarSign size={32} />
                             </div>
-                            <h3 className="font-black text-zinc-900 dark:text-white">Nenhum lanÁamento</h3>
-                            <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">Use o bot„o + para comeÁar.</p>
+                            <h3 className="font-black text-zinc-900 dark:text-white">Nenhum lan√ßamento</h3>
+                            <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">Use o bot√£o + para come√ßar.</p>
                         </div>
                     ) : (
                         (Object.entries(groupedPayments) as [string, { items: StudentPayment[], total: number }][]).map(([category, group]) => {
@@ -510,7 +510,7 @@ const FinanceScreen: React.FC<FinanceScreenProps> = ({ user, onBack }) => {
                                                                 <div className="flex flex-wrap items-center gap-x-3 text-[10px] text-zinc-500 dark:text-zinc-400">
                                                                     <p>Vencimento: <span className="font-bold text-zinc-400">{item.year ? `${String(item.month).padStart(2, '0')}/${item.year}` : '--/----'}</span></p>
                                                                     <div className="w-1 h-1 rounded-full bg-zinc-300 dark:bg-zinc-700" />
-                                                                    <p>SituaÁ„o: <span className={`font-black ${item.status === 'paid' ? 'text-emerald-500' : 'text-amber-500'}`}>{getStatusLabel(item.status)}</span></p>
+                                                                    <p>Situa√ß√£o: <span className={`font-black ${item.status === 'paid' ? 'text-emerald-500' : 'text-amber-500'}`}>{getStatusLabel(item.status)}</span></p>
                                                                 </div>
                                                             </div>
                                                             <div className="text-right shrink-0">
@@ -523,12 +523,12 @@ const FinanceScreen: React.FC<FinanceScreenProps> = ({ user, onBack }) => {
                                                     ) : (
                                                         <div className="flex flex-col gap-0.5 max-w-[60%] overflow-hidden">
                                                             <p className="font-black text-sm text-zinc-800 dark:text-zinc-200 truncate">
-                                                                {item.description || 'Sem descriÁ„o'}
+                                                                {item.description || 'Sem descri√ß√£o'}
                                                             </p>
                                                             <p className="text-zinc-500 dark:text-zinc-400 text-xs font-bold truncate">{getStudentName(item.studentId)}</p>
                                                             <div className="flex flex-col text-zinc-400 dark:text-zinc-500 text-[10px] mt-0.5">
                                                                 <p>Vencimento: <span className="font-bold">{item.year ? `${String(item.month).padStart(2, '0')}/${item.year}` : '--/----'}</span></p>
-                                                                <p>SituaÁ„o: <span className={`font-black ${item.status === 'paid' ? 'text-emerald-500' : 'text-amber-500'}`}>{getStatusLabel(item.status)}</span></p>
+                                                                <p>Situa√ß√£o: <span className={`font-black ${item.status === 'paid' ? 'text-emerald-500' : 'text-amber-500'}`}>{getStatusLabel(item.status)}</span></p>
                                                                 <p>Valor: <span className={`font-black ${item.type === 'expense' ? 'text-red-500' : 'text-zinc-800 dark:text-zinc-200'}`}>{item.type === 'expense' ? '-' : ''} R$ {item.amount?.toFixed(2)}</span></p>
                                                             </div>
                                                             {item.proofUrl && (
@@ -557,7 +557,7 @@ const FinanceScreen: React.FC<FinanceScreenProps> = ({ user, onBack }) => {
                                                                 ? 'border-red-500/30 text-red-500 hover:bg-red-500/10'
                                                                 : 'border-emerald-500/30 text-emerald-500 hover:bg-emerald-500/10'}`}
                                                         >
-                                                            {saving === item.id ? <Loader2 size={12} className="animate-spin" /> : 'Baixar TÌtulo'}
+                                                            {saving === item.id ? <Loader2 size={12} className="animate-spin" /> : 'Baixar T√≠tulo'}
                                                         </button>
                                                     )}
                                                 </div>
@@ -623,7 +623,7 @@ const FinanceScreen: React.FC<FinanceScreenProps> = ({ user, onBack }) => {
                     />
                 )
             }
-            {/* Modal de VisualizaÁ„o de Comprovante */}
+            {/* Modal de Visualiza√ß√£o de Comprovante */}
             {
                 proofToView && (
                     <div className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">

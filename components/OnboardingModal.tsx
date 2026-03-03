@@ -56,7 +56,7 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ students, onClose, on
       equipment: student.equipment.join(', ') || 'Academia Completa'
     });
     setSearchTerm(student.name);
-    // Avança automaticamente para o passo 2 ao selecionar aluno existente para agilizar
+    // AvanÃ§a automaticamente para o passo 2 ao selecionar aluno existente para agilizar
     setStep(2);
   };
 
@@ -67,7 +67,7 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ students, onClose, on
       return;
     }
 
-    // Garante que o nome no formData seja o que está no campo de busca caso não tenha selecionado da lista
+    // Garante que o nome no formData seja o que estÃ¡ no campo de busca caso nÃ£o tenha selecionado da lista
     const finalName = formData.name || searchTerm;
 
     setIsGenerating(true);
@@ -97,7 +97,7 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ students, onClose, on
       onAISuccess(program, { ...formData, name: finalName });
     } catch (error) {
       console.error(error);
-      alert("Houve um erro ao gerar o treino com IA. Verifique sua conexão ou tente o modo manual.");
+      alert("Houve um erro ao gerar o treino com IA. Verifique sua conexÃ£o ou tente o modo manual.");
     } finally {
       setIsGenerating(false);
     }
@@ -112,12 +112,12 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ students, onClose, on
           </div>
           <Sparkles className="absolute -top-4 -right-4 text-zinc-400 dark:text-zinc-300 animate-pulse" size={32} />
         </div>
-        <h2 className="text-3xl font-black text-white mb-4">PersonalFlow está processando...</h2>
+        <h2 className="text-3xl font-black text-white mb-4">PersonalFlow estÃ¡ processando...</h2>
         <div className="space-y-4 max-w-xs">
           <p className="text-zinc-400 dark:text-zinc-500 font-bold text-xs uppercase tracking-[0.2em] animate-pulse">Personalizando Planilha</p>
           <div className="bg-white/5 dark:bg-zinc-900/50 p-4 rounded-2xl border border-white/10 dark:border-zinc-800 text-left transition-colors">
             <p className="text-[10px] text-zinc-500 dark:text-zinc-600 uppercase font-black mb-1">Foco Detectado:</p>
-            <p className="text-white dark:text-zinc-200 text-xs font-medium italic">"{formData.observations || 'Equilíbrio muscular completo'}"</p>
+            <p className="text-white dark:text-zinc-200 text-xs font-medium italic">"{formData.observations || 'EquilÃ­brio muscular completo'}"</p>
           </div>
         </div>
         <div className="mt-12 flex items-center gap-2 px-6 py-3 bg-white/5 dark:bg-zinc-900/50 rounded-full border border-white/10 dark:border-zinc-800 transition-colors">
@@ -164,7 +164,7 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ students, onClose, on
           {step === 1 && (
             <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
               <div className="space-y-2">
-                <h3 className="text-2xl font-black text-zinc-900 dark:text-white leading-tight">Identificação</h3>
+                <h3 className="text-2xl font-black text-zinc-900 dark:text-white leading-tight">IdentificaÃ§Ã£o</h3>
                 <p className="text-zinc-500 dark:text-zinc-400 text-sm">Digite o nome ou selecione um aluno da lista.</p>
               </div>
 
@@ -183,7 +183,7 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ students, onClose, on
                   />
                 </div>
 
-                {/* Sugestões de Alunos Existentes */}
+                {/* SugestÃµes de Alunos Existentes */}
                 {filteredStudents.length > 0 && (
                   <div className="space-y-2 animate-in fade-in slide-in-from-top-2 duration-300">
                     <p className="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 ml-2 tracking-wider">Alunos Encontrados</p>
@@ -214,7 +214,7 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ students, onClose, on
               <div className="space-y-3">
                 <label className="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 ml-1">Objetivo</label>
                 <div className="grid grid-cols-2 gap-3">
-                  {['Hipertrofia', 'Emagrecimento', 'Força', 'Saúde'].map(g => (
+                  {['Hipertrofia', 'Emagrecimento', 'ForÃ§a', 'SaÃºde'].map(g => (
                     <button
                       key={g}
                       onClick={() => setFormData({ ...formData, goal: g })}
@@ -236,7 +236,7 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ students, onClose, on
               <h3 className="text-2xl font-black text-zinc-900 dark:text-white leading-tight transition-colors">Perfil de Treino</h3>
 
               <div className="space-y-3">
-                <label className="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 ml-1 transition-colors">Experiência</label>
+                <label className="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 ml-1 transition-colors">ExperiÃªncia</label>
                 <div className="grid grid-cols-3 gap-2">
                   {['beginner', 'intermediate', 'advanced'].map(lvl => (
                     <button
@@ -247,16 +247,16 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ students, onClose, on
                         : 'bg-white dark:bg-zinc-800 border-zinc-100 dark:border-zinc-800 text-zinc-400 dark:text-zinc-500 hover:border-zinc-300 dark:hover:border-zinc-700'
                         }`}
                     >
-                      {lvl === 'beginner' ? 'Iniciante' : lvl === 'intermediate' ? 'Interm.' : 'Avançado'}
+                      {lvl === 'beginner' ? 'Iniciante' : lvl === 'intermediate' ? 'Interm.' : 'AvanÃ§ado'}
                     </button>
                   ))}
                 </div>
               </div>
 
               <div className="space-y-3">
-                <label className="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 ml-1 transition-colors">Restrições ou Lesões</label>
+                <label className="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 ml-1 transition-colors">RestriÃ§Ãµes ou LesÃµes</label>
                 <textarea
-                  placeholder="Ex: Condromalácia, Hérnia de disco, Dor no ombro..."
+                  placeholder="Ex: CondromalÃ¡cia, HÃ©rnia de disco, Dor no ombro..."
                   className="w-full bg-zinc-50 dark:bg-zinc-800 border-2 border-transparent rounded-[24px] px-6 py-4 font-bold min-h-[120px] text-sm text-zinc-900 dark:text-white placeholder:text-zinc-300 dark:placeholder:text-zinc-600 focus:border-zinc-900 dark:focus:border-white focus:bg-white dark:focus:bg-zinc-900 transition-all shadow-inner"
                   value={formData.injuries}
                   onChange={e => setFormData({ ...formData, injuries: e.target.value })}
@@ -296,7 +296,7 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ students, onClose, on
                   <option value="Academia Completa">Academia Completa</option>
                   <option value="Somente Halteres">Somente Halteres</option>
                   <option value="Calistenia / Peso do Corpo">Peso do Corpo</option>
-                  <option value="Home Gym Básica">Home Gym Básica</option>
+                  <option value="Home Gym BÃ¡sica">Home Gym BÃ¡sica</option>
                 </select>
               </div>
             </div>
@@ -305,15 +305,15 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ students, onClose, on
           {step === 4 && (
             <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
               <div className="space-y-2">
-                <h3 className="text-2xl font-black text-zinc-900 dark:text-white leading-tight transition-colors">Observações IA</h3>
-                <p className="text-zinc-500 dark:text-zinc-400 text-sm transition-colors">O que a inteligência deve focar neste treino?</p>
+                <h3 className="text-2xl font-black text-zinc-900 dark:text-white leading-tight transition-colors">ObservaÃ§Ãµes IA</h3>
+                <p className="text-zinc-500 dark:text-zinc-400 text-sm transition-colors">O que a inteligÃªncia deve focar neste treino?</p>
               </div>
 
               <div className="space-y-4">
                 <div className="relative">
                   <MessageSquareQuote className="absolute left-4 top-4 text-zinc-300 dark:text-zinc-800 transition-colors" size={24} />
                   <textarea
-                    placeholder="Ex: Focar em quadríceps e glúteo. Adicionar exercícios de mobilidade no início. Treinos curtos de 45 min..."
+                    placeholder="Ex: Focar em quadrÃ­ceps e glÃºteo. Adicionar exercÃ­cios de mobilidade no inÃ­cio. Treinos curtos de 45 min..."
                     className="w-full bg-zinc-100 dark:bg-zinc-900 border-2 border-zinc-200 dark:border-zinc-800 rounded-[32px] pl-14 pr-6 py-6 font-bold text-zinc-800 dark:text-zinc-200 min-h-[180px] text-sm focus:border-zinc-900 dark:focus:border-zinc-100 focus:bg-white transition-all shadow-sm placeholder:text-zinc-300 dark:placeholder:text-zinc-600"
                     value={formData.observations}
                     onChange={e => setFormData({ ...formData, observations: e.target.value })}
@@ -322,10 +322,10 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ students, onClose, on
 
                 <div className="grid grid-cols-2 gap-2">
                   {[
-                    { icon: <Target size={14} />, text: 'Foco em Glúteo' },
+                    { icon: <Target size={14} />, text: 'Foco em GlÃºteo' },
                     { icon: <Dumbbell size={14} />, text: 'Foco em Superiores' },
-                    { icon: <Zap size={14} />, text: 'Treino Rápido' },
-                    { icon: <BrainCircuit size={14} />, text: 'Reabilitação' }
+                    { icon: <Zap size={14} />, text: 'Treino RÃ¡pido' },
+                    { icon: <BrainCircuit size={14} />, text: 'ReabilitaÃ§Ã£o' }
                   ].map((tag, i) => (
                     <button
                       key={i}
@@ -347,7 +347,7 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ students, onClose, on
                   <Sparkles size={20} />
                 </div>
                 <p className="text-[11px] font-medium leading-relaxed">
-                  Nossa IA usará essas notas para selecionar os melhores exercícios e a ordem ideal para o aluno {formData.name || searchTerm}.
+                  Nossa IA usarÃ¡ essas notas para selecionar os melhores exercÃ­cios e a ordem ideal para o aluno {formData.name || searchTerm}.
                 </p>
               </div>
             </div>
@@ -362,7 +362,7 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ students, onClose, on
               disabled={step === 1 && !searchTerm}
               className="w-full bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 font-black uppercase text-xs tracking-widest py-5 rounded-[24px] flex items-center justify-center gap-2 shadow-xl shadow-zinc-900/20 dark:shadow-white/10 disabled:opacity-50 transition-all active:scale-95"
             >
-              Próximo
+              PrÃ³ximo
               <ChevronRight size={18} />
             </button>
           ) : (

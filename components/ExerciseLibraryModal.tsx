@@ -62,7 +62,7 @@ const ExerciseLibraryModal: React.FC<ExerciseLibraryModalProps> = ({ onSelect, o
 
       <div className="px-6 mb-4">
         <h2 className="text-xl font-black text-zinc-900 dark:text-white transition-colors">Biblioteca</h2>
-        <p className="text-xs text-zinc-400 dark:text-zinc-500 font-bold uppercase tracking-wider transition-colors">Escolha um exercÌcio</p>
+        <p className="text-xs text-zinc-400 dark:text-zinc-500 font-bold uppercase tracking-wider transition-colors">Escolha um exerc√≠cio</p>
       </div>
 
       {/* Search and Filters */}
@@ -116,7 +116,7 @@ const ExerciseLibraryModal: React.FC<ExerciseLibraryModalProps> = ({ onSelect, o
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-zinc-500" size={18} />
             <input
               type="text"
-              placeholder="Buscar por nome do exercÌcio..."
+              placeholder="Buscar por nome do exerc√≠cio..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-100 dark:border-zinc-800 rounded-[20px] pl-12 pr-6 py-4 font-bold placeholder:text-zinc-300 dark:placeholder:text-zinc-600 focus:ring-2 focus:ring-zinc-900 dark:focus:ring-white focus:bg-white dark:focus:bg-zinc-900 transition-all shadow-sm dark:shadow-none dark:text-zinc-200"
@@ -158,7 +158,7 @@ const ExerciseLibraryModal: React.FC<ExerciseLibraryModalProps> = ({ onSelect, o
                       setPreviewExercise(ex);
                     }}
                     className="p-3 mr-[-8px] text-zinc-400 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-700/50 rounded-full transition-all"
-                    title="Visualizar execuÁ„o"
+                    title="Visualizar execu√ß√£o"
                   >
                     <Eye size={20} />
                   </button>
@@ -174,7 +174,7 @@ const ExerciseLibraryModal: React.FC<ExerciseLibraryModalProps> = ({ onSelect, o
           ))
         ) : (
           <div className="py-20 text-center space-y-2 transition-colors">
-            <p className="text-zinc-400 dark:text-zinc-600 font-bold">Nenhum exercÌcio encontrado</p>
+            <p className="text-zinc-400 dark:text-zinc-600 font-bold">Nenhum exerc√≠cio encontrado</p>
             <p className="text-xs text-zinc-300 dark:text-zinc-700">Tente mudar os filtros ou o termo de busca</p>
           </div>
         )}
@@ -217,7 +217,7 @@ const ExerciseLibraryModal: React.FC<ExerciseLibraryModalProps> = ({ onSelect, o
               ) : (
                 <div className="flex flex-col items-center gap-4 text-zinc-500">
                   <PlayCircle size={48} />
-                  <p className="font-bold">VÌdeo n„o disponÌvel</p>
+                  <p className="font-bold">V√≠deo n√£o dispon√≠vel</p>
                 </div>
               )}
             </div>
@@ -230,7 +230,7 @@ const ExerciseLibraryModal: React.FC<ExerciseLibraryModalProps> = ({ onSelect, o
                 }}
                 className="bg-white text-zinc-900 px-6 py-3 rounded-xl font-black text-sm uppercase tracking-wide hover:scale-105 transition-transform"
               >
-                Selecionar ExercÌcio
+                Selecionar Exerc√≠cio
               </button>
             </div>
           </div>

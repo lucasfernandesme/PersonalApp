@@ -150,19 +150,19 @@ const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
   const handleSave = async () => {
     setError(null);
     if (!programName.trim()) {
-      setError("Dê um nome ao programa.");
+      setError("DÃª um nome ao programa.");
       return;
     }
 
-    // Data de início só é obrigatória se NÃO for template
+    // Data de inÃ­cio sÃ³ Ã© obrigatÃ³ria se NÃƒO for template
     if (!isTemplateMode && !startDate) {
-      setError("Selecione uma data de início.");
+      setError("Selecione uma data de inÃ­cio.");
       return;
     }
 
     const filledDays = days.filter(d => d.exercises.length > 0);
     if (filledDays.length === 0) {
-      setError("Adicione ao menos um exercício.");
+      setError("Adicione ao menos um exercÃ­cio.");
       return;
     }
 
@@ -251,24 +251,24 @@ const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
                   className="w-full bg-zinc-50 dark:bg-zinc-800 border-none rounded-2xl px-5 py-4 font-bold text-zinc-800 dark:text-white focus:ring-2 focus:ring-zinc-900 dark:focus:ring-white transition-all appearance-none"
                 >
                   <option value="Hipertrofia" className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white">Hipertrofia</option>
-                  <option value="Emagrecimento" className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white">Emagrecimento / Redução de Gordura</option>
-                  <option value="Condicionamento" className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white">Condicionamento Físico</option>
-                  <option value="Força" className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white">Força Máxima</option>
+                  <option value="Emagrecimento" className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white">Emagrecimento / ReduÃ§Ã£o de Gordura</option>
+                  <option value="Condicionamento" className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white">Condicionamento FÃ­sico</option>
+                  <option value="ForÃ§a" className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white">ForÃ§a MÃ¡xima</option>
                   <option value="Qualidade de Vida" className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white">Qualidade de Vida</option>
-                  <option value="Reabilitação" className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white">Reabilitação / Fortalecimento</option>
+                  <option value="ReabilitaÃ§Ã£o" className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white">ReabilitaÃ§Ã£o / Fortalecimento</option>
                 </select>
               </div>
             </div>
 
             <div className="space-y-4">
               <div className="space-y-1.5">
-                <label className="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 ml-1 tracking-widest">Dificuldade / Nível</label>
+                <label className="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 ml-1 tracking-widest">Dificuldade / NÃ­vel</label>
                 <div className="grid grid-cols-2 gap-2">
                   {[
-                    { id: 'adaptation', label: 'Adaptação' },
+                    { id: 'adaptation', label: 'AdaptaÃ§Ã£o' },
                     { id: 'beginner', label: 'Iniciante' },
-                    { id: 'intermediate', label: 'Intermediário' },
-                    { id: 'advanced', label: 'Avançado' }
+                    { id: 'intermediate', label: 'IntermediÃ¡rio' },
+                    { id: 'advanced', label: 'AvanÃ§ado' }
                   ].map((level) => (
                     <button
                       key={level.id}
@@ -287,7 +287,7 @@ const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
               {!isTemplateMode && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 ml-1 tracking-widest">Data de Início</label>
+                    <label className="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 ml-1 tracking-widest">Data de InÃ­cio</label>
                     <input
                       type="date"
                       value={startDate}
@@ -310,11 +310,11 @@ const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
           </div>
 
           <div className="bg-white dark:bg-zinc-900 p-6 rounded-[32px] border border-zinc-200 dark:border-zinc-800 shadow-sm space-y-2 transition-colors">
-            <label className="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 ml-1 tracking-widest">Observações Gerais</label>
+            <label className="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 ml-1 tracking-widest">ObservaÃ§Ãµes Gerais</label>
             <textarea
               value={observations}
               onChange={(e) => setObservations(e.target.value)}
-              placeholder="Observações sobre o treino, restrições, orientações gerais..."
+              placeholder="ObservaÃ§Ãµes sobre o treino, restriÃ§Ãµes, orientaÃ§Ãµes gerais..."
               className="w-full bg-zinc-50 dark:bg-zinc-800 border-none rounded-2xl px-5 py-4 font-medium text-zinc-700 dark:text-white focus:ring-2 focus:ring-zinc-900 dark:focus:ring-white transition-all min-h-[100px] resize-none placeholder:text-zinc-400 dark:placeholder:text-zinc-600"
             />
           </div>
@@ -360,7 +360,7 @@ const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
                         <input
                           type="text"
                           readOnly
-                          placeholder="Nome do exercício"
+                          placeholder="Nome do exercÃ­cio"
                           value={ex.name}
                           onClick={() => openLibraryForEdit(dIdx, eIdx)}
                           className="w-full bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-xl pl-4 pr-10 py-2.5 text-sm font-bold text-zinc-900 dark:text-white focus:ring-2 focus:ring-zinc-900 dark:focus:ring-white shadow-sm placeholder:text-zinc-400 dark:placeholder:text-zinc-600 transition-colors cursor-pointer select-none"
@@ -376,7 +376,7 @@ const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
                           <button
                             onClick={() => setPreviewExercise(ex)}
                             className="absolute right-10 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-zinc-500 hover:text-emerald-500 transition-colors p-1"
-                            title="Ver vídeo"
+                            title="Ver vÃ­deo"
                           >
                             <Eye size={18} />
                           </button>
@@ -385,7 +385,7 @@ const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
 
                       <div className="grid grid-cols-3 gap-2">
                         <div className="space-y-1">
-                          <label className="text-[9px] font-black uppercase text-zinc-400 dark:text-zinc-500 block ml-1">Séries</label>
+                          <label className="text-[9px] font-black uppercase text-zinc-400 dark:text-zinc-500 block ml-1">SÃ©ries</label>
                           <input type="number" value={ex.sets} onChange={(e) => updateExercise(dIdx, eIdx, 'sets', parseInt(e.target.value) || 0)} className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl px-3 py-2 text-sm font-bold text-zinc-900 dark:text-white transition-colors" />
                         </div>
                         <div className="space-y-1">
@@ -402,12 +402,12 @@ const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
                         <div className="flex items-center justify-between px-1">
                           <label className="text-[9px] font-black uppercase text-zinc-400 dark:text-zinc-500 flex items-center gap-1">
                             <MessageSquareQuote size={10} />
-                            Observações
+                            ObservaÃ§Ãµes
                           </label>
 
                         </div>
                         <textarea
-                          placeholder="Dicas de execução, biomecânica ou segurança..."
+                          placeholder="Dicas de execuÃ§Ã£o, biomecÃ¢nica ou seguranÃ§a..."
                           value={ex.notes || ''}
                           onChange={(e) => updateExercise(dIdx, eIdx, 'notes', e.target.value)}
                           className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs font-medium text-zinc-700 dark:text-white min-h-[60px] focus:ring-2 focus:ring-zinc-900 dark:focus:ring-white shadow-sm transition-colors placeholder:text-zinc-400 dark:placeholder:text-zinc-600"
@@ -421,7 +421,7 @@ const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
                     className="w-full py-4 border-2 border-dashed border-zinc-200 dark:border-zinc-700 rounded-2xl text-zinc-400 dark:text-zinc-500 text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:border-zinc-300 dark:hover:border-zinc-700 hover:text-zinc-900 dark:hover:text-zinc-100 transition-all"
                   >
                     <Plus size={16} />
-                    Adicionar Exercício
+                    Adicionar ExercÃ­cio
                   </button>
                 </div>
               </div>
@@ -479,7 +479,7 @@ const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
                 ) : (
                   <div className="flex flex-col items-center gap-4 text-zinc-500">
                     <PlayCircle size={48} />
-                    <p className="font-bold">Vídeo não disponível</p>
+                    <p className="font-bold">VÃ­deo nÃ£o disponÃ­vel</p>
                   </div>
                 )}
               </div>
