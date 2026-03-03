@@ -71,8 +71,8 @@ const Layout: React.FC<LayoutProps> = ({ children, role, onSwitchRole, onNavigat
                         <>
                             <NavItem icon={<LayoutDashboard size={20} />} label="Início" active={activeTab === 'home'} onClick={() => onNavigate('home')} />
                             <NavItem icon={<Users size={20} />} label="Meus Alunos" active={activeTab === 'students'} onClick={() => onNavigate('students')} />
+                            <NavItem icon={<Calendar size={20} />} label="Agenda" active={activeTab === 'agenda'} onClick={() => onNavigate('agenda')} />
                             <NavItem icon={<TrendingUp size={20} />} label="Evolução" active={activeTab === 'evolution'} onClick={() => onNavigate('evolution')} />
-                            <NavItem icon={<MessageSquare size={20} />} label="Chat IA" active={activeTab === 'chat'} onClick={() => onNavigate('chat')} />
                             <NavItem icon={<User size={20} />} label="Perfil" active={activeTab === 'profile'} onClick={() => onNavigate('profile')} />
                         </>
                     ) : (
@@ -238,7 +238,7 @@ const Layout: React.FC<LayoutProps> = ({ children, role, onSwitchRole, onNavigat
                     role === UserRole.TRAINER ? (
                         <>
                             <BottomNavItem icon={<Users size={24} />} active={activeTab === 'students'} onClick={() => onNavigate('students')} />
-                            <BottomNavItem icon={<MessageSquare size={24} />} active={activeTab === 'chat'} onClick={() => onNavigate('chat')} />
+                            <BottomNavItem icon={<Calendar size={24} />} active={activeTab === 'agenda'} onClick={() => onNavigate('agenda')} />
                         </>
                     ) : (
                         <>
