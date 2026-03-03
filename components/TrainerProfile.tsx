@@ -17,6 +17,7 @@ interface TrainerProfileProps {
     user: AuthUser;
     onUpdateProfile?: (updatedUser: Partial<AuthUser>) => void;
     onBack?: () => void;
+    initialModal?: 'edit' | 'schedule' | 'reports' | 'subscription' | 'finance' | null;
 }
 
 const statusMap: Record<string, { label: string; color: string }> = {
@@ -27,10 +28,10 @@ const statusMap: Record<string, { label: string; color: string }> = {
     'unpaid': { label: 'Inativo', color: 'bg-zinc-500/10 text-zinc-500 border-zinc-500/20' },
 };
 
-const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, onBack }) => {
+const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, onBack, initialModal = null }) => {
     const { subscriptionStatus, subscriptionEndDate, refreshSubscription, session, subscriptionSource } = useAuth();
     const { purchasePackage, offerings } = useRevenueCat();
-    const [activeModal, setActiveModal] = useState<'edit' | 'schedule' | 'reports' | 'subscription' | 'finance' | null>(null);
+    const [activeModal, setActiveModal] = useState<'edit' | 'schedule' | 'reports' | 'subscription' | 'finance' | null>(initialModal);
     const [isRedirecting, setIsRedirecting] = useState(false);
 
     // Agenda State
@@ -425,13 +426,26 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, 
                     cref: formData.cref,
                     ...(formData.password ? { password: formData.password } : {})
                 });
-                setActiveModal(null);
+
+                if (initialModal === 'edit' && onBack) {
+                    onBack();
+                } else {
+                    setActiveModal(null);
+                }
             } catch (error) {
                 console.error("Erro ao salvar perfil:", error);
                 alert("Ocorreu um erro ao salvar as alterações. Tente novamente.");
             } finally {
                 setIsSavingLocal(false);
             }
+        }
+    };
+
+    const handleCloseEditModal = () => {
+        if (initialModal === 'edit' && onBack) {
+            onBack();
+        } else {
+            setActiveModal(null);
         }
     };
 
@@ -558,12 +572,12 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ user, onUpdateProfile, 
                 <div className="fixed inset-0 z-50 bg-black/60 dark:bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200 overflow-y-auto">
                     <div className="bg-white dark:bg-zinc-900 rounded-[32px] w-full max-w-lg shadow-2xl p-6 relative max-h-[90vh] overflow-y-auto border dark:border-zinc-800 transition-colors">
                         <div className="flex items-center justify-between mb-6 sticky top-0 bg-white dark:bg-zinc-900 z-10 pt-[env(safe-area-inset-top)] pb-4 border-b border-zinc-50 dark:border-zinc-800 transition-colors">
-                            <button onClick={() => setActiveModal(null)} className="flex items-center gap-2 text-zinc-400 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 font-bold text-xs uppercase tracking-widest transition-colors">
+                            <button onClick={handleCloseEditModal} className="flex items-center gap-2 text-zinc-400 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 font-bold text-xs uppercase tracking-widest transition-colors">
                                 <ArrowLeft size={18} />
                                 Voltar
                             </button>
                             <h3 className="text-xl font-black text-zinc-900 dark:text-white">Editar Perfil</h3>
-                            <button onClick={() => setActiveModal(null)} className="p-2 text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors">
+                            <button onClick={handleCloseEditModal} className="p-2 text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors">
                                 <X size={24} />
                             </button>
                         </div>

@@ -151,7 +151,7 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ role, student }) => {
             className={`absolute right-2 top-2 w-12 h-12 rounded-full flex items-center justify-center transition-all ${input.trim() ? 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 shadow-lg' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-300 dark:text-zinc-700'
               }`}
           >
-            <Send size={20} className={input.trim() ? 'tranzinc-x-0.5' : ''} />
+            <Send size={20} className={input.trim() ? 'translate-x-0.5' : ''} />
           </button>
         </div>
         <div className="flex items-center justify-center gap-2 mt-3 transition-colors">
@@ -164,3 +164,4 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ role, student }) => {
 };
 
 export default ChatScreen;
+

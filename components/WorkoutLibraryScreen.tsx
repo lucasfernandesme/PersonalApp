@@ -178,7 +178,7 @@ const WorkoutLibraryScreen: React.FC<WorkoutLibraryScreenProps> = ({
 
             {/* Search Bar */}
             <div className="relative">
-                <Search className="absolute left-4 top-1/2 -tranzinc-y-1/2 text-zinc-300 dark:text-zinc-600" size={20} />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-300 dark:text-zinc-600" size={20} />
                 <input
                     type="text"
                     placeholder="Buscar"
@@ -303,3 +303,4 @@ const WorkoutLibraryScreen: React.FC<WorkoutLibraryScreenProps> = ({
 };
 
 export default WorkoutLibraryScreen;
+

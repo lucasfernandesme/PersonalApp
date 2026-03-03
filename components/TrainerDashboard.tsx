@@ -38,7 +38,7 @@ const TrainerDashboard: React.FC<TrainerDashboardProps> = ({
     const matchesSearch = s.name.toLowerCase().includes(searchTerm.toLowerCase());
     const isStudentActive = s.isActive !== false;
 
-    // Se estivermos apenas no Dashboard (n√£o na lista completa), mostrar apenas ativos
+    // Se estivermos apenas no Dashboard (n„o na lista completa), mostrar apenas ativos
     if (!onlyList) return matchesSearch && isStudentActive;
 
     // Na lista completa, filtrar pela aba selecionada
@@ -65,7 +65,7 @@ const TrainerDashboard: React.FC<TrainerDashboardProps> = ({
         </div>
       )}
 
-      {/* T√≠tulo da Se√ß√£o quando em modo Lista */}
+      {/* TÌtulo da SeÁ„o quando em modo Lista */}
       {onlyList && (
         <div className="flex flex-col gap-2">
           <h2 className="text-3xl font-black text-zinc-900 dark:text-white tracking-tight">Meus Alunos</h2>
@@ -78,7 +78,7 @@ const TrainerDashboard: React.FC<TrainerDashboardProps> = ({
         <div className="grid grid-cols-2 gap-4">
           <button
             onClick={onOpenStudentRegistration}
-            className="bg-white dark:bg-zinc-900 p-6 rounded-[32px] border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col items-start gap-4 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all active:scale-95 group"
+            className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col items-start gap-4 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all active:scale-95 group"
           >
             <div className="w-12 h-12 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 rounded-2xl flex items-center justify-center group-hover:bg-zinc-900 dark:group-hover:bg-zinc-100 group-hover:text-white dark:group-hover:text-zinc-900 transition-all">
               <UserPlus size={24} />
@@ -91,20 +91,20 @@ const TrainerDashboard: React.FC<TrainerDashboardProps> = ({
 
           <button
             onClick={onOpenExerciseManager}
-            className="bg-white dark:bg-zinc-900 p-6 rounded-[32px] border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col items-start gap-4 hover:border-emerald-200 dark:hover:border-emerald-800 transition-all active:scale-95 group"
+            className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col items-start gap-4 hover:border-emerald-200 dark:hover:border-emerald-800 transition-all active:scale-95 group"
           >
             <div className="w-12 h-12 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-2xl flex items-center justify-center group-hover:bg-emerald-600 group-hover:text-white transition-all">
               <PlusCircle size={24} />
             </div>
             <div className="text-left">
-              <p className="font-black text-zinc-800 dark:text-white text-sm">Exerc√≠cios</p>
+              <p className="font-black text-zinc-800 dark:text-white text-sm">ExercÌcios</p>
               <p className="text-[10px] text-zinc-400 dark:text-zinc-500 font-bold uppercase mt-1">Biblioteca</p>
             </div>
           </button>
 
           <button
             onClick={onOpenWorkoutLibrary}
-            className="col-span-2 bg-white dark:bg-zinc-900 p-6 rounded-[32px] border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-row items-center gap-6 hover:border-amber-200 dark:hover:border-amber-800 transition-all active:scale-95 group"
+            className="col-span-2 bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-row items-center gap-6 hover:border-amber-200 dark:hover:border-amber-800 transition-all active:scale-95 group"
           >
             <div className="w-14 h-14 bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 rounded-2xl flex items-center justify-center group-hover:bg-amber-600 group-hover:text-white transition-all transition-colors">
               <BookOpen size={28} />
@@ -120,7 +120,7 @@ const TrainerDashboard: React.FC<TrainerDashboardProps> = ({
         </div>
       )}
 
-      {/* Tabs - S√≥ aparece na tela de Meus Alunos */}
+      {/* Tabs - SÛ aparece na tela de Meus Alunos */}
       {onlyList && (
         <div className="flex bg-zinc-100/50 dark:bg-zinc-800/50 p-1.5 rounded-[24px] gap-1">
           <button
@@ -175,7 +175,7 @@ const TrainerDashboard: React.FC<TrainerDashboardProps> = ({
             <div
               key={student.id}
               onClick={() => onSelectStudent(student)}
-              className="group bg-white dark:bg-zinc-900 p-5 rounded-[32px] border border-zinc-200 dark:border-zinc-800 flex items-center justify-between active:scale-[0.98] transition-all shadow-sm hover:shadow-md hover:border-zinc-300 dark:hover:border-zinc-700 cursor-pointer"
+              className="group bg-white dark:bg-zinc-900 p-4 lg:p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 flex items-center justify-between active:scale-[0.98] transition-all shadow-sm hover:shadow-md hover:border-zinc-300 dark:hover:border-zinc-700 cursor-pointer"
             >
               <div className="flex items-center gap-4">
                 <div className="relative">
@@ -222,7 +222,7 @@ const TrainerDashboard: React.FC<TrainerDashboardProps> = ({
             </div>
           ))
         ) : (
-          <div className="py-12 text-center bg-white dark:bg-zinc-900 rounded-[32px] border border-dashed border-zinc-200 dark:border-zinc-800">
+          <div className="py-12 text-center bg-white dark:bg-zinc-900 rounded-2xl border border-dashed border-zinc-200 dark:border-zinc-800">
             <p className="text-zinc-400 dark:text-zinc-500 font-bold">
               {activeTab === 'inactive' ? 'Nenhum aluno inativo.' : 'Nenhum aluno encontrado.'}
             </p>
@@ -244,3 +244,4 @@ const TrainerDashboard: React.FC<TrainerDashboardProps> = ({
 };
 
 export default TrainerDashboard;
+

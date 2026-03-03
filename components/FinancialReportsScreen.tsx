@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { ArrowLeft, Calendar, ChevronDown, Download, TrendingUp, TrendingDown, DollarSign, Filter, Loader2, FileText, User } from 'lucide-react';
-import { format, startOfMonth, endOfMonth, parseISO, isWithinInterval } from 'date-fns';
+import { format, startOfMonth, endOfMonth, parseISO, isWithinInterval, isValid } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { DataService } from '../services/dataService';
 import { useAuth } from '../contexts/AuthContext';
@@ -22,6 +22,22 @@ const FinancialReportsScreen: React.FC<FinancialReportsScreenProps> = ({ onBack 
     const [selectedStudentId, setSelectedStudentId] = useState<string>('all');
     const [statusFilter, setStatusFilter] = useState<'all' | 'paid' | 'open'>('all');
     const [typeFilter, setTypeFilter] = useState<'all' | 'revenue' | 'expense'>('all');
+
+    const safeParseISO = (dateStr: string | null | undefined) => {
+        if (!dateStr) return null;
+        try {
+            const date = parseISO(dateStr);
+            return isValid(date) ? date : null;
+        } catch (e) {
+            return null;
+        }
+    };
+
+    const safeFormat = (dateStr: string | null | undefined, formatStr: string) => {
+        const date = safeParseISO(dateStr);
+        if (!date) return '---';
+        return format(date, formatStr, { locale: ptBR });
+    };
 
     useEffect(() => {
         if (user?.id) {
@@ -264,7 +280,7 @@ const FinancialReportsScreen: React.FC<FinancialReportsScreenProps> = ({ onBack 
                                                         {payment.description || (payment.type === 'revenue' ? `Mensalidade` : 'Despesa')}
                                                     </p>
                                                     <p className="text-[10px] text-zinc-400 uppercase font-bold">
-                                                        {payment.paidAt ? format(new Date(payment.paidAt), 'dd/MM/yyyy') : 'Pendente'} • {payment.category || 'Geral'}
+                                                        {safeFormat(payment.paidAt, 'dd/MM/yyyy')} • {payment.category || 'Geral'}
                                                     </p>
                                                 </div>
                                             </div>

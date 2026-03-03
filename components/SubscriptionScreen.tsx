@@ -1,11 +1,15 @@
-import React from 'react';
-import { CreditCard, Rocket, CheckCircle2, ShieldCheck, Zap, ArrowRight, Loader2, RefreshCw } from 'lucide-react';
+﻿import React from 'react';
+import { CreditCard, Rocket, CheckCircle2, ShieldCheck, Zap, ArrowRight, Loader2, RefreshCw, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../services/supabase';
 import { Capacitor } from '@capacitor/core';
 import { useRevenueCat } from '../hooks/useRevenueCat';
 
-const SubscriptionScreen: React.FC = () => {
+interface SubscriptionScreenProps {
+    onBack: () => void;
+}
+
+const SubscriptionScreen: React.FC<SubscriptionScreenProps> = ({ onBack }) => {
     const { user, subscriptionStatus, subscriptionEndDate, signOut, session, refreshSubscription, subscriptionSource } = useAuth();
     const { purchasePackage, offerings } = useRevenueCat();
     const [isRedirecting, setIsRedirecting] = React.useState(false);
@@ -146,7 +150,17 @@ const SubscriptionScreen: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen bg-zinc-50 dark:bg-black p-6 flex flex-col items-center justify-center animate-in fade-in duration-500">
+        <div className="min-h-screen bg-zinc-50 dark:bg-black p-6 flex flex-col items-center justify-center animate-in fade-in duration-500 relative">
+            {/* Header / Back Button */}
+            <div className="absolute top-0 left-0 right-0 p-6 flex items-center justify-between z-20">
+                <button
+                    onClick={onBack}
+                    className="p-3 bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-2xl shadow-sm text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-all active:scale-95"
+                >
+                    <ArrowLeft size={20} />
+                </button>
+            </div>
+
             <div className="max-w-md w-full bg-white dark:bg-zinc-900 rounded-[40px] p-8 shadow-2xl border border-zinc-100 dark:border-zinc-800 text-center relative overflow-hidden">
                 {/* Background Decoration */}
                 <div className="absolute -top-24 -right-24 w-48 h-48 bg-indigo-500/10 rounded-full blur-3xl opacity-50"></div>
@@ -291,3 +305,4 @@ const SubscriptionScreen: React.FC = () => {
 };
 
 export default SubscriptionScreen;
+

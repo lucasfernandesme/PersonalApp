@@ -46,13 +46,13 @@ const ExerciseLibraryModal: React.FC<ExerciseLibraryModalProps> = ({ onSelect, o
   }, [searchTerm, selectedCategory]);
 
   return (
-    <div className="fixed inset-0 z-[80] bg-white dark:bg-slate-900 flex flex-col animate-in slide-in-from-bottom duration-300 transition-colors">
+    <div className="fixed inset-0 z-[80] bg-white dark:bg-zinc-900 flex flex-col animate-in slide-in-from-bottom duration-300 transition-colors">
       <header className="bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between px-4 pt-[calc(1.5rem+env(safe-area-inset-top))] pb-4 transition-all duration-300 relative flex-shrink-0 mb-6">
         <div className="w-10"></div> {/* Placeholder for symmetry */}
 
         <div className="flex items-center gap-2">
           <img src="/logo.png" alt="PersonalFlow" className="w-8 h-8 rounded-full shadow-sm" />
-          <span className="font-extrabold text-slate-900 dark:text-white tracking-tight">PersonalFlow</span>
+          <span className="font-extrabold text-zinc-900 dark:text-white tracking-tight">PersonalFlow</span>
         </div>
 
         <button onClick={onClose} className="p-2 text-zinc-400 dark:text-zinc-500 hover:text-red-500 transition-colors z-10 w-10 flex justify-end">
@@ -62,24 +62,24 @@ const ExerciseLibraryModal: React.FC<ExerciseLibraryModalProps> = ({ onSelect, o
 
       <div className="px-6 mb-4">
         <h2 className="text-xl font-black text-zinc-900 dark:text-white transition-colors">Biblioteca</h2>
-        <p className="text-xs text-zinc-400 dark:text-zinc-500 font-bold uppercase tracking-wider transition-colors">Escolha um exerc√≠cio</p>
+        <p className="text-xs text-zinc-400 dark:text-zinc-500 font-bold uppercase tracking-wider transition-colors">Escolha um exercÌcio</p>
       </div>
 
       {/* Search and Filters */}
-      <div className="p-6 bg-white dark:bg-slate-900 border-b border-slate-50 dark:border-slate-800 relative z-20 transition-colors">
+      <div className="p-6 bg-white dark:bg-zinc-900 border-b border-zinc-50 dark:border-zinc-800 relative z-20 transition-colors">
         <div className="grid grid-cols-1 gap-4">
           {/* Custom Combobox */}
           <div className="relative">
-            <label className="text-[10px] font-black uppercase text-slate-400 dark:text-slate-500 ml-1 mb-2 block transition-colors">Filtrar por Categoria</label>
+            <label className="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 ml-1 mb-2 block transition-colors">Filtrar por Categoria</label>
             <button
               onClick={() => setIsComboOpen(!isComboOpen)}
-              className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-800 rounded-2xl px-5 py-4 flex items-center justify-between group hover:border-zinc-300 dark:hover:border-zinc-700 transition-all active:scale-[0.99]"
+              className="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-100 dark:border-zinc-800 rounded-2xl px-5 py-4 flex items-center justify-between group hover:border-zinc-300 dark:hover:border-zinc-700 transition-all active:scale-[0.99]"
             >
               <div className="flex items-center gap-3">
                 <div className="w-2 h-2 rounded-full bg-zinc-400 shadow-[0_0_8px_rgba(161,161,170,0.5)]"></div>
-                <span className="font-bold text-slate-700 dark:text-slate-200">{selectedCategory}</span>
+                <span className="font-bold text-zinc-700 dark:text-zinc-200">{selectedCategory}</span>
               </div>
-              <ChevronDown className={`text-slate-400 transition-transform duration-300 ${isComboOpen ? 'rotate-180 text-zinc-900 dark:text-zinc-100' : ''}`} size={20} />
+              <ChevronDown className={`text-zinc-400 transition-transform duration-300 ${isComboOpen ? 'rotate-180 text-zinc-900 dark:text-zinc-100' : ''}`} size={20} />
             </button>
 
             {isComboOpen && (
@@ -88,7 +88,7 @@ const ExerciseLibraryModal: React.FC<ExerciseLibraryModalProps> = ({ onSelect, o
                   className="fixed inset-0 z-10"
                   onClick={() => setIsComboOpen(false)}
                 ></div>
-                <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-[24px] shadow-2xl py-3 z-20 animate-in fade-in zoom-in-95 duration-200 transaction-colors">
+                <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-zinc-800 border border-zinc-100 dark:border-zinc-700 rounded-[24px] shadow-2xl py-3 z-20 animate-in fade-in zoom-in-95 duration-200 transaction-colors">
                   <div className="max-h-60 overflow-y-auto px-2 space-y-1 custom-scrollbar">
                     {CATEGORIES.map(cat => (
                       <button
@@ -99,7 +99,7 @@ const ExerciseLibraryModal: React.FC<ExerciseLibraryModalProps> = ({ onSelect, o
                         }}
                         className={`w-full text-left px-4 py-3 rounded-xl text-xs font-black uppercase tracking-wide transition-all flex items-center justify-between ${selectedCategory === cat
                           ? 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900'
-                          : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700'
+                          : 'text-zinc-500 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-700'
                           }`}
                       >
                         {cat}
@@ -113,13 +113,13 @@ const ExerciseLibraryModal: React.FC<ExerciseLibraryModalProps> = ({ onSelect, o
           </div>
 
           <div className="relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500" size={18} />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-zinc-500" size={18} />
             <input
               type="text"
-              placeholder="Buscar por nome do exerc√≠cio..."
+              placeholder="Buscar por nome do exercÌcio..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-800 rounded-[20px] pl-12 pr-6 py-4 font-bold placeholder:text-slate-300 dark:placeholder:text-slate-600 focus:ring-2 focus:ring-zinc-900 dark:focus:ring-white focus:bg-white dark:focus:bg-zinc-900 transition-all shadow-sm dark:shadow-none dark:text-slate-200"
+              className="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-100 dark:border-zinc-800 rounded-[20px] pl-12 pr-6 py-4 font-bold placeholder:text-zinc-300 dark:placeholder:text-zinc-600 focus:ring-2 focus:ring-zinc-900 dark:focus:ring-white focus:bg-white dark:focus:bg-zinc-900 transition-all shadow-sm dark:shadow-none dark:text-zinc-200"
             />
           </div>
         </div>
@@ -131,7 +131,7 @@ const ExerciseLibraryModal: React.FC<ExerciseLibraryModalProps> = ({ onSelect, o
           filteredExercises.map((ex, idx) => (
             <div
               key={idx}
-              className="w-full p-4 bg-white dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800/50 rounded-2xl flex items-center justify-between group cursor-pointer hover:border-zinc-300 dark:hover:border-zinc-600 transition-all"
+              className="w-full p-4 bg-white dark:bg-zinc-800/50 border border-zinc-100 dark:border-zinc-800/50 rounded-2xl flex items-center justify-between group cursor-pointer hover:border-zinc-300 dark:hover:border-zinc-600 transition-all"
               onClick={() => onSelect(ex)}
             >
               <div className="flex items-center gap-4">
@@ -140,14 +140,14 @@ const ExerciseLibraryModal: React.FC<ExerciseLibraryModalProps> = ({ onSelect, o
                 </div>
                 <div className="text-left">
                   <div className="flex items-center gap-2">
-                    <p className="font-bold text-slate-800 dark:text-white text-sm transition-colors">{ex.name}</p>
+                    <p className="font-bold text-zinc-800 dark:text-white text-sm transition-colors">{ex.name}</p>
                     {ex.videoUrl && (
                       <div className="text-zinc-400 dark:text-zinc-500 flex items-center gap-1" title="Possui guia visual">
                         <Eye size={12} />
                       </div>
                     )}
                   </div>
-                  <p className="text-[10px] font-black uppercase text-slate-400 dark:text-slate-500 transition-colors">{ex.category}</p>
+                  <p className="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 transition-colors">{ex.category}</p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
@@ -158,7 +158,7 @@ const ExerciseLibraryModal: React.FC<ExerciseLibraryModalProps> = ({ onSelect, o
                       setPreviewExercise(ex);
                     }}
                     className="p-3 mr-[-8px] text-zinc-400 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-700/50 rounded-full transition-all"
-                    title="Visualizar execu√ß√£o"
+                    title="Visualizar execuÁ„o"
                   >
                     <Eye size={20} />
                   </button>
@@ -174,8 +174,8 @@ const ExerciseLibraryModal: React.FC<ExerciseLibraryModalProps> = ({ onSelect, o
           ))
         ) : (
           <div className="py-20 text-center space-y-2 transition-colors">
-            <p className="text-slate-400 dark:text-slate-600 font-bold">Nenhum exerc√≠cio encontrado</p>
-            <p className="text-xs text-slate-300 dark:text-slate-700">Tente mudar os filtros ou o termo de busca</p>
+            <p className="text-zinc-400 dark:text-zinc-600 font-bold">Nenhum exercÌcio encontrado</p>
+            <p className="text-xs text-zinc-300 dark:text-zinc-700">Tente mudar os filtros ou o termo de busca</p>
           </div>
         )}
       </div>
@@ -217,7 +217,7 @@ const ExerciseLibraryModal: React.FC<ExerciseLibraryModalProps> = ({ onSelect, o
               ) : (
                 <div className="flex flex-col items-center gap-4 text-zinc-500">
                   <PlayCircle size={48} />
-                  <p className="font-bold">V√≠deo n√£o dispon√≠vel</p>
+                  <p className="font-bold">VÌdeo n„o disponÌvel</p>
                 </div>
               )}
             </div>
@@ -230,7 +230,7 @@ const ExerciseLibraryModal: React.FC<ExerciseLibraryModalProps> = ({ onSelect, o
                 }}
                 className="bg-white text-zinc-900 px-6 py-3 rounded-xl font-black text-sm uppercase tracking-wide hover:scale-105 transition-transform"
               >
-                Selecionar Exerc√≠cio
+                Selecionar ExercÌcio
               </button>
             </div>
           </div>
@@ -241,3 +241,4 @@ const ExerciseLibraryModal: React.FC<ExerciseLibraryModalProps> = ({ onSelect, o
 };
 
 export default ExerciseLibraryModal;
+

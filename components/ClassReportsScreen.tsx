@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { ScheduleEvent, Student } from '../types';
-import { format, isWithinInterval, parseISO, startOfMonth, endOfMonth } from 'date-fns';
+import { format, isWithinInterval, parseISO, startOfMonth, endOfMonth, isValid } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Search, Calendar, User, CheckCircle2, XCircle, Clock, ChevronDown, ArrowLeft } from 'lucide-react';
 
@@ -16,10 +16,21 @@ const ClassReportsScreen: React.FC<ClassReportsScreenProps> = ({ events, student
     const [selectedStudentId, setSelectedStudentId] = useState<string>('all');
     const [statusFilter, setStatusFilter] = useState<'all' | 'planned' | 'completed' | 'cancelled'>('all');
 
+    const safeParseISO = (dateStr: string | null | undefined) => {
+        if (!dateStr) return null;
+        try {
+            const date = parseISO(dateStr);
+            return isValid(date) ? date : null;
+        } catch (e) {
+            return null;
+        }
+    };
 
     const filteredEvents = useMemo(() => {
         return events.filter(event => {
-            const eventDate = parseISO(event.start);
+            const eventDate = safeParseISO(event.start);
+            if (!eventDate) return false; // Skip events without valid dates in reports
+
             const start = parseISO(startDate);
             const end = parseISO(endDate);
             // Fix end date to include the full day
@@ -27,14 +38,17 @@ const ClassReportsScreen: React.FC<ClassReportsScreenProps> = ({ events, student
 
             const matchesDate = isWithinInterval(eventDate, { start, end });
             const matchesStudent = selectedStudentId === 'all' || event.studentId === selectedStudentId;
-            const matchesStatus = statusFilter === 'all' || event.status === statusFilter;
 
             // Default legacy events to 'planned' if status is missing
             const eventStatus = event.status || 'planned';
             const finalMatchesStatus = statusFilter === 'all' || eventStatus === statusFilter;
 
             return matchesDate && matchesStudent && finalMatchesStatus;
-        }).sort((a, b) => new Date(b.start).getTime() - new Date(a.start).getTime()); // Sort desc
+        }).sort((a, b) => {
+            const dateA = safeParseISO(a.start)?.getTime() || 0;
+            const dateB = safeParseISO(b.start)?.getTime() || 0;
+            return dateB - dateA;
+        }); // Sort desc
     }, [events, startDate, endDate, selectedStudentId, statusFilter]);
 
     const stats = useMemo(() => {
@@ -174,48 +188,53 @@ const ClassReportsScreen: React.FC<ClassReportsScreenProps> = ({ events, student
                             <p className="text-sm font-medium">Nenhuma aula encontrada.</p>
                         </div>
                     ) : (
-                        filteredEvents.map(event => (
-                            <div
-                                key={event.id}
-                                className="bg-white dark:bg-zinc-900 p-4 rounded-3xl border border-zinc-100 dark:border-zinc-800/60 flex items-center justify-between group hover:shadow-lg hover:shadow-zinc-900/5 dark:hover:shadow-zinc-100/5 transition-all duration-300 active:scale-[0.98]"
-                            >
-                                <div className="flex items-center gap-4">
-                                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shadow-sm transition-transform group-hover:scale-110 ${getStatusColor(event.status)}`}>
-                                        {event.status === 'completed' ? <CheckCircle2 size={22} /> :
-                                            event.status === 'cancelled' ? <XCircle size={22} /> :
-                                                <Clock size={22} />}
+                        filteredEvents.map(event => {
+                            const eventDate = safeParseISO(event.start);
+                            if (!eventDate) return null;
+
+                            return (
+                                <div
+                                    key={event.id}
+                                    className="bg-white dark:bg-zinc-900 p-4 rounded-3xl border border-zinc-100 dark:border-zinc-800/60 flex items-center justify-between group hover:shadow-lg hover:shadow-zinc-900/5 dark:hover:shadow-zinc-100/5 transition-all duration-300 active:scale-[0.98]"
+                                >
+                                    <div className="flex items-center gap-4">
+                                        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shadow-sm transition-transform group-hover:scale-110 ${getStatusColor(event.status)}`}>
+                                            {event.status === 'completed' ? <CheckCircle2 size={22} /> :
+                                                event.status === 'cancelled' ? <XCircle size={22} /> :
+                                                    <Clock size={22} />}
+                                        </div>
+                                        <div>
+                                            <h4 className="font-black text-zinc-900 dark:text-white text-base leading-tight">
+                                                {event.title}
+                                            </h4>
+                                            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1.5">
+                                                <div className="flex items-center gap-1.5 text-[11px] font-bold text-zinc-500 dark:text-zinc-400">
+                                                    <Calendar size={13} className="text-zinc-400 opacity-70" />
+                                                    <span className="capitalize">{format(eventDate, "eeee, dd 'de' MMM", { locale: ptBR })}</span>
+                                                </div>
+                                                <div className="flex items-center gap-1.5 text-[11px] font-black text-zinc-900 dark:text-zinc-100 bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 rounded-lg">
+                                                    <Clock size={11} />
+                                                    <span>{format(eventDate, "HH:mm")}</span>
+                                                </div>
+                                                {event.studentName && event.title !== event.studentName && (
+                                                    <span className="text-[10px] font-black text-zinc-400 dark:text-zinc-500 border border-zinc-100 dark:border-zinc-800 px-2 py-0.5 rounded-lg uppercase tracking-wider">
+                                                        {event.studentName}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <h4 className="font-black text-zinc-900 dark:text-white text-base leading-tight">
-                                            {event.title}
-                                        </h4>
-                                        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1.5">
-                                            <div className="flex items-center gap-1.5 text-[11px] font-bold text-zinc-500 dark:text-zinc-400">
-                                                <Calendar size={13} className="text-zinc-400 opacity-70" />
-                                                <span className="capitalize">{format(parseISO(event.start), "eeee, dd 'de' MMM", { locale: ptBR })}</span>
-                                            </div>
-                                            <div className="flex items-center gap-1.5 text-[11px] font-black text-zinc-900 dark:text-zinc-100 bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 rounded-lg">
-                                                <Clock size={11} />
-                                                <span>{format(parseISO(event.start), "HH:mm")}</span>
-                                            </div>
-                                            {event.studentName && event.title !== event.studentName && (
-                                                <span className="text-[10px] font-black text-zinc-400 dark:text-zinc-500 border border-zinc-100 dark:border-zinc-800 px-2 py-0.5 rounded-lg uppercase tracking-wider">
-                                                    {event.studentName}
-                                                </span>
-                                            )}
+                                    <div className="flex flex-col items-end gap-2">
+                                        <div className={`px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-wider shadow-sm border ${event.status === 'completed' ? 'border-green-200 dark:border-green-800/50' :
+                                            event.status === 'cancelled' ? 'border-red-200 dark:border-red-800/50' :
+                                                'border-zinc-200 dark:border-zinc-700/50'
+                                            } ${getStatusColor(event.status)}`}>
+                                            {getStatusLabel(event.status)}
                                         </div>
                                     </div>
                                 </div>
-                                <div className="flex flex-col items-end gap-2">
-                                    <div className={`px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-wider shadow-sm border ${event.status === 'completed' ? 'border-green-200 dark:border-green-800/50' :
-                                        event.status === 'cancelled' ? 'border-red-200 dark:border-red-800/50' :
-                                            'border-zinc-200 dark:border-zinc-700/50'
-                                        } ${getStatusColor(event.status)}`}>
-                                        {getStatusLabel(event.status)}
-                                    </div>
-                                </div>
-                            </div>
-                        ))
+                            );
+                        })
                     )}
                 </div>
             </div>

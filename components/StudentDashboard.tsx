@@ -80,7 +80,7 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
     return (
         <div className="space-y-6 pb-24 animate-in fade-in duration-300">
             {/* Header com Avatar e Nome */}
-            <div className="bg-white dark:bg-zinc-900 rounded-[32px] p-6 border border-zinc-100 dark:border-zinc-800 shadow-sm transition-colors duration-300">
+            <div className="bg-white dark:bg-zinc-900 rounded-2xl p-6 border border-zinc-100 dark:border-zinc-800 shadow-sm transition-colors duration-300">
                 <div className="flex flex-col">
                     {/* Trainer Info - Centralizado */}
                     <div className="flex flex-col items-center justify-center mb-6">
@@ -113,7 +113,7 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
                 {/* Treinos */}
                 <button
                     onClick={onNavigateToWorkout}
-                    className="bg-white dark:bg-zinc-900 p-6 rounded-[32px] border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col items-center justify-center gap-3 transition-all active:scale-95 col-span-2 group hover:border-emerald-200 dark:hover:border-emerald-800"
+                    className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col items-center justify-center gap-3 transition-all active:scale-95 col-span-2 group hover:border-emerald-200 dark:hover:border-emerald-800"
                 >
                     <div className="w-14 h-14 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-2xl flex items-center justify-center group-hover:bg-emerald-600 group-hover:text-white transition-all">
                         <Dumbbell size={28} />
@@ -124,7 +124,7 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
                 {/* Avaliações */}
                 <button
                     onClick={onNavigateToAssessments}
-                    className="bg-white dark:bg-zinc-900 p-6 rounded-[32px] border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col items-start gap-4 hover:border-amber-200 dark:hover:border-amber-800 transition-all active:scale-95 group"
+                    className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col items-start gap-4 hover:border-amber-200 dark:hover:border-amber-800 transition-all active:scale-95 group"
                 >
                     <div className="w-12 h-12 bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 rounded-2xl flex items-center justify-center group-hover:bg-amber-600 group-hover:text-white transition-all">
                         <Calendar size={24} />
@@ -138,7 +138,7 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
                 {/* Meu Progresso */}
                 <button
                     onClick={onNavigateToProgress}
-                    className="bg-white dark:bg-zinc-900 p-6 rounded-[32px] border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col items-start gap-4 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all active:scale-95 group"
+                    className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col items-start gap-4 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all active:scale-95 group"
                 >
                     <div className="w-12 h-12 bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 rounded-2xl flex items-center justify-center group-hover:bg-zinc-900 dark:group-hover:bg-zinc-100 group-hover:text-white dark:group-hover:text-zinc-900 transition-all">
                         <TrendingUp size={24} />
@@ -155,7 +155,7 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
                         setActiveModal('payments');
                         loadPayments();
                     }}
-                    className="bg-white dark:bg-zinc-900 p-6 rounded-[32px] border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col items-start gap-4 hover:border-amber-200 dark:hover:border-amber-800 transition-all active:scale-95 group"
+                    className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col items-start gap-4 hover:border-amber-200 dark:hover:border-amber-800 transition-all active:scale-95 group"
                 >
                     <div className="w-12 h-12 bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 rounded-2xl flex items-center justify-center group-hover:bg-amber-600 group-hover:text-white transition-all">
                         <DollarSign size={24} />
@@ -169,7 +169,7 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
                 {/* Arquivos */}
                 <button
                     onClick={() => setActiveModal('files')}
-                    className="bg-white dark:bg-zinc-900 p-6 rounded-[32px] border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col items-start gap-4 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all active:scale-95 group"
+                    className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col items-start gap-4 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all active:scale-95 group"
                 >
                     <div className="w-12 h-12 bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 rounded-2xl flex items-center justify-center group-hover:bg-zinc-900 dark:group-hover:bg-zinc-100 group-hover:text-white dark:group-hover:text-zinc-900 transition-all">
                         <FileText size={24} />
@@ -184,7 +184,7 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
             {/* Modal de Arquivos */}
             {activeModal === 'files' && (
                 <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
-                    <div className="bg-white dark:bg-zinc-900 rounded-[32px] w-full max-w-sm shadow-2xl p-6 relative border dark:border-zinc-800">
+                    <div className="bg-white dark:bg-zinc-900 rounded-2xl w-full max-w-sm shadow-2xl p-6 relative border dark:border-zinc-800">
                         <button onClick={() => setActiveModal(null)} className="absolute top-4 right-4 p-2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"><X size={24} /></button>
                         <h3 className="text-xl font-black text-zinc-900 dark:text-white mb-2">Enviar Arquivo</h3>
                         <p className="text-sm font-medium text-zinc-500 dark:text-zinc-400 mb-6">Selecione um arquivo para enviar ao seu personal.</p>
@@ -238,7 +238,7 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
             {/* Modal de Avaliações */}
             {activeModal === 'assessments' && (
                 <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
-                    <div className="bg-white dark:bg-zinc-900 rounded-[32px] w-full max-w-md shadow-2xl p-6 relative h-[60vh] flex flex-col border dark:border-zinc-800">
+                    <div className="bg-white dark:bg-zinc-900 rounded-2xl w-full max-w-md shadow-2xl p-6 relative h-[60vh] flex flex-col border dark:border-zinc-800">
                         <button onClick={() => setActiveModal(null)} className="absolute top-4 right-4 p-2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"><X size={24} /></button>
                         <div className="mb-6">
                             <h3 className="text-xl font-black text-zinc-900 dark:text-white">Minhas Avaliações</h3>
@@ -280,7 +280,7 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
             {/* Modal de Pagamentos */}
             {activeModal === 'payments' && (
                 <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
-                    <div className="bg-white dark:bg-zinc-900 rounded-[32px] w-full max-w-md shadow-2xl p-6 relative h-[60vh] flex flex-col border dark:border-zinc-800">
+                    <div className="bg-white dark:bg-zinc-900 rounded-2xl w-full max-w-md shadow-2xl p-6 relative h-[60vh] flex flex-col border dark:border-zinc-800">
                         <button onClick={() => setActiveModal(null)} className="absolute top-4 right-4 p-2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 pt-[calc(1rem+env(safe-area-inset-top))]"><X size={24} /></button>
                         <div className="mb-6 pt-[env(safe-area-inset-top)]">
                             <h3 className="text-xl font-black text-zinc-900 dark:text-white">Meus Pagamentos</h3>
@@ -401,7 +401,7 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
             {/* Modal de Visualização de Arquivo */}
             {fileToView && (
                 <div className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
-                    <div className="bg-white dark:bg-zinc-900 rounded-[32px] w-full max-w-4xl h-[85vh] shadow-2xl relative flex flex-col overflow-hidden">
+                    <div className="bg-white dark:bg-zinc-900 rounded-2xl w-full max-w-4xl h-[85vh] shadow-2xl relative flex flex-col overflow-hidden">
                         <div className="flex items-center justify-between p-4 border-b border-zinc-100 dark:border-zinc-800">
                             <h3 className="font-bold text-zinc-900 dark:text-white truncate pr-8">{fileToView.name}</h3>
                             <button

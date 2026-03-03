@@ -38,11 +38,11 @@ const StudentRegistrationScreen: React.FC<StudentRegistrationScreenProps> = ({ o
 
   const levels = [
     { id: 'beginner', label: 'Iniciante' },
-    { id: 'intermediate', label: 'IntermediÃ¡rio' },
-    { id: 'advanced', label: 'AvanÃ§ado' }
+    { id: 'intermediate', label: 'Intermediário' },
+    { id: 'advanced', label: 'Avançado' }
   ];
 
-  const goals = ['Hipertrofia', 'Emagrecimento', 'ForÃ§a', 'SaÃºde'];
+  const goals = ['Hipertrofia', 'Emagrecimento', 'Força', 'Saúde'];
 
   useEffect(() => {
     if (initialData) {
@@ -63,22 +63,22 @@ const StudentRegistrationScreen: React.FC<StudentRegistrationScreenProps> = ({ o
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // ValidaÃ§Ã£o de campos obrigatÃ³rios
+    // Validação de campos obrigatórios
     const phoneDigits = formData.phone.replace(/\D/g, '');
     const cpfDigits = (formData.cpf || '').replace(/\D/g, '');
 
     if (!formData.name.trim() || !formData.email.trim() || !cpfDigits || !formData.birthDate || !formData.gender || !phoneDigits) {
-      alert('Por favor, preencha todos os campos obrigatÃ³rios (Nome, E-mail, CPF, WhatsApp, Data de Nascimento e GÃªnero)');
+      alert('Por favor, preencha todos os campos obrigatórios (Nome, E-mail, CPF, WhatsApp, Data de Nascimento e Gênero)');
       return;
     }
 
     if (cpfDigits.length < 11) {
-      alert('Por favor, insira um CPF vÃ¡lido (11 dÃ­gitos)');
+      alert('Por favor, insira um CPF válido (11 dígitos)');
       return;
     }
 
     if (phoneDigits.length < 11) {
-      alert('Por favor, insira um nÃºmero de WhatsApp vÃ¡lido com DDD (Ex: 11 99999-9999)');
+      alert('Por favor, insira um número de WhatsApp válido com DDD (Ex: 11 99999-9999)');
       return;
     }
 
@@ -101,7 +101,7 @@ const StudentRegistrationScreen: React.FC<StudentRegistrationScreenProps> = ({ o
         <div className="flex items-center gap-2">
           <img src="/logo.png" alt="PersonalFlow" className="w-8 h-8 object-contain dark:hidden" />
           <img src="/logo-dark.png" alt="PersonalFlow" className="w-8 h-8 object-contain hidden dark:block" />
-          <span className="font-extrabold text-slate-900 dark:text-white tracking-tight">PersonalFlow</span>
+          <span className="font-extrabold text-zinc-900 dark:text-white tracking-tight">PersonalFlow</span>
         </div>
 
         <div className="w-10"></div> {/* Placeholder for symmetry */}
@@ -114,14 +114,14 @@ const StudentRegistrationScreen: React.FC<StudentRegistrationScreenProps> = ({ o
               {initialData ? 'Editar Aluno' : 'Novo Aluno'}
             </h2>
             <p className="text-zinc-400 dark:text-zinc-500 font-medium">
-              {initialData ? 'Atualize os dados e as configuraÃ§Ãµes do aluno.' : 'Cadastre um novo aluno para comeÃ§ar a prescrever treinos.'}
+              {initialData ? 'Atualize os dados e as configurações do aluno.' : 'Cadastre um novo aluno para começar a prescrever treinos.'}
             </p>
           </div>
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-8 pb-32">
           <div className="space-y-4">
-            <label className="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 ml-1">InformaÃ§Ãµes Pessoais <span className="text-red-500">*</span></label>
+            <label className="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 ml-1">Informações Pessoais <span className="text-red-500">*</span></label>
 
             <div className="space-y-1">
               <div className="relative">
@@ -195,7 +195,7 @@ const StudentRegistrationScreen: React.FC<StudentRegistrationScreenProps> = ({ o
             </div>
 
             <div className="space-y-3">
-              <label className="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 ml-1">GÃªnero <span className="text-red-500">*</span></label>
+              <label className="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 ml-1">Gênero <span className="text-red-500">*</span></label>
               <div className="grid grid-cols-3 gap-2">
                 {[
                   { id: 'male', label: 'Masculino' },
@@ -227,7 +227,7 @@ const StudentRegistrationScreen: React.FC<StudentRegistrationScreenProps> = ({ o
                     type="button"
                     key={g}
                     onClick={() => setFormData({ ...formData, goal: g })}
-                    className={`p-4 rounded-2xl border-2 font-bold text-xs transition-all ${formData.goal === g
+                    className={`py-5 rounded-[24px] border-2 font-bold text-xs transition-all ${formData.goal === g
                       ? 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 border-zinc-900 dark:border-zinc-100 shadow-lg shadow-zinc-900/20 dark:shadow-zinc-100/10'
                       : 'bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-400 dark:text-zinc-500 hover:border-zinc-300 dark:hover:border-zinc-700'
                       }`}
@@ -238,7 +238,7 @@ const StudentRegistrationScreen: React.FC<StudentRegistrationScreenProps> = ({ o
               </div>
             </div>
             <div className="space-y-3">
-              <label className="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 ml-1">NÃ­vel de ExperiÃªncia</label>
+              <label className="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 ml-1">Nível de Experiência</label>
               <div className="grid grid-cols-3 gap-2">
                 {levels.map(l => (
                   <button
@@ -273,7 +273,7 @@ const StudentRegistrationScreen: React.FC<StudentRegistrationScreenProps> = ({ o
                     {formData.isActive ? 'Aluno Ativo' : 'Aluno Inativo'}
                   </span>
                   <span className="text-[10px] font-bold opacity-70 text-left">
-                    {formData.isActive ? 'Recebe notificaÃ§Ãµes e acessa treinos' : 'Acesso suspenso temporariamente'}
+                    {formData.isActive ? 'Recebe notificações e acessa treinos' : 'Acesso suspenso temporariamente'}
                   </span>
                 </div>
                 <div className={`w-12 h-6 rounded-full relative transition-colors ${formData.isActive ? 'bg-emerald-500' : 'bg-zinc-300 dark:bg-zinc-700'}`}>
@@ -289,7 +289,7 @@ const StudentRegistrationScreen: React.FC<StudentRegistrationScreenProps> = ({ o
             <button
               type="button"
               onClick={() => {
-                if (window.confirm('Tem certeza que deseja excluir este aluno? Esta aÃ§Ã£o nÃ£o pode ser desfeita.')) {
+                if (window.confirm('Tem certeza que deseja excluir este aluno? Esta ação não pode ser desfeita.')) {
                   onDelete(initialData.id);
                 }
               }}
@@ -301,7 +301,7 @@ const StudentRegistrationScreen: React.FC<StudentRegistrationScreenProps> = ({ o
           <button
             onClick={handleSubmit}
             disabled={isLoading}
-            className={`flex-[2] ${isLoading ? 'bg-zinc-400 dark:bg-zinc-700 cursor-not-allowed' : 'bg-zinc-900 dark:bg-zinc-100 hover:bg-zinc-800 dark:hover:bg-white'} text-white dark:text-zinc-900 font-black uppercase text-xs tracking-widest py-5 rounded-2xl shadow-xl shadow-zinc-900/30 dark:shadow-zinc-100/10 flex items-center justify-center gap-2 transition-all`}
+            className={`flex-[2] ${isLoading ? 'bg-zinc-400 dark:bg-zinc-700 cursor-not-allowed' : 'bg-zinc-900 dark:bg-zinc-100 hover:bg-zinc-800 dark:hover:bg-white'} text-white dark:text-zinc-900 font-black uppercase text-xs tracking-[0.2em] py-5 rounded-[24px] shadow-xl shadow-zinc-900/30 dark:shadow-zinc-100/10 flex items-center justify-center gap-2 transition-all`}
           >
             {isLoading ? (
               <>
@@ -322,3 +322,4 @@ const StudentRegistrationScreen: React.FC<StudentRegistrationScreenProps> = ({ o
 };
 
 export default StudentRegistrationScreen;
+

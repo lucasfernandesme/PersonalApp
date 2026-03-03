@@ -22,7 +22,11 @@ import StudentProfile from './components/StudentProfile';
 import StudentSelectorModal from './components/StudentSelectorModal';
 import StudentDashboard from './components/StudentDashboard';
 import StudentAssessmentsScreen from './components/StudentAssessmentsScreen';
-import { WorkoutFolder, WorkoutTemplate, Student, StudentFile } from './types';
+import AgendaScreen from './components/AgendaScreen';
+import FinanceScreen from './components/FinanceScreen';
+import ReportsScreen from './components/ReportsScreen';
+import ScheduleEventModal from './components/ScheduleEventModal';
+import { WorkoutFolder, WorkoutTemplate, Student, StudentFile, ScheduleEvent } from './types';
 import { ArrowLeft, Settings, Loader2, RefreshCw, CheckCircle2, X, Dumbbell, ArrowRight, Zap, Award, ChevronRight, Plus, Edit2, Trash2, User, Calendar, FileText, MessageCircle } from 'lucide-react';
 import { TrainingFrequencyCard } from './components/TrainingFrequencyCard';
 import { ThemeProvider } from './contexts/ThemeContext';
@@ -58,7 +62,8 @@ const App: React.FC = () => {
   const [workoutToEdit, setWorkoutToEdit] = useState<TrainingProgram | null>(null);
 
   const [activeView, setActiveView] = useState<'dashboard' | 'register' | 'exercises' | 'edit-student' | 'student-stats' | 'library'>('dashboard');
-  const [activeTab, setActiveTab] = useState<'home' | 'students' | 'evolution' | 'chat' | 'workout' | 'profile'>('home');
+  const [profileInitialModal, setProfileInitialModal] = useState<'edit' | null>(null);
+  const [activeTab, setActiveTab] = useState<'home' | 'students' | 'evolution' | 'chat' | 'workout' | 'profile' | 'agenda' | 'reports' | 'finance' | 'subscription'>('home');
   const [students, setStudents] = useState<Student[]>([]);
   const [workoutTemplates, setWorkoutTemplates] = useState<WorkoutTemplate[]>([]);
   const [workoutFolders, setWorkoutFolders] = useState<WorkoutFolder[]>([]);
@@ -76,6 +81,11 @@ const App: React.FC = () => {
 
   const [fileToView, setFileToView] = useState<{ url: string; name: string; type: string } | null>(null);
   const [isPasswordReset, setIsPasswordReset] = useState(false);
+
+  const [scheduleEvents, setScheduleEvents] = useState<ScheduleEvent[]>([]);
+  const [isEventModalOpen, setIsEventModalOpen] = useState(false);
+  const [eventToEdit, setEventToEdit] = useState<ScheduleEvent | undefined>(undefined);
+  const [initialDateForEvent, setInitialDateForEvent] = useState<Date | undefined>(undefined);
 
   const reloadStudents = useCallback(async () => {
     try {
@@ -144,6 +154,16 @@ const App: React.FC = () => {
       console.error("Erro ao recarregar pastas:", err);
     }
   }, [authUser?.id]);
+
+  const reloadEvents = useCallback(async () => {
+    if (!authUser?.id || authUser.role !== UserRole.TRAINER) return;
+    try {
+      const loaded = await DataService.getScheduleEvents(authUser.id);
+      setScheduleEvents(loaded);
+    } catch (err) {
+      console.error("Erro ao recarregar agenda:", err);
+    }
+  }, [authUser?.id, authUser?.role]);
 
   const refreshProfile = useCallback(async () => {
     if (authUser && authUser.role === UserRole.TRAINER && DataService.isCloudActive()) {
@@ -221,7 +241,8 @@ const App: React.FC = () => {
           reloadStudents(),
           reloadExercises(),
           reloadTemplates(),
-          reloadFolders()
+          reloadFolders(),
+          reloadEvents()
         ]);
       } catch (err) {
         console.error("Erro ao carregar dados:", err);
@@ -323,8 +344,13 @@ const App: React.FC = () => {
     };
   }, [customExercises]);
 
-  const handleNavigate = (tab: 'home' | 'students' | 'evolution' | 'chat' | 'workout' | 'profile') => {
+  const handleNavigate = (tab: 'home' | 'students' | 'evolution' | 'chat' | 'workout' | 'profile' | 'agenda' | 'reports' | 'finance' | 'subscription') => {
     setActiveTab(tab);
+    if (tab === 'profile') {
+      setProfileInitialModal('edit');
+    } else {
+      setProfileInitialModal(null);
+    }
     setActiveView('dashboard');
     setIsManualBuilderOpen(false);
     setIsOnboardingOpen(false);
@@ -524,6 +550,39 @@ const App: React.FC = () => {
     }
   };
 
+  const handleSaveScheduleEvent = async (eventData: any) => {
+    try {
+      if (!authUser?.id) return;
+
+      const payload = {
+        ...eventData,
+        trainerId: authUser.id,
+        id: eventToEdit?.id || Math.random().toString(36).substring(2, 11)
+      };
+
+      await DataService.saveScheduleEvent(payload);
+      await reloadEvents();
+      setIsEventModalOpen(false);
+      setEventToEdit(undefined);
+    } catch (err) {
+      console.error("Erro ao salvar evento:", err);
+      alert("Erro ao salvar agendamento.");
+    }
+  };
+
+  const handleDeleteScheduleEvent = async (eventId: string) => {
+    if (!window.confirm("Tem certeza que deseja excluir este agendamento?")) return;
+    try {
+      await DataService.deleteScheduleEvent(eventId);
+      await reloadEvents();
+      setIsEventModalOpen(false);
+      setEventToEdit(undefined);
+    } catch (err) {
+      console.error("Erro ao excluir evento:", err);
+      alert("Erro ao excluir agendamento.");
+    }
+  };
+
   const renderTrainerContent = () => {
     if (activeView === 'register') {
       return (
@@ -681,7 +740,56 @@ const App: React.FC = () => {
     }
 
     if (activeTab === 'profile') {
-      return <TrainerProfile user={authUser} onUpdateProfile={handleUpdateTrainerProfile} onBack={() => setActiveTab('students')} />;
+      return (
+        <TrainerProfile
+          user={authUser}
+          onUpdateProfile={handleUpdateTrainerProfile}
+          onBack={() => setActiveTab('home')}
+          initialModal={profileInitialModal}
+        />
+      );
+    }
+
+    if (activeTab === 'agenda') {
+      return (
+        <AgendaScreen
+          events={scheduleEvents}
+          students={students}
+          onAddEvent={(date) => {
+            setInitialDateForEvent(date);
+            setEventToEdit(undefined);
+            setIsEventModalOpen(true);
+          }}
+          onEditEvent={(event) => {
+            setEventToEdit(event);
+            setIsEventModalOpen(true);
+          }}
+          onClose={() => setActiveTab('home')}
+        />
+      );
+    }
+
+    if (activeTab === 'reports') {
+      return (
+        <ReportsScreen
+          events={scheduleEvents}
+          students={students}
+          onClose={() => setActiveTab('home')}
+        />
+      );
+    }
+
+    if (activeTab === 'finance') {
+      return authUser ? (
+        <FinanceScreen
+          user={authUser}
+          onBack={() => setActiveTab('home')}
+        />
+      ) : null;
+    }
+
+    if (activeTab === 'subscription') {
+      return <SubscriptionScreen onBack={() => setActiveTab('home')} />;
     }
 
     if (activeTab === 'evolution') {
@@ -776,19 +884,19 @@ const App: React.FC = () => {
             >
               <ArrowLeft size={20} />
             </button>
-            <button onClick={() => setActiveView('edit-student')} className="p-3 bg-slate-100 dark:bg-zinc-800 text-slate-500 dark:text-zinc-400 rounded-2xl hover:bg-slate-200 dark:hover:bg-zinc-700 transition-colors">
+            <button onClick={() => setActiveView('edit-student')} className="p-3 bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 rounded-2xl hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors">
               <Settings size={20} />
             </button>
           </div>
 
-          <div className="flex flex-col md:flex-row items-start justify-between gap-6 bg-white dark:bg-zinc-900 p-6 rounded-[32px] border border-slate-100 dark:border-zinc-800 shadow-sm transition-colors duration-300">
+          <div className="flex flex-col md:flex-row items-start justify-between gap-6 bg-white dark:bg-zinc-900 p-6 rounded-[32px] border border-zinc-100 dark:border-zinc-800 shadow-sm transition-colors duration-300">
             <div className="flex items-center gap-6">
               <img src={selectedStudent.avatar} className="w-20 h-20 md:w-24 md:h-24 rounded-3xl object-cover shadow-xl border-4 border-white dark:border-zinc-800" />
               <div>
-                <h2 className="text-2xl md:text-3xl font-black text-slate-900 dark:text-white tracking-tight">{selectedStudent.name}</h2>
+                <h2 className="text-2xl md:text-3xl font-black text-zinc-900 dark:text-white tracking-tight">{selectedStudent.name}</h2>
                 <div className="flex flex-wrap gap-2 mt-2">
                   <span className="px-3 py-1 bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 text-[10px] font-black uppercase rounded-full border border-zinc-200 dark:border-zinc-700">{selectedStudent.goal}</span>
-                  <span className="px-3 py-1 bg-slate-50 dark:bg-zinc-800 text-slate-500 dark:text-zinc-400 text-[10px] font-black uppercase rounded-full border border-slate-100 dark:border-zinc-700">{translateExperience(selectedStudent.experience)}</span>
+                  <span className="px-3 py-1 bg-zinc-50 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 text-[10px] font-black uppercase rounded-full border border-zinc-100 dark:border-zinc-700">{translateExperience(selectedStudent.experience)}</span>
                 </div>
               </div>
             </div>
@@ -801,54 +909,54 @@ const App: React.FC = () => {
 
               <button
                 onClick={() => setSelectedStudentView('workouts')}
-                className="group bg-white dark:bg-zinc-900 p-5 rounded-[28px] transition-all active:scale-[0.98] shadow-sm hover:shadow-md border border-slate-200 dark:border-zinc-800 flex items-center justify-between w-full"
+                className="group bg-white dark:bg-zinc-900 p-5 rounded-[28px] transition-all active:scale-[0.98] shadow-sm hover:shadow-md border border-zinc-200 dark:border-zinc-800 flex items-center justify-between w-full"
               >
                 <div className="flex items-center gap-4 flex-1">
                   <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-600/20 dark:shadow-emerald-900/10 group-hover:scale-105 transition-transform flex-shrink-0">
                     <Dumbbell size={24} />
                   </div>
                   <div className="text-left">
-                    <h3 className="text-lg font-black text-slate-900 dark:text-white leading-tight">Treinos</h3>
-                    <p className="text-slate-500 dark:text-zinc-400 text-[10px] font-bold uppercase tracking-wider">Gerenciar todas as rotinas</p>
+                    <h3 className="text-lg font-black text-zinc-900 dark:text-white leading-tight">Treinos</h3>
+                    <p className="text-zinc-500 dark:text-zinc-400 text-[10px] font-bold uppercase tracking-wider">Gerenciar todas as rotinas</p>
                   </div>
                 </div>
-                <div className="w-10 h-10 bg-slate-50 dark:bg-zinc-800 rounded-xl flex items-center justify-center text-slate-300 dark:text-zinc-600 group-hover:bg-emerald-600 group-hover:text-white transition-all flex-shrink-0">
+                <div className="w-10 h-10 bg-zinc-50 dark:bg-zinc-800 rounded-xl flex items-center justify-center text-zinc-300 dark:text-zinc-600 group-hover:bg-emerald-600 group-hover:text-white transition-all flex-shrink-0">
                   <ArrowRight size={20} />
                 </div>
               </button>
 
               <button
                 onClick={() => setSelectedStudentView('files')}
-                className="group bg-white dark:bg-zinc-900 p-5 rounded-[28px] transition-all active:scale-[0.98] shadow-sm hover:shadow-md border border-slate-200 dark:border-zinc-800 flex items-center justify-between w-full"
+                className="group bg-white dark:bg-zinc-900 p-5 rounded-[28px] transition-all active:scale-[0.98] shadow-sm hover:shadow-md border border-zinc-200 dark:border-zinc-800 flex items-center justify-between w-full"
               >
                 <div className="flex items-center gap-4 flex-1">
                   <div className="w-12 h-12 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 rounded-2xl flex items-center justify-center shadow-lg shadow-zinc-900/10 dark:shadow-zinc-100/5 group-hover:scale-105 transition-transform flex-shrink-0">
                     <FileText size={24} />
                   </div>
                   <div className="text-left">
-                    <h3 className="text-lg font-black text-slate-900 dark:text-white leading-tight">Arquivos</h3>
-                    <p className="text-slate-500 dark:text-zinc-400 text-[10px] font-bold uppercase tracking-wider">Documentos e Anexos</p>
+                    <h3 className="text-lg font-black text-zinc-900 dark:text-white leading-tight">Arquivos</h3>
+                    <p className="text-zinc-500 dark:text-zinc-400 text-[10px] font-bold uppercase tracking-wider">Documentos e Anexos</p>
                   </div>
                 </div>
-                <div className="w-10 h-10 bg-slate-50 dark:bg-zinc-800 rounded-xl flex items-center justify-center text-slate-300 dark:text-zinc-600 group-hover:bg-zinc-900 dark:group-hover:bg-zinc-100 group-hover:text-white dark:group-hover:text-zinc-900 transition-all flex-shrink-0">
+                <div className="w-10 h-10 bg-zinc-50 dark:bg-zinc-800 rounded-xl flex items-center justify-center text-zinc-300 dark:text-zinc-600 group-hover:bg-zinc-900 dark:group-hover:bg-zinc-100 group-hover:text-white dark:group-hover:text-zinc-900 transition-all flex-shrink-0">
                   <ArrowRight size={20} />
                 </div>
               </button>
 
               <button
                 onClick={() => setSelectedStudentView('assessments')}
-                className="group bg-white dark:bg-zinc-900 p-5 rounded-[28px] transition-all active:scale-[0.98] shadow-sm hover:shadow-md border border-slate-200 dark:border-zinc-800 flex items-center justify-between w-full"
+                className="group bg-white dark:bg-zinc-900 p-5 rounded-[28px] transition-all active:scale-[0.98] shadow-sm hover:shadow-md border border-zinc-200 dark:border-zinc-800 flex items-center justify-between w-full"
               >
                 <div className="flex items-center gap-4 flex-1">
                   <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-2xl flex items-center justify-center shadow-lg shadow-purple-600/20 dark:shadow-purple-900/10 group-hover:scale-105 transition-transform flex-shrink-0">
                     <Award size={24} />
                   </div>
                   <div className="text-left">
-                    <h3 className="text-lg font-black text-slate-900 dark:text-white leading-tight">Avaliações</h3>
-                    <p className="text-slate-500 dark:text-zinc-400 text-[10px] font-bold uppercase tracking-wider">Morfológica e Anamnese</p>
+                    <h3 className="text-lg font-black text-zinc-900 dark:text-white leading-tight">Avaliações</h3>
+                    <p className="text-zinc-500 dark:text-zinc-400 text-[10px] font-bold uppercase tracking-wider">Morfológica e Anamnese</p>
                   </div>
                 </div>
-                <div className="w-10 h-10 bg-slate-50 dark:bg-zinc-800 rounded-xl flex items-center justify-center text-slate-300 dark:text-zinc-600 group-hover:bg-purple-600 group-hover:text-white transition-all flex-shrink-0">
+                <div className="w-10 h-10 bg-zinc-50 dark:bg-zinc-800 rounded-xl flex items-center justify-center text-zinc-300 dark:text-zinc-600 group-hover:bg-purple-600 group-hover:text-white transition-all flex-shrink-0">
                   <ArrowRight size={20} />
                 </div>
               </button>
@@ -856,18 +964,18 @@ const App: React.FC = () => {
               <div className="space-y-2">
                 <button
                   onClick={() => setShowLoginInfo(!showLoginInfo)}
-                  className="group bg-white dark:bg-zinc-900 p-5 rounded-[28px] transition-all active:scale-[0.98] shadow-sm hover:shadow-md border border-slate-200 dark:border-zinc-800 flex items-center justify-between w-full"
+                  className="group bg-white dark:bg-zinc-900 p-5 rounded-[28px] transition-all active:scale-[0.98] shadow-sm hover:shadow-md border border-zinc-200 dark:border-zinc-800 flex items-center justify-between w-full"
                 >
                   <div className="flex items-center gap-4 flex-1">
                     <div className="w-12 h-12 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 rounded-2xl flex items-center justify-center shadow-lg shadow-zinc-900/10 dark:shadow-zinc-100/5 group-hover:scale-105 transition-transform flex-shrink-0">
                       <Zap size={24} />
                     </div>
                     <div className="text-left">
-                      <h3 className="text-lg font-black text-slate-900 dark:text-white leading-tight">Informações de Login</h3>
-                      <p className="text-slate-500 dark:text-zinc-400 text-[10px] font-bold uppercase tracking-wider">Credenciais de Acesso</p>
+                      <h3 className="text-lg font-black text-zinc-900 dark:text-white leading-tight">Informações de Login</h3>
+                      <p className="text-zinc-500 dark:text-zinc-400 text-[10px] font-bold uppercase tracking-wider">Credenciais de Acesso</p>
                     </div>
                   </div>
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all flex-shrink-0 ${showLoginInfo ? 'bg-zinc-900 text-white' : 'bg-slate-50 dark:bg-zinc-800 text-slate-300 dark:text-zinc-600'}`}>
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all flex-shrink-0 ${showLoginInfo ? 'bg-zinc-900 text-white' : 'bg-zinc-50 dark:bg-zinc-800 text-zinc-300 dark:text-zinc-600'}`}>
                     <ArrowRight size={20} className={`transition-transform duration-300 ${showLoginInfo ? 'rotate-90' : ''}`} />
                   </div>
                 </button>
@@ -913,7 +1021,7 @@ const App: React.FC = () => {
           ) : selectedStudentView === 'files' ? (
             <div className="space-y-6">
               <div className="flex items-center justify-between px-2">
-                <h3 className="font-black text-slate-400 dark:text-zinc-500 uppercase text-[10px] tracking-widest">Arquivos do Aluno</h3>
+                <h3 className="font-black text-zinc-400 dark:text-zinc-500 uppercase text-[10px] tracking-widest">Arquivos do Aluno</h3>
               </div>
 
               <div className="grid gap-4">
@@ -1044,7 +1152,7 @@ const App: React.FC = () => {
           ) : selectedStudentView === 'workouts' ? (
             <div className="space-y-6">
               <div className="flex items-center justify-between px-2">
-                <h3 className="font-black text-slate-400 dark:text-zinc-500 uppercase text-[10px] tracking-widest">Gestão de Treinos</h3>
+                <h3 className="font-black text-zinc-400 dark:text-zinc-500 uppercase text-[10px] tracking-widest">Gestão de Treinos</h3>
 
               </div>
 
@@ -1060,7 +1168,7 @@ const App: React.FC = () => {
               </button>
 
               <div className="space-y-4">
-                <h4 className="text-[10px] font-black uppercase text-slate-400 tracking-widest px-2">Histórico e biblioteca do Aluno</h4>
+                <h4 className="text-[10px] font-black uppercase text-zinc-400 tracking-widest px-2">Histórico e biblioteca do Aluno</h4>
                 {(selectedStudent.programs || (selectedStudent.program ? [selectedStudent.program] : [])).length > 0 ? (
                   (selectedStudent.programs || [selectedStudent.program]).map((prog, pIdx) => (
                     <div
@@ -1076,14 +1184,14 @@ const App: React.FC = () => {
 
                           </div>
                           <div className="flex items-center gap-2">
-                            <h4 className="text-xl font-black text-slate-900 dark:text-white mb-1">{prog.name}</h4>
-                            <ChevronRight size={16} className={`text-slate-400 transition-transform duration-300 ${expandedWorkoutId === prog.id ? 'rotate-90' : ''}`} />
+                            <h4 className="text-xl font-black text-zinc-900 dark:text-white mb-1">{prog.name}</h4>
+                            <ChevronRight size={16} className={`text-zinc-400 transition-transform duration-300 ${expandedWorkoutId === prog.id ? 'rotate-90' : ''}`} />
                           </div>
-                          <div className="flex items-center gap-3 text-[10px] font-bold text-slate-400 uppercase">
+                          <div className="flex items-center gap-3 text-[10px] font-bold text-zinc-400 uppercase">
                             <span>{prog.goal}</span>
                             {prog.endDate && (
                               <>
-                                <span className="w-1 h-1 bg-slate-200 dark:bg-slate-700 rounded-full"></span>
+                                <span className="w-1 h-1 bg-zinc-200 dark:bg-zinc-700 rounded-full"></span>
                                 <span className="text-red-400">Expira em: {prog.endDate}</span>
                               </>
 
@@ -1137,13 +1245,13 @@ const App: React.FC = () => {
                         <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4 animate-in slide-in-from-top-4 fade-in duration-300">
                           {prog.split.map((day, dIdx) => (
                             <div key={dIdx} className="bg-white dark:bg-zinc-950 p-4 rounded-2xl border border-zinc-100 dark:border-zinc-800">
-                              <h5 className="font-black text-slate-800 dark:text-zinc-200 text-xs mb-3 uppercase flex items-center gap-2">
+                              <h5 className="font-black text-zinc-800 dark:text-zinc-200 text-xs mb-3 uppercase flex items-center gap-2">
                                 <span className="h-6 w-auto min-w-[24px] px-1.5 bg-zinc-100 dark:bg-zinc-900 rounded-lg flex items-center justify-center text-[10px] border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 font-black">{day.day}</span>
                                 <span className="text-zinc-800 dark:text-zinc-100">{day.label}</span>
                               </h5>
                               <div className="space-y-2">
                                 {day.exercises.map((ex, exIdx) => (
-                                  <div key={exIdx} className="flex items-center justify-between text-[10px] py-1.5 border-b border-slate-200 dark:border-zinc-800/50 last:border-0">
+                                  <div key={exIdx} className="flex items-center justify-between text-[10px] py-1.5 border-b border-zinc-200 dark:border-zinc-800/50 last:border-0">
                                     <span className="font-bold text-zinc-600 dark:text-zinc-400 truncate flex-1">{ex.name}</span>
                                     <span className="text-zinc-500 dark:text-zinc-500 font-black tracking-tight bg-zinc-50 dark:bg-zinc-900 px-2 py-0.5 rounded-md border border-zinc-100 dark:border-zinc-800">{ex.sets}x{ex.reps}</span>
                                   </div>
@@ -1161,13 +1269,13 @@ const App: React.FC = () => {
                       <div className="flex items-center gap-3">
                         <button
                           onClick={() => setSelectedStudentView('dashboard')}
-                          className="p-2 bg-slate-100 dark:bg-zinc-800 text-slate-500 dark:text-zinc-400 rounded-xl hover:bg-slate-200 dark:hover:bg-zinc-700 transition-colors"
+                          className="p-2 bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 rounded-xl hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
                         >
                           <ArrowLeft size={18} />
                         </button>
                         <div>
-                          <h3 className="font-black text-slate-900 dark:text-white text-lg uppercase tracking-tight">{selectedStudent.program?.name || 'Sem Ficha'}</h3>
-                          <p className="text-[10px] font-bold text-slate-400 dark:text-zinc-500 uppercase">Ficha Detalhada</p>
+                          <h3 className="font-black text-zinc-900 dark:text-white text-lg uppercase tracking-tight">{selectedStudent.program?.name || 'Sem Ficha'}</h3>
+                          <p className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase">Ficha Detalhada</p>
                         </div>
                       </div>
                       <button
@@ -1184,19 +1292,19 @@ const App: React.FC = () => {
                     {selectedStudent.program ? (
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {selectedStudent.program.split.map((day, idx) => (
-                          <div key={idx} className="bg-white dark:bg-zinc-900 p-6 rounded-[32px] border border-slate-100 dark:border-zinc-800 shadow-sm transition-colors duration-300">
+                          <div key={idx} className="bg-white dark:bg-zinc-900 p-6 rounded-[32px] border border-zinc-100 dark:border-zinc-800 shadow-sm transition-colors duration-300">
                             <div className="flex items-center gap-3 mb-4">
-                              <span className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-zinc-800 text-slate-900 dark:text-white flex items-center justify-center font-black text-xs">
+                              <span className="w-8 h-8 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-white flex items-center justify-center font-black text-xs">
                                 {day.day.split(' ')[1] || (idx + 1)}
                               </span>
-                              <h5 className="font-black text-slate-800 dark:text-zinc-200 text-sm uppercase">{day.label}</h5>
+                              <h5 className="font-black text-zinc-800 dark:text-zinc-200 text-sm uppercase">{day.label}</h5>
                             </div>
                             <div className="space-y-2">
                               {day.exercises.map((ex, exIdx) => (
-                                <div key={exIdx} className="flex items-center justify-between py-2 border-b border-slate-50 dark:border-zinc-800 last:border-0 group">
+                                <div key={exIdx} className="flex items-center justify-between py-2 border-b border-zinc-50 dark:border-zinc-800 last:border-0 group">
                                   <div>
-                                    <p className="font-bold text-slate-800 dark:text-zinc-200 text-xs">{ex.name}</p>
-                                    <p className="text-[10px] text-slate-400 dark:text-zinc-500 font-bold uppercase">{ex.sets}x{ex.reps}</p>
+                                    <p className="font-bold text-zinc-800 dark:text-zinc-200 text-xs">{ex.name}</p>
+                                    <p className="text-[10px] text-zinc-400 dark:text-zinc-500 font-bold uppercase">{ex.sets}x{ex.reps}</p>
                                   </div>
                                   <div className="w-8 h-8 rounded-lg bg-zinc-50 dark:bg-zinc-800 flex items-center justify-center text-zinc-400 dark:text-zinc-500 group-hover:bg-zinc-900 dark:group-hover:bg-zinc-100 group-hover:text-white dark:group-hover:text-zinc-900 transition-all">
                                     <ChevronRight size={14} />
@@ -1208,8 +1316,8 @@ const App: React.FC = () => {
                         ))}
                       </div>
                     ) : (
-                      <div className="p-12 text-center bg-white dark:bg-zinc-900 rounded-[32px] border border-slate-100 dark:border-zinc-800 transition-colors duration-300">
-                        <p className="text-slate-400 dark:text-zinc-500 font-bold mb-1">Nenhum treino encontrado</p>
+                      <div className="p-12 text-center bg-white dark:bg-zinc-900 rounded-[32px] border border-zinc-100 dark:border-zinc-800 transition-colors duration-300">
+                        <p className="text-zinc-400 dark:text-zinc-500 font-bold mb-1">Nenhum treino encontrado</p>
                         <button onClick={() => { setWorkoutToEdit(null); setIsManualBuilderOpen(true); }} className="text-zinc-900 dark:text-zinc-100 font-black text-xs uppercase underline">Criar Treino</button>
                       </div>
                     )}
@@ -1260,7 +1368,7 @@ const App: React.FC = () => {
 
   if (isLoading || (authUser && authLoading)) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 dark:bg-zinc-950 p-6 text-center">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-zinc-50 dark:bg-zinc-950 p-6 text-center">
         <div className="relative mb-8">
           <img src="/logo.png" alt="PersonalFlow" className="w-24 h-24 object-contain mx-auto animate-pulse dark:hidden" />
           <img src="/logo-dark.png" alt="PersonalFlow" className="w-24 h-24 object-contain mx-auto animate-pulse hidden dark:block" />
@@ -1364,7 +1472,14 @@ const App: React.FC = () => {
         );
       case 'evolution': return loggedInStudent ? <StudentProgressScreen student={loggedInStudent} onBack={() => setActiveTab('home')} /> : null;
       case 'chat': return <ChatScreen role={UserRole.STUDENT} student={loggedInStudent || undefined} />;
-      case 'profile': return loggedInStudent ? <StudentProfile student={loggedInStudent} onUpdateProfile={handleUpdateStudentProfile} /> : null;
+      case 'profile': return loggedInStudent ? (
+        <StudentProfile
+          student={loggedInStudent}
+          onUpdateProfile={handleUpdateStudentProfile}
+          initialModal={profileInitialModal}
+          onBack={() => setActiveTab('home')}
+        />
+      ) : null;
       case 'assessments':
         return loggedInStudent ? (
           <StudentAssessmentsScreen
@@ -1521,6 +1636,16 @@ const App: React.FC = () => {
             onClose={() => setIsStudentSelectorOpen(false)}
             onAddStudent={() => { }} // Not needed here
             onDeleteStudent={() => { }} // Not needed here
+          />
+        )}
+        {isEventModalOpen && (
+          <ScheduleEventModal
+            initialDate={initialDateForEvent || new Date()}
+            existingEvent={eventToEdit}
+            students={students}
+            onSave={handleSaveScheduleEvent}
+            onDelete={eventToEdit ? () => handleDeleteScheduleEvent(eventToEdit.id) : undefined}
+            onClose={() => setIsEventModalOpen(false)}
           />
         )}
       </Layout>

@@ -23,11 +23,11 @@ const ResetPasswordScreen: React.FC<ResetPasswordScreenProps> = ({ onSuccess, on
             const errorDescription = params.get('error_description');
 
             if (errorCode === 'otp_expired') {
-                setError('O link de recupera√ß√£o expirou. Por favor, solicite um novo.');
+                setError('O link de recuperaÁ„o expirou. Por favor, solicite um novo.');
             } else if (errorDescription) {
                 setError(errorDescription.replace(/\+/g, ' '));
             } else {
-                setError('Link inv√°lido ou expirado.');
+                setError('Link inv·lido ou expirado.');
             }
         }
     }, []);
@@ -42,7 +42,7 @@ const ResetPasswordScreen: React.FC<ResetPasswordScreenProps> = ({ onSuccess, on
         }
 
         if (password !== confirmPassword) {
-            setError('As senhas n√£o coincidem.');
+            setError('As senhas n„o coincidem.');
             return;
         }
 
@@ -66,14 +66,14 @@ const ResetPasswordScreen: React.FC<ResetPasswordScreenProps> = ({ onSuccess, on
 
     if (success) {
         return (
-            <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 flex flex-col items-center justify-center p-6 transition-colors">
-                <div className="bg-white dark:bg-zinc-900 p-8 rounded-[32px] shadow-xl border border-slate-100 dark:border-zinc-800 w-full max-w-md text-center space-y-4 animate-in fade-in zoom-in duration-300">
+            <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 flex flex-col items-center justify-center p-6 transition-colors">
+                <div className="bg-white dark:bg-zinc-900 p-8 rounded-[32px] shadow-xl border border-zinc-100 dark:border-zinc-800 w-full max-w-md text-center space-y-4 animate-in fade-in zoom-in duration-300">
                     <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
                         <CheckCircle2 className="w-8 h-8 text-green-600 dark:text-green-400" />
                     </div>
-                    <h2 className="text-2xl font-black text-slate-900 dark:text-white">Senha Atualizada!</h2>
-                    <p className="text-slate-500 dark:text-zinc-400">
-                        Sua senha foi alterada com sucesso. Voc√™ ser√° redirecionado para o login.
+                    <h2 className="text-2xl font-black text-zinc-900 dark:text-white">Senha Atualizada!</h2>
+                    <p className="text-zinc-500 dark:text-zinc-400">
+                        Sua senha foi alterada com sucesso. VocÍ ser· redirecionado para o login.
                     </p>
                 </div>
             </div>
@@ -81,20 +81,20 @@ const ResetPasswordScreen: React.FC<ResetPasswordScreenProps> = ({ onSuccess, on
     }
 
     return (
-        <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 flex flex-col items-center justify-center p-6 transition-colors">
+        <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 flex flex-col items-center justify-center p-6 transition-colors">
             <div className="w-full max-w-md space-y-8 animate-in fade-in duration-500">
                 <div className="text-center space-y-2">
                     <div className="mb-6 hover:scale-105 transition-transform duration-300">
                         <img src="/logo.png" alt="PersonalFlow" className="w-24 h-24 object-contain mx-auto dark:hidden" />
                         <img src="/logo-dark.png" alt="PersonalFlow" className="w-24 h-24 object-contain mx-auto hidden dark:block" />
                     </div>
-                    <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tighter transition-colors">Nova Senha</h1>
+                    <h1 className="text-3xl font-black text-zinc-900 dark:text-white tracking-tighter transition-colors">Nova Senha</h1>
                     <p className="text-center text-xs font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mt-2">
                         Defina sua nova senha de acesso
                     </p>
                 </div>
 
-                <div className="bg-white dark:bg-zinc-900 p-8 rounded-[32px] shadow-sm border border-slate-100 dark:border-zinc-800 relative">
+                <div className="bg-white dark:bg-zinc-900 p-8 rounded-[32px] shadow-sm border border-zinc-100 dark:border-zinc-800 relative">
                     <button
                         onClick={onCancel}
                         className="absolute top-8 left-8 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition-colors"
@@ -106,26 +106,26 @@ const ResetPasswordScreen: React.FC<ResetPasswordScreenProps> = ({ onSuccess, on
                     <form onSubmit={handleReset} className="space-y-6 mt-8">
                         <div className="space-y-4">
                             <div className="relative group">
-                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 dark:text-zinc-600 group-focus-within:text-zinc-900 dark:group-focus-within:text-zinc-100 transition-colors" size={20} />
+                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-300 dark:text-zinc-600 group-focus-within:text-zinc-900 dark:group-focus-within:text-zinc-100 transition-colors" size={20} />
                                 <input
                                     type="password"
                                     placeholder="Nova senha"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     required
-                                    className="w-full bg-slate-50 dark:bg-zinc-800 border-2 border-slate-100 dark:border-zinc-800 rounded-[24px] pl-12 pr-6 py-4 font-bold text-slate-900 dark:text-white focus:border-zinc-900 dark:focus:border-white transition-all outline-none placeholder:text-slate-300 dark:placeholder:text-zinc-600"
+                                    className="w-full bg-zinc-50 dark:bg-zinc-800 border-2 border-zinc-100 dark:border-zinc-800 rounded-[24px] pl-12 pr-6 py-4 font-bold text-zinc-900 dark:text-white focus:border-zinc-900 dark:focus:border-white transition-all outline-none placeholder:text-zinc-300 dark:placeholder:text-zinc-600"
                                 />
                             </div>
 
                             <div className="relative group">
-                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 dark:text-zinc-600 group-focus-within:text-zinc-900 dark:group-focus-within:text-zinc-100 transition-colors" size={20} />
+                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-300 dark:text-zinc-600 group-focus-within:text-zinc-900 dark:group-focus-within:text-zinc-100 transition-colors" size={20} />
                                 <input
                                     type="password"
                                     placeholder="Confirme a nova senha"
                                     value={confirmPassword}
                                     onChange={(e) => setConfirmPassword(e.target.value)}
                                     required
-                                    className="w-full bg-slate-50 dark:bg-zinc-800 border-2 border-slate-100 dark:border-zinc-800 rounded-[24px] pl-12 pr-6 py-4 font-bold text-slate-900 dark:text-white focus:border-zinc-900 dark:focus:border-white transition-all outline-none placeholder:text-slate-300 dark:placeholder:text-zinc-600"
+                                    className="w-full bg-zinc-50 dark:bg-zinc-800 border-2 border-zinc-100 dark:border-zinc-800 rounded-[24px] pl-12 pr-6 py-4 font-bold text-zinc-900 dark:text-white focus:border-zinc-900 dark:focus:border-white transition-all outline-none placeholder:text-zinc-300 dark:placeholder:text-zinc-600"
                                 />
                             </div>
                         </div>
@@ -152,3 +152,4 @@ const ResetPasswordScreen: React.FC<ResetPasswordScreenProps> = ({ onSuccess, on
 };
 
 export default ResetPasswordScreen;
+

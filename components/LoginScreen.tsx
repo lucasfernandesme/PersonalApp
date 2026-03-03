@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { UserRole, AuthUser, Student } from '../types';
-import { Mail, Lock, ChevronRight, UserCircle, Users, Loader2, UserPlus, ArrowLeft } from 'lucide-react';
+import { Mail, Lock, ChevronRight, Users, Loader2, UserPlus, ArrowLeft, UserCircle, Sun, Moon } from 'lucide-react';
 import { DataService } from '../services/dataService';
 import { supabase } from '../services/supabase';
 import { formatPhone } from '../utils/formatters';
@@ -8,9 +8,11 @@ import { formatPhone } from '../utils/formatters';
 interface LoginScreenProps {
   students: Student[];
   onLogin: (user: AuthUser) => void;
+  isDarkMode?: boolean;
+  setIsDarkMode?: (v: boolean) => void;
 }
 
-const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin }) => {
+const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin, isDarkMode = false, setIsDarkMode }) => {
   const [role, setRole] = useState<UserRole>(UserRole.TRAINER);
   const [view, setView] = useState<'login' | 'register' | 'forgot_password'>('login');
 
@@ -40,15 +42,14 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin }) => {
           return;
         }
 
-        // Busca dados extras na tabela de trainers
         const trainerData = await DataService.findTrainer(email.toLowerCase());
 
         onLogin({
           id: data.user.id,
-          name: trainerData?.name || data.user.user_metadata.name || 'Personal Trainer',
+          name: trainerData?.name || data.user.user_metadata.full_name || 'Personal Trainer',
           email: data.user.email!,
           role: UserRole.TRAINER,
-          avatar: trainerData?.avatar || data.user.user_metadata.avatar || `https://picsum.photos/seed/${data.user.email}/100`,
+          avatar: trainerData?.avatar || data.user.user_metadata.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(email)}&background=random`,
           surname: trainerData?.surname || '',
           instagram: trainerData?.instagram || '',
           whatsapp: trainerData?.whatsapp || '',
@@ -56,10 +57,8 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin }) => {
         });
 
       } else {
-        // Login de Aluno
         const inputEmail = email.trim().toLowerCase();
         const student = students.find(s => s.email.toLowerCase() === inputEmail);
-
         const validPassword = student?.password || '123456';
 
         if (student && password === validPassword) {
@@ -71,9 +70,6 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin }) => {
             avatar: student.avatar
           });
         } else {
-          // Log detalhado para debug se necessário
-          const status = !student ? "Aluno não encontrado" : "Senha incorreta";
-          console.log(`Tentativa de login: ${status} (${inputEmail})`);
           setError(`Aluno não encontrado ou senha incorreta.`);
         }
       }
@@ -105,10 +101,10 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin }) => {
         password,
         options: {
           data: {
-            name,
+            full_name: name,
             role: UserRole.TRAINER,
-            avatar: `https://picsum.photos/seed/${email.toLowerCase()}/100`,
-            whatsapp // Add phone to metadata just in case
+            avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random`,
+            whatsapp
           }
         }
       });
@@ -119,7 +115,6 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin }) => {
       }
 
       if (data.user) {
-        // Calculate 7-day trial end date
         const trialEndDate = new Date();
         trialEndDate.setDate(trialEndDate.getDate() + 7);
 
@@ -128,22 +123,18 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin }) => {
           name: name,
           email: email.toLowerCase(),
           role: UserRole.TRAINER,
-          avatar: `https://picsum.photos/seed/${email.toLowerCase()}/100`,
+          avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random`,
           whatsapp: whatsapp,
           subscriptionStatus: 'trial',
           subscriptionEndDate: trialEndDate.toISOString()
         };
 
-        // Salvar no banco customizado 'trainers' também
         await DataService.updateTrainer(initialProfile);
-
         onLogin(initialProfile);
       }
 
     } catch (err: any) {
-      console.error("Erro no registro:", err);
       setError(err.message || 'Falha ao criar conta. Verifique sua conexão.');
-      alert(`Erro: ${err.message || 'Desconhecido'}`);
     } finally {
       setIsLoading(false);
     }
@@ -171,66 +162,76 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin }) => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 flex flex-col items-center justify-center p-6 transition-colors">
-      <div className="w-full max-w-md space-y-8 animate-in fade-in duration-500">
+    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 flex flex-col items-center justify-center p-6 transition-colors relative">
+      {/* Header synchronized with BjjFlow */}
+      <header className="absolute top-0 left-0 w-full flex items-center justify-between px-6 z-50 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md border-b border-zinc-200/50 dark:border-zinc-800/50 pt-[calc(1rem+env(safe-area-inset-top))] pb-4">
+        <button
+          onClick={() => setIsDarkMode && setIsDarkMode(!isDarkMode)}
+          className="p-2 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors text-zinc-900 dark:text-white"
+        >
+          {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
+        </button>
+
+        <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2">
+          <img src="/logo.png" alt="PersonalFlow" className="h-10 w-auto object-contain drop-shadow-sm dark:bg-white dark:rounded-full dark:px-1" />
+          <span className="font-outfit font-black italic tracking-tighter text-xl text-zinc-900 dark:text-white">PersonalFlow</span>
+        </div>
+      </header>
+
+      <div className="w-full max-w-md space-y-8 mt-12">
         <div className="text-center space-y-2">
-          <div className="mb-6 hover:scale-105 transition-transform duration-300">
-            <img src="/logo.png" alt="PersonalFlow" className="w-24 h-24 object-contain mx-auto dark:hidden" />
-            <img src="/logo-dark.png" alt="PersonalFlow" className="w-24 h-24 object-contain mx-auto hidden dark:block" />
-          </div>
-          <h1 className="text-4xl font-black text-slate-900 dark:text-white tracking-tighter transition-colors">PersonalFlow</h1>
-          <p className="text-center text-xs font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mt-2 animate-in slide-in-from-top-2">
-            {role === UserRole.TRAINER ? 'Área do Personal' : 'Área do Aluno'}
+          <p className="text-center text-xs font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mt-2 animate-in slide-in-from-top-2">
+            Gestão Inteligente de Treinos
           </p>
         </div>
 
         {view === 'login' && (
-          <>
-            <div className="bg-white dark:bg-zinc-900 p-2 rounded-[32px] shadow-sm border border-slate-100 dark:border-zinc-800 flex gap-1 transition-colors">
-              <button
-                onClick={() => setRole(UserRole.TRAINER)}
-                className={`flex-1 flex items-center justify-center gap-2 py-4 rounded-[24px] text-xs font-black uppercase tracking-widest transition-all ${role === UserRole.TRAINER
-                  ? 'bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 shadow-lg'
-                  : 'text-slate-400 dark:text-zinc-500 hover:bg-slate-50 dark:hover:bg-zinc-800'}`}
-              >
-                <Users size={16} />
-                Personal
-              </button>
-              <button
-                onClick={() => setRole(UserRole.STUDENT)}
-                className={`flex-1 flex items-center justify-center gap-2 py-4 rounded-[24px] text-xs font-black uppercase tracking-widest transition-all ${role === UserRole.STUDENT
-                  ? 'bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 shadow-lg'
-                  : 'text-slate-400 dark:text-zinc-500 hover:bg-slate-50 dark:hover:bg-zinc-800'}`}
-              >
-                <UserCircle size={16} />
-                Aluno
-              </button>
-            </div>
+          <div className="flex p-1 bg-zinc-100 dark:bg-zinc-900 rounded-2xl mb-8 border border-zinc-200 dark:border-zinc-800 shadow-inner">
+            <button
+              onClick={() => setRole(UserRole.TRAINER)}
+              className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${role === UserRole.TRAINER
+                ? 'bg-white dark:bg-zinc-800 text-zinc-950 dark:text-white shadow-lg'
+                : 'text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300'
+                }`}
+            >
+              Professor
+            </button>
+            <button
+              onClick={() => setRole(UserRole.STUDENT)}
+              className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${role === UserRole.STUDENT
+                ? 'bg-white dark:bg-zinc-800 text-zinc-950 dark:text-white shadow-lg'
+                : 'text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300'
+                }`}
+            >
+              Aluno
+            </button>
+          </div>
+        )}
 
-
-
+        {view === 'login' && (
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
             <form onSubmit={handleLogin} className="space-y-4">
               <div className="space-y-2">
                 <div className="relative group">
-                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 dark:text-zinc-600 group-focus-within:text-zinc-900 dark:group-focus-within:text-zinc-100 transition-colors" size={20} />
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-300 dark:text-zinc-600 group-focus-within:text-zinc-900 dark:group-focus-within:text-zinc-100 transition-colors" size={20} />
                   <input
                     type="email"
-                    placeholder={role === UserRole.TRAINER ? "E-mail profissional" : "Seu e-mail de aluno"}
+                    placeholder="Seu E-mail"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="w-full bg-white dark:bg-zinc-800 border-2 border-slate-50 dark:border-zinc-800 rounded-[24px] pl-12 pr-6 py-5 font-bold text-slate-900 dark:text-white focus:border-zinc-900 dark:focus:border-white transition-all outline-none placeholder:text-slate-300 dark:placeholder:text-zinc-600"
+                    className="w-full bg-white dark:bg-zinc-800 border-2 border-zinc-50 dark:border-zinc-800 rounded-[24px] pl-12 pr-6 py-5 font-bold text-zinc-900 dark:text-white focus:border-zinc-900 dark:focus:border-white transition-all outline-none placeholder:text-zinc-300 dark:placeholder:text-zinc-600"
                   />
                 </div>
                 <div className="relative group">
-                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 dark:text-zinc-600 group-focus-within:text-zinc-900 dark:group-focus-within:text-zinc-100 transition-colors" size={20} />
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-300 dark:text-zinc-600 group-focus-within:text-zinc-900 dark:group-focus-within:text-zinc-100 transition-colors" size={20} />
                   <input
                     type="password"
-                    placeholder={role === UserRole.TRAINER ? "Sua senha" : "Sua senha"}
+                    placeholder="Sua Senha"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    className="w-full bg-white dark:bg-zinc-800 border-2 border-slate-50 dark:border-zinc-800 rounded-[24px] pl-12 pr-6 py-5 font-bold text-slate-900 dark:text-white focus:border-zinc-900 dark:focus:border-white transition-all outline-none placeholder:text-slate-300 dark:placeholder:text-zinc-600"
+                    className="w-full bg-white dark:bg-zinc-800 border-2 border-zinc-50 dark:border-zinc-800 rounded-[24px] pl-12 pr-6 py-5 font-bold text-zinc-900 dark:text-white focus:border-zinc-900 dark:focus:border-white transition-all outline-none placeholder:text-zinc-300 dark:placeholder:text-zinc-600"
                   />
                 </div>
               </div>
@@ -240,83 +241,83 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin }) => {
               )}
 
               <div className="flex justify-end">
-                {role === UserRole.TRAINER && (
-                  <button
-                    type="button"
-                    onClick={() => setView('forgot_password')}
-                    className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors uppercase tracking-wide"
-                  >
-                    Esqueceu a senha?
-                  </button>
-                )}
+                <button
+                  type="button"
+                  onClick={() => setView('forgot_password')}
+                  className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors uppercase tracking-wide"
+                >
+                  Esqueceu a senha?
+                </button>
               </div>
 
               <button
                 type="submit"
                 disabled={isLoading}
-                className={`w-full py-5 rounded-[24px] font-black uppercase text-xs tracking-[0.2em] flex items-center justify-center gap-3 shadow-2xl transition-all active:scale-95 ${role === UserRole.TRAINER
-                  ? 'bg-zinc-900 dark:bg-white shadow-zinc-900/20 dark:shadow-white/10 text-white dark:text-zinc-900'
-                  : 'bg-zinc-900 dark:bg-white shadow-zinc-900/20 dark:shadow-white/10 text-white dark:text-zinc-900'
-                  } disabled:opacity-50`}
+                className="w-full py-5 rounded-[24px] font-black uppercase text-xs tracking-[0.2em] flex items-center justify-center gap-3 shadow-2xl transition-all active:scale-95 bg-zinc-900 dark:bg-white shadow-zinc-900/20 dark:shadow-white/10 text-white dark:text-zinc-900 disabled:opacity-50"
               >
-                {isLoading ? <Loader2 className="animate-spin" size={20} /> : <>Entrar no App <ChevronRight size={18} /></>}
+                {isLoading ? (
+                  <Loader2 className="animate-spin" size={20} />
+                ) : (
+                  <>
+                    Entrar no Sistema
+                    <ChevronRight size={18} />
+                  </>
+                )}
               </button>
             </form>
 
-            <div className="text-center">
-              {role === UserRole.TRAINER && (
+            <div className="text-center mt-6">
+              {role === UserRole.TRAINER ? (
                 <button
                   onClick={() => setView('register')}
                   className="text-[10px] font-black uppercase tracking-widest text-zinc-900 dark:text-white hover:underline transition-colors"
                 >
                   Não tenho uma conta
                 </button>
-              )}
-              {role === UserRole.STUDENT && (
-                <p className="text-xs font-medium text-slate-500 dark:text-zinc-400 text-center max-w-[280px] mx-auto leading-relaxed animate-in fade-in slide-in-from-top-2 duration-500">
-                  Para acessar, utilize os dados de login fornecidos pelo seu <span className="text-zinc-900 dark:text-zinc-300 font-extrabold">Personal Trainer</span>.
+              ) : (
+                <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400 text-center max-w-[280px] mx-auto leading-relaxed">
+                  Utilize os dados de login fornecidos pelo seu <span className="text-zinc-900 dark:text-zinc-300 font-extrabold">Personal Trainer</span>.
                 </p>
               )}
-
             </div>
-          </>
+          </div>
         )}
 
         {view === 'register' && (
           <div className="space-y-6 animate-in slide-in-from-right duration-300">
-            <button onClick={() => setView('login')} className="flex items-center gap-2 text-slate-400 dark:text-zinc-500 hover:text-slate-600 dark:hover:text-zinc-300 font-bold text-xs uppercase tracking-widest transition-colors">
+            <button onClick={() => setView('login')} className="flex items-center gap-2 text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 font-bold text-xs uppercase tracking-widest transition-colors">
               <ArrowLeft size={16} /> Voltar
             </button>
 
             <div className="space-y-2">
-              <h2 className="text-2xl font-black text-slate-900 dark:text-white transition-colors">Criar Conta</h2>
+              <h2 className="text-2xl font-black text-zinc-900 dark:text-white transition-colors">Criar Nova Conta</h2>
             </div>
 
             <form onSubmit={handleRegister} className="space-y-4">
               <div className="space-y-3">
                 <input
                   type="text"
-                  placeholder="Seu Nome"
+                  placeholder="Nome Completo"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   required
-                  className="w-full bg-white dark:bg-zinc-800 border-2 border-slate-50 dark:border-zinc-800 rounded-[24px] px-6 py-4 font-bold text-slate-900 dark:text-white focus:border-zinc-900 dark:focus:border-white transition-all outline-none placeholder:text-slate-300 dark:placeholder:text-zinc-600"
+                  className="w-full bg-white dark:bg-zinc-800 border-2 border-zinc-50 dark:border-zinc-800 rounded-[24px] px-6 py-4 font-bold text-zinc-900 dark:text-white focus:border-zinc-900 dark:focus:border-white transition-all outline-none placeholder:text-zinc-300 dark:placeholder:text-zinc-600"
                 />
                 <input
                   type="email"
-                  placeholder="E-mail profissional"
+                  placeholder="E-mail"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="w-full bg-white dark:bg-zinc-800 border-2 border-slate-50 dark:border-zinc-800 rounded-[24px] px-6 py-4 font-bold text-slate-900 dark:text-white focus:border-zinc-900 dark:focus:border-white transition-all outline-none placeholder:text-slate-300 dark:placeholder:text-zinc-600"
+                  className="w-full bg-white dark:bg-zinc-800 border-2 border-zinc-50 dark:border-zinc-800 rounded-[24px] px-6 py-4 font-bold text-zinc-900 dark:text-white focus:border-zinc-900 dark:focus:border-white transition-all outline-none placeholder:text-zinc-300 dark:placeholder:text-zinc-600"
                 />
                 <input
                   type="email"
-                  placeholder="Confirme seu e-mail"
+                  placeholder="Confirme seu E-mail"
                   value={confirmEmail}
                   onChange={(e) => setConfirmEmail(e.target.value)}
                   required
-                  className="w-full bg-white dark:bg-zinc-800 border-2 border-slate-50 dark:border-zinc-800 rounded-[24px] px-6 py-4 font-bold text-slate-900 dark:text-white focus:border-zinc-900 dark:focus:border-white transition-all outline-none placeholder:text-slate-300 dark:placeholder:text-zinc-600"
+                  className="w-full bg-white dark:bg-zinc-800 border-2 border-zinc-50 dark:border-zinc-800 rounded-[24px] px-6 py-4 font-bold text-zinc-900 dark:text-white focus:border-zinc-900 dark:focus:border-white transition-all outline-none placeholder:text-zinc-300 dark:placeholder:text-zinc-600"
                 />
                 <input
                   type="tel"
@@ -324,15 +325,15 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin }) => {
                   value={whatsapp}
                   onChange={(e) => setWhatsapp(formatPhone(e.target.value))}
                   required
-                  className="w-full bg-white dark:bg-zinc-800 border-2 border-slate-50 dark:border-zinc-800 rounded-[24px] px-6 py-4 font-bold text-slate-900 dark:text-white focus:border-zinc-900 dark:focus:border-white transition-all outline-none placeholder:text-slate-300 dark:placeholder:text-zinc-600"
+                  className="w-full bg-white dark:bg-zinc-800 border-2 border-zinc-50 dark:border-zinc-800 rounded-[24px] px-6 py-4 font-bold text-zinc-900 dark:text-white focus:border-zinc-900 dark:focus:border-white transition-all outline-none placeholder:text-zinc-300 dark:placeholder:text-zinc-600"
                 />
                 <input
                   type="password"
-                  placeholder="Crie sua senha"
+                  placeholder="Crie sua Senha"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="w-full bg-white dark:bg-zinc-800 border-2 border-slate-50 dark:border-zinc-800 rounded-[24px] px-6 py-4 font-bold text-slate-900 dark:text-white focus:border-zinc-900 dark:focus:border-white transition-all outline-none placeholder:text-slate-300 dark:placeholder:text-zinc-600"
+                  className="w-full bg-white dark:bg-zinc-800 border-2 border-zinc-50 dark:border-zinc-800 rounded-[24px] px-6 py-4 font-bold text-zinc-900 dark:text-white focus:border-zinc-900 dark:focus:border-white transition-all outline-none placeholder:text-zinc-300 dark:placeholder:text-zinc-600"
                 />
               </div>
 
@@ -351,13 +352,13 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin }) => {
 
         {view === 'forgot_password' && (
           <div className="space-y-6 animate-in slide-in-from-right duration-300">
-            <button onClick={() => setView('login')} className="flex items-center gap-2 text-slate-400 dark:text-zinc-500 hover:text-slate-600 dark:hover:text-zinc-300 font-bold text-xs uppercase tracking-widest transition-colors">
+            <button onClick={() => setView('login')} className="flex items-center gap-2 text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 font-bold text-xs uppercase tracking-widest transition-colors">
               <ArrowLeft size={16} /> Voltar
             </button>
 
             <div className="space-y-2">
-              <h2 className="text-2xl font-black text-slate-900 dark:text-white transition-colors">Recuperar Senha</h2>
-              <p className="text-sm text-slate-500 dark:text-zinc-400">
+              <h2 className="text-2xl font-black text-zinc-900 dark:text-white transition-colors">Recuperar Senha</h2>
+              <p className="text-sm text-zinc-500 dark:text-zinc-400">
                 Digite seu e-mail para receber o link de redefinição de senha.
               </p>
             </div>
@@ -370,7 +371,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin }) => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="w-full bg-white dark:bg-zinc-800 border-2 border-slate-50 dark:border-zinc-800 rounded-[24px] px-6 py-4 font-bold text-slate-900 dark:text-white focus:border-zinc-900 dark:focus:border-white transition-all outline-none placeholder:text-slate-300 dark:placeholder:text-zinc-600"
+                  className="w-full bg-white dark:bg-zinc-800 border-2 border-zinc-50 dark:border-zinc-800 rounded-[24px] px-6 py-4 font-bold text-zinc-900 dark:text-white focus:border-zinc-900 dark:focus:border-white transition-all outline-none placeholder:text-zinc-300 dark:placeholder:text-zinc-600"
                 />
               </div>
 

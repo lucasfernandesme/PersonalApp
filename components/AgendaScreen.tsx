@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import {
     format,
     startOfWeek,
@@ -38,7 +38,7 @@ const AgendaScreen: React.FC<AgendaScreenProps> = ({ events, students, onAddEven
 
                     <div className="flex items-center gap-2">
                         <img src="/logo.png" alt="PersonalFlow" className="w-8 h-8 rounded-full shadow-sm" />
-                        <span className="font-extrabold text-slate-900 dark:text-white tracking-tight">PersonalFlow</span>
+                        <span className="font-extrabold text-zinc-900 dark:text-white tracking-tight">PersonalFlow</span>
                     </div>
 
                     <button onClick={onClose} className="p-2 text-zinc-400 dark:text-zinc-500 hover:text-red-500 transition-colors z-10 w-10 flex justify-end">

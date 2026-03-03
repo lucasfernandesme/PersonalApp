@@ -26,7 +26,7 @@ const ScheduleEventModal: React.FC<ScheduleEventModalProps> = ({ initialDate, ex
     const [recurrenceDuration, setRecurrenceDuration] = useState<number>(1);
     const [status, setStatus] = useState<'planned' | 'completed' | 'cancelled'>('planned');
 
-    const monthNames = ['Janeiro', 'Fevereiro', 'MarÃ§o', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+    const monthNames = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
 
     useEffect(() => {
         if (existingEvent) {
@@ -58,16 +58,16 @@ const ScheduleEventModal: React.FC<ScheduleEventModalProps> = ({ initialDate, ex
 
     const handleSave = () => {
         if (!title && !selectedStudentId) {
-            alert("Por favor, informe um tÃ­tulo ou selecione um aluno.");
+            alert("Por favor, informe um título ou selecione um aluno.");
             return;
         }
 
         if (!date || !startTime || !endTime) {
-            alert("Por favor, preencha a data e os horÃ¡rios.");
+            alert("Por favor, preencha a data e os horários.");
             return;
         }
 
-        // Se selecionou aluno e nÃ£o tem tÃ­tulo, usa o nome do aluno como tÃ­tulo
+        // Se selecionou aluno e não tem título, usa o nome do aluno como título
         let finalTitle = title;
         let studentName = undefined;
 
@@ -95,7 +95,7 @@ const ScheduleEventModal: React.FC<ScheduleEventModalProps> = ({ initialDate, ex
         });
 
         if (startDateTime >= endDateTime) {
-            alert("O horÃ¡rio de tÃ©rmino deve ser depois do inÃ­cio.");
+            alert("O horário de término deve ser depois do início.");
             return;
         }
 
@@ -149,7 +149,7 @@ const ScheduleEventModal: React.FC<ScheduleEventModalProps> = ({ initialDate, ex
 
                     {/* Title */}
                     <div>
-                        <label className="block text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase mb-1.5 ml-1">TÃ­tulo da Aula</label>
+                        <label className="block text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase mb-1.5 ml-1">Título da Aula</label>
                         <input
                             type="text"
                             value={title}
@@ -176,7 +176,7 @@ const ScheduleEventModal: React.FC<ScheduleEventModalProps> = ({ initialDate, ex
 
                         <div className="flex gap-2">
                             <div className="flex-1">
-                                <label className="block text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase mb-1.5 ml-1">InÃ­cio</label>
+                                <label className="block text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase mb-1.5 ml-1">Início</label>
                                 <input
                                     type="time"
                                     value={startTime}
@@ -213,7 +213,7 @@ const ScheduleEventModal: React.FC<ScheduleEventModalProps> = ({ initialDate, ex
 
                     {/* Description */}
                     <div>
-                        <label className="block text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase mb-1.5 ml-1">ObservaÃ§Ãµes</label>
+                        <label className="block text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase mb-1.5 ml-1">Observações</label>
                         <textarea
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
@@ -258,7 +258,7 @@ const ScheduleEventModal: React.FC<ScheduleEventModalProps> = ({ initialDate, ex
                                         onChange={() => setIsRecurring(false)}
                                         className="w-4 h-4 text-zinc-900 focus:ring-zinc-900 dark:text-zinc-100 dark:focus:ring-white border-zinc-300 dark:border-zinc-600 bg-zinc-100 dark:bg-zinc-800"
                                     />
-                                    <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">NÃ£o replicar</span>
+                                    <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Não replicar</span>
                                 </label>
                                 <label className="flex items-center gap-2 cursor-pointer">
                                     <input
@@ -276,26 +276,26 @@ const ScheduleEventModal: React.FC<ScheduleEventModalProps> = ({ initialDate, ex
                                 <div className="pt-2 space-y-4 animate-in slide-in-from-top-2 duration-200">
                                     {/* Days of Week */}
                                     <div>
-                                        <label className="block text-xs font-bold text-slate-500 dark:text-zinc-400 mb-2">Replicar para os seguintes dias da semana</label>
+                                        <label className="block text-xs font-bold text-zinc-500 dark:text-zinc-400 mb-2">Replicar para os seguintes dias da semana</label>
                                         <div className="flex flex-wrap gap-2 p-2 border border-blue-400 rounded-lg min-h-[40px] bg-white dark:bg-zinc-950">
                                             {recurringDays.length === 0 && <span className="text-xs text-zinc-400 p-1">Selecione os dias abaixo...</span>}
                                             {recurringDays.map((dayIdx) => (
-                                                <span key={dayIdx} className="inline-flex items-center gap-1 px-2 py-1 rounded bg-slate-700 text-white text-xs font-bold">
-                                                    {['Domingo', 'Segunda', 'TerÃ§a', 'Quarta', 'Quinta', 'Sexta', 'SÃ¡bado'][dayIdx]}
+                                                <span key={dayIdx} className="inline-flex items-center gap-1 px-2 py-1 rounded bg-zinc-700 text-white text-xs font-bold">
+                                                    {['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'][dayIdx]}
                                                     <button
                                                         onClick={() => {
                                                             setRecurringDays(prev => prev.filter(d => d !== dayIdx));
                                                         }}
                                                         className="hover:text-red-300"
                                                     >
-                                                        Ã—
+                                                        ×
                                                     </button>
                                                 </span>
                                             ))}
                                         </div>
                                         {/* Day Selector Buttons */}
                                         <div className="flex flex-wrap gap-1 mt-2">
-                                            {['Domingo', 'Segunda', 'TerÃ§a', 'Quarta', 'Quinta', 'Sexta', 'SÃ¡bado'].map((label, idx) => {
+                                            {['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'].map((label, idx) => {
                                                 if (recurringDays.includes(idx)) return null; // Don't show if already selected (or maybe show disabled?)
                                                 // Actually typical tag UI shows available options to add.
                                                 return (
@@ -313,11 +313,11 @@ const ScheduleEventModal: React.FC<ScheduleEventModalProps> = ({ initialDate, ex
 
                                     {/* Months Selector */}
                                     <div>
-                                        <label className="block text-xs font-bold text-slate-500 dark:text-zinc-400 mb-2">Nos meses</label>
-                                        <div className="flex flex-wrap gap-2 p-2 border border-slate-300 dark:border-zinc-700 rounded-lg min-h-[40px] bg-white dark:bg-zinc-950">
+                                        <label className="block text-xs font-bold text-zinc-500 dark:text-zinc-400 mb-2">Nos meses</label>
+                                        <div className="flex flex-wrap gap-2 p-2 border border-zinc-300 dark:border-zinc-700 rounded-lg min-h-[40px] bg-white dark:bg-zinc-950">
                                             {recurringMonths.length === 0 && <span className="text-xs text-zinc-400 p-1">Selecione os meses abaixo...</span>}
                                             {recurringMonths.map((monthIdx) => (
-                                                <span key={monthIdx} className="inline-flex items-center gap-1 px-2 py-1 rounded bg-slate-700 text-white text-xs font-bold">
+                                                <span key={monthIdx} className="inline-flex items-center gap-1 px-2 py-1 rounded bg-zinc-700 text-white text-xs font-bold">
                                                     {monthNames[monthIdx]}
                                                     <button
                                                         onClick={() => {
@@ -325,7 +325,7 @@ const ScheduleEventModal: React.FC<ScheduleEventModalProps> = ({ initialDate, ex
                                                         }}
                                                         className="hover:text-red-300"
                                                     >
-                                                        Ã—
+                                                        ×
                                                     </button>
                                                 </span>
                                             ))}
@@ -362,7 +362,7 @@ const ScheduleEventModal: React.FC<ScheduleEventModalProps> = ({ initialDate, ex
                         onClick={handleSave}
                         className="w-full py-4 bg-zinc-900 hover:bg-zinc-800 dark:bg-white dark:hover:bg-zinc-200 text-white dark:text-zinc-900 rounded-2xl font-black uppercase text-xs tracking-widest shadow-lg shadow-zinc-900/20 dark:shadow-none active:scale-95 transition-all flex items-center justify-center gap-2"
                     >
-                        {existingEvent ? 'Salvar AlteraÃ§Ãµes' : 'Agendar Aula'} <CheckCircle2 size={18} />
+                        {existingEvent ? 'Salvar Alterações' : 'Agendar Aula'} <CheckCircle2 size={18} />
                     </button>
                 </div>
 
@@ -372,3 +372,4 @@ const ScheduleEventModal: React.FC<ScheduleEventModalProps> = ({ initialDate, ex
 };
 
 export default ScheduleEventModal;
+

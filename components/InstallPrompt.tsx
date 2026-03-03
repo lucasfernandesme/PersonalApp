@@ -1,4 +1,4 @@
-
+﻿
 import React, { useState, useEffect } from 'react';
 import { Download, X, Share } from 'lucide-react';
 
@@ -27,10 +27,10 @@ const InstallPrompt: React.FC = () => {
 
   return (
     <div className="fixed bottom-24 left-4 right-4 z-[100] animate-in slide-in-from-bottom duration-500">
-      <div className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white p-5 rounded-[32px] shadow-2xl border border-slate-100 dark:border-slate-800 relative overflow-hidden transition-colors">
+      <div className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white p-5 rounded-[32px] shadow-2xl border border-zinc-100 dark:border-zinc-800 relative overflow-hidden transition-colors">
         <button
           onClick={() => setIsVisible(false)}
-          className="absolute top-4 right-4 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+          className="absolute top-4 right-4 text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
         >
           <X size={20} />
         </button>
@@ -41,7 +41,7 @@ const InstallPrompt: React.FC = () => {
           </div>
           <div>
             <h4 className="font-black text-sm uppercase tracking-tight">Instale o PersonalFlow</h4>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+            <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1 leading-relaxed">
               {isIOS
                 ? 'Toque no ícone de compartilhar (seta pra cima) e selecione "Adicionar à Tela de Início".'
                 : 'Instale nosso app para acesso rápido e melhor performance.'}
