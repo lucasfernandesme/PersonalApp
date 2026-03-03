@@ -38,7 +38,7 @@ const TrainerDashboard: React.FC<TrainerDashboardProps> = ({
     const matchesSearch = s.name.toLowerCase().includes(searchTerm.toLowerCase());
     const isStudentActive = s.isActive !== false;
 
-    // Se estivermos apenas no Dashboard (n„o na lista completa), mostrar apenas ativos
+    // Se estivermos apenas no Dashboard (n√£o na lista completa), mostrar apenas ativos
     if (!onlyList) return matchesSearch && isStudentActive;
 
     // Na lista completa, filtrar pela aba selecionada
@@ -65,7 +65,7 @@ const TrainerDashboard: React.FC<TrainerDashboardProps> = ({
         </div>
       )}
 
-      {/* TÌtulo da SeÁ„o quando em modo Lista */}
+      {/* T√≠tulo da Se√ß√£o quando em modo Lista */}
       {onlyList && (
         <div className="flex flex-col gap-2">
           <h2 className="text-3xl font-black text-zinc-900 dark:text-white tracking-tight">Meus Alunos</h2>
@@ -97,7 +97,7 @@ const TrainerDashboard: React.FC<TrainerDashboardProps> = ({
               <PlusCircle size={24} />
             </div>
             <div className="text-left">
-              <p className="font-black text-zinc-800 dark:text-white text-sm">ExercÌcios</p>
+              <p className="font-black text-zinc-800 dark:text-white text-sm">Exerc√≠cios</p>
               <p className="text-[10px] text-zinc-400 dark:text-zinc-500 font-bold uppercase mt-1">Biblioteca</p>
             </div>
           </button>
@@ -120,7 +120,7 @@ const TrainerDashboard: React.FC<TrainerDashboardProps> = ({
         </div>
       )}
 
-      {/* Tabs - SÛ aparece na tela de Meus Alunos */}
+      {/* Tabs - S√≥ aparece na tela de Meus Alunos */}
       {onlyList && (
         <div className="flex bg-zinc-100/50 dark:bg-zinc-800/50 p-1.5 rounded-[24px] gap-1">
           <button

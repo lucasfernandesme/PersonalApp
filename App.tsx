@@ -26,7 +26,9 @@ import AgendaScreen from './components/AgendaScreen';
 import FinanceScreen from './components/FinanceScreen';
 import ReportsScreen from './components/ReportsScreen';
 import ScheduleEventModal from './components/ScheduleEventModal';
+import ClassDetailsModal from './components/ClassDetailsModal';
 import { WorkoutFolder, WorkoutTemplate, Student, StudentFile, ScheduleEvent } from './types';
+import { parseISO, format } from 'date-fns';
 import { ArrowLeft, Settings, Loader2, RefreshCw, CheckCircle2, X, Dumbbell, ArrowRight, Zap, Award, ChevronRight, Plus, Edit2, Trash2, User, Calendar, FileText, MessageCircle } from 'lucide-react';
 import { TrainingFrequencyCard } from './components/TrainingFrequencyCard';
 import { ThemeProvider } from './contexts/ThemeContext';
@@ -86,6 +88,9 @@ const App: React.FC = () => {
   const [isEventModalOpen, setIsEventModalOpen] = useState(false);
   const [eventToEdit, setEventToEdit] = useState<ScheduleEvent | undefined>(undefined);
   const [initialDateForEvent, setInitialDateForEvent] = useState<Date | undefined>(undefined);
+
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+  const [selectedEventDetails, setSelectedEventDetails] = useState<ScheduleEvent | null>(null);
 
   const reloadStudents = useCallback(async () => {
     try {
@@ -554,13 +559,69 @@ const App: React.FC = () => {
     try {
       if (!authUser?.id) return;
 
-      const payload = {
+      const basePayload = {
         ...eventData,
-        trainerId: authUser.id,
-        id: eventToEdit?.id || Math.random().toString(36).substring(2, 11)
+        trainerId: authUser.id
       };
 
-      await DataService.saveScheduleEvent(payload);
+      if (!eventData.isRecurring || !eventData.recurringDays?.length) {
+        // Aula única
+        const payload = {
+          ...basePayload,
+          id: eventToEdit?.id || Math.random().toString(36).substring(2, 11)
+        };
+        await DataService.saveScheduleEvent(payload);
+      } else {
+        // Aplicar lógica de replicação para evento recorrente selecionando meses e dias da semana
+        const eventsToSave = [];
+        const baseStart = parseISO(eventData.start);
+        const baseEnd = parseISO(eventData.end);
+
+        // Calcula a duração do evento em ms
+        const duration = baseEnd.getTime() - baseStart.getTime();
+
+        const defaultMonths = [baseStart.getMonth()];
+        const targetMonths = (eventData.recurringMonths && eventData.recurringMonths.length > 0)
+          ? eventData.recurringMonths
+          : defaultMonths;
+
+        const currentYear = baseStart.getFullYear();
+        const currentMonthIndex = baseStart.getMonth();
+
+        for (const targetMonthIndex of targetMonths) {
+          // Se o mês alvo for anterior ao mês atual no ano, agende para o PRÓXIMO ano!
+          const yearOfTargetMonth = targetMonthIndex < currentMonthIndex ? currentYear + 1 : currentYear;
+          const daysInMonth = new Date(yearOfTargetMonth, targetMonthIndex + 1, 0).getDate();
+
+          for (let day = 1; day <= daysInMonth; day++) {
+            const currentDate = new Date(yearOfTargetMonth, targetMonthIndex, day);
+            const currentDayOfWeek = currentDate.getDay(); // 0=Domingo, 1=Segunda...
+
+            if (eventData.recurringDays.includes(currentDayOfWeek)) {
+              // Ajusta a hora para bater com o baseStart
+              currentDate.setHours(baseStart.getHours(), baseStart.getMinutes(), baseStart.getSeconds(), 0);
+
+              // Só agenda se a data gerada for >= a data inicial base
+              if (currentDate.getTime() >= baseStart.getTime()) {
+                const newEnd = new Date(currentDate.getTime() + duration);
+
+                eventsToSave.push({
+                  ...basePayload,
+                  id: Math.random().toString(36).substring(2, 11),
+                  start: currentDate.toISOString(),
+                  end: newEnd.toISOString()
+                });
+              }
+            }
+          }
+        }
+
+        // Save batch
+        for (const evt of eventsToSave) {
+          await DataService.saveScheduleEvent(evt);
+        }
+      }
+
       await reloadEvents();
       setIsEventModalOpen(false);
       setEventToEdit(undefined);
@@ -761,8 +822,8 @@ const App: React.FC = () => {
             setIsEventModalOpen(true);
           }}
           onEditEvent={(event) => {
-            setEventToEdit(event);
-            setIsEventModalOpen(true);
+            setSelectedEventDetails(event);
+            setIsDetailsModalOpen(true);
           }}
           onClose={() => setActiveTab('home')}
         />
@@ -1645,7 +1706,31 @@ const App: React.FC = () => {
             students={students}
             onSave={handleSaveScheduleEvent}
             onDelete={eventToEdit ? () => handleDeleteScheduleEvent(eventToEdit.id) : undefined}
-            onClose={() => setIsEventModalOpen(false)}
+            onClose={() => {
+              setIsEventModalOpen(false);
+              setEventToEdit(undefined);
+            }}
+          />
+        )}
+
+        {isDetailsModalOpen && selectedEventDetails && (
+          <ClassDetailsModal
+            event={selectedEventDetails}
+            onUpdate={(updates) => {
+              const updatedEvent = { ...selectedEventDetails, ...updates };
+              setScheduleEvents(prev => prev.map(e => e.id === selectedEventDetails.id ? updatedEvent : e));
+              DataService.saveScheduleEvent(updatedEvent as ScheduleEvent).catch(err => console.error("Erro ao atualizar:", err));
+            }}
+            onEdit={() => {
+              setEventToEdit(selectedEventDetails);
+              setIsDetailsModalOpen(false);
+              setIsEventModalOpen(true);
+            }}
+            onDelete={() => {
+              handleDeleteScheduleEvent(selectedEventDetails.id);
+              setIsDetailsModalOpen(false);
+            }}
+            onClose={() => setIsDetailsModalOpen(false)}
           />
         )}
       </Layout>

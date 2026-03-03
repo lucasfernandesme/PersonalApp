@@ -42,11 +42,11 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
                         </div>
 
                         <h1 className="text-5xl md:text-7xl font-black text-zinc-900 dark:text-white tracking-tighter leading-[1.1] mb-8 max-w-4xl mx-auto animate-in slide-in-from-bottom-8 duration-700">
-                            Evolua a forma como você <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-teal-400">gerencia seus alunos.</span>
+                            Evolua a forma como vocÃª <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-teal-400">gerencia seus alunos.</span>
                         </h1>
 
                         <p className="text-lg md:text-xl text-zinc-500 dark:text-zinc-400 max-w-2xl mx-auto font-medium leading-relaxed mb-12 animate-in slide-in-from-bottom-10 duration-700 delay-100">
-                            Crie treinos incríveis, acompanhe a evolução e ofereça uma experiência premium. O PersonalFlow foi feito para transformar seu negócio.
+                            Crie treinos incrÃ­veis, acompanhe a evoluÃ§Ã£o e ofereÃ§a uma experiÃªncia premium. O PersonalFlow foi feito para transformar seu negÃ³cio.
                         </p>
 
                         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-in slide-in-from-bottom-12 duration-700 delay-200">
@@ -54,7 +54,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
                                 onClick={onEnterApp}
                                 className="w-full sm:w-auto px-8 py-4 bg-emerald-500 hover:bg-emerald-400 text-white rounded-2xl text-sm font-black uppercase tracking-widest flex items-center justify-center gap-3 transition-colors shadow-xl shadow-emerald-500/20"
                             >
-                                Começar Agora <ArrowRight size={18} />
+                                ComeÃ§ar Agora <ArrowRight size={18} />
                             </button>
                             <a
                                 href="#features"
@@ -70,18 +70,18 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
                 <section id="features" className="py-20 bg-white dark:bg-zinc-950 px-6 border-y border-zinc-100 dark:border-zinc-900">
                     <div className="max-w-7xl mx-auto">
                         <div className="text-center mb-16">
-                            <h2 className="text-3xl md:text-4xl font-black text-zinc-900 dark:text-white mb-4">Tudo que você precisa em um só lugar</h2>
-                            <p className="text-zinc-500 dark:text-zinc-400 max-w-2xl mx-auto">Diga adeus às planilhas e mensagens perdidas. Otimize seu tempo com ferramentas poderosas de organização e gestão.</p>
+                            <h2 className="text-3xl md:text-4xl font-black text-zinc-900 dark:text-white mb-4">Tudo que vocÃª precisa em um sÃ³ lugar</h2>
+                            <p className="text-zinc-500 dark:text-zinc-400 max-w-2xl mx-auto">Diga adeus Ã s planilhas e mensagens perdidas. Otimize seu tempo com ferramentas poderosas de organizaÃ§Ã£o e gestÃ£o.</p>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                             {[
-                                { icon: <Dumbbell className="text-emerald-500" size={32} />, title: "Criador de Treinos", desc: "Monte fichas de forma ágil com nossa biblioteca de exercícios ou adicione os seus vídeos customizados." },
-                                { icon: <Calendar className="text-blue-500" size={32} />, title: "Agenda Inteligente", desc: "Controle as datas de vencimento, pagamentos mensais e horários das aulas presenciais com facilidade." },
-                                { icon: <BarChart3 className="text-purple-500" size={32} />, title: "Acompanhamento", desc: "Registre anamneses, avaliações morfológicas e veja gráficos reais da evolução dos seus alunos ao longo do tempo." },
-                                { icon: <Zap className="text-yellow-500" size={32} />, title: "Notificações Pelo WhatsApp", desc: "Gere links para enviar dados de login, metas, feedbacks e relatórios diretamente no chat do aluno." },
-                                { icon: <MessageCircle className="text-pink-500" size={32} />, title: "Chat Integrado", desc: "Mantenha a comunicação organizada. Separe sua vida pessoal da profissional, respondendo às dúvidas direto no app." },
-                                { icon: <Play className="text-red-500" size={32} />, title: "Vídeos e Referências", desc: "Sem dúvidas na execução: cada exercício pode ter o seu vídeo, garantindo mais segurança e resultado." }
+                                { icon: <Dumbbell className="text-emerald-500" size={32} />, title: "Criador de Treinos", desc: "Monte fichas de forma Ã¡gil com nossa biblioteca de exercÃ­cios ou adicione os seus vÃ­deos customizados." },
+                                { icon: <Calendar className="text-blue-500" size={32} />, title: "Agenda Inteligente", desc: "Controle as datas de vencimento, pagamentos mensais e horÃ¡rios das aulas presenciais com facilidade." },
+                                { icon: <BarChart3 className="text-purple-500" size={32} />, title: "Acompanhamento", desc: "Registre anamneses, avaliaÃ§Ãµes morfolÃ³gicas e veja grÃ¡ficos reais da evoluÃ§Ã£o dos seus alunos ao longo do tempo." },
+                                { icon: <Zap className="text-yellow-500" size={32} />, title: "NotificaÃ§Ãµes Pelo WhatsApp", desc: "Gere links para enviar dados de login, metas, feedbacks e relatÃ³rios diretamente no chat do aluno." },
+                                { icon: <MessageCircle className="text-pink-500" size={32} />, title: "Chat Integrado", desc: "Mantenha a comunicaÃ§Ã£o organizada. Separe sua vida pessoal da profissional, respondendo Ã s dÃºvidas direto no app." },
+                                { icon: <Play className="text-red-500" size={32} />, title: "VÃ­deos e ReferÃªncias", desc: "Sem dÃºvidas na execuÃ§Ã£o: cada exercÃ­cio pode ter o seu vÃ­deo, garantindo mais seguranÃ§a e resultado." }
                             ].map((feature, idx) => (
                                 <div key={idx} className="bg-zinc-50 dark:bg-zinc-900 rounded-[32px] p-8 border border-zinc-100 dark:border-zinc-800 hover:-translate-y-2 transition-transform duration-300">
                                     <div className="w-16 h-16 rounded-2xl bg-white dark:bg-zinc-950 flex items-center justify-center shadow-sm mb-6">
@@ -104,15 +104,15 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
                                 <span className="text-zinc-400">Mais valor cobrado.</span>
                             </h2>
                             <p className="text-lg text-zinc-500 dark:text-zinc-400 leading-relaxed">
-                                Entregar uma planilha em PDF é passado. Ter um aplicativo próprio para seus alunos acessarem os treinos aumenta enormemente a percepção de valor do seu serviço. Quando a experiência é premium, o preço acompanha.
+                                Entregar uma planilha em PDF Ã© passado. Ter um aplicativo prÃ³prio para seus alunos acessarem os treinos aumenta enormemente a percepÃ§Ã£o de valor do seu serviÃ§o. Quando a experiÃªncia Ã© premium, o preÃ§o acompanha.
                             </p>
 
                             <ul className="space-y-4">
                                 {[
-                                    "Aumento na retenção de alunos.",
-                                    "Cobranças de mensalidades automatizadas via Stripe.",
-                                    "Mais facilidade na renovação de treinos.",
-                                    "Dashboard intuitivo para você focar no que dá resultado."
+                                    "Aumento na retenÃ§Ã£o de alunos.",
+                                    "CobranÃ§as de mensalidades automatizadas via Stripe.",
+                                    "Mais facilidade na renovaÃ§Ã£o de treinos.",
+                                    "Dashboard intuitivo para vocÃª focar no que dÃ¡ resultado."
                                 ].map((item, idx) => (
                                     <li key={idx} className="flex items-center gap-3">
                                         <div className="w-6 h-6 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center flex-shrink-0">
@@ -146,7 +146,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
                                 </div>
                                 <div>
                                     <p className="font-black text-zinc-900 dark:text-white text-lg">5.0</p>
-                                    <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Avaliação Média</p>
+                                    <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">AvaliaÃ§Ã£o MÃ©dia</p>
                                 </div>
                             </div>
                         </div>
@@ -163,7 +163,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
 
                         <div className="bg-white dark:bg-zinc-900 border-2 border-emerald-500 rounded-[32px] p-8 md:p-12 relative shadow-2xl shadow-emerald-500/10">
                             <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-emerald-500 text-white px-6 py-2 rounded-full font-black text-xs uppercase tracking-widest shadow-lg">
-                                Plano Único Pro
+                                Plano Ãšnico Pro
                             </div>
 
                             <div className="flex flex-col md:flex-row gap-12 items-center">
@@ -174,11 +174,11 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
                                     </p>
                                     <ul className="space-y-4">
                                         {[
-                                            'Gestão ilimitada de alunos',
-                                            'Criação de treinos por IA',
-                                            'Relatórios detalhados de evolução',
+                                            'GestÃ£o ilimitada de alunos',
+                                            'CriaÃ§Ã£o de treinos por IA',
+                                            'RelatÃ³rios detalhados de evoluÃ§Ã£o',
                                             'Agenda e agendamentos integrados',
-                                            'Suporte prioritário via chat'
+                                            'Suporte prioritÃ¡rio via chat'
                                         ].map((item, i) => (
                                             <li key={i} className="flex items-center gap-3 text-zinc-700 dark:text-zinc-300 font-bold text-sm bg-zinc-50 dark:bg-zinc-950 p-3 rounded-xl border border-zinc-100 dark:border-zinc-800">
                                                 <div className="w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center flex-shrink-0 shadow-sm">
@@ -197,7 +197,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
                                         <span className="text-7xl font-black tracking-tighter">10</span>
                                         <span className="text-2xl font-bold text-zinc-500 dark:text-zinc-400 mb-1">,90</span>
                                     </div>
-                                    <div className="text-zinc-500 dark:text-zinc-400 font-bold mb-6 text-sm">por mês</div>
+                                    <div className="text-zinc-500 dark:text-zinc-400 font-bold mb-6 text-sm">por mÃªs</div>
                                     <button
                                         onClick={onEnterApp}
                                         className="w-full bg-emerald-500 hover:bg-emerald-400 active:scale-95 text-white px-8 py-5 rounded-2xl font-black text-sm uppercase tracking-widest transition-all shadow-xl shadow-emerald-500/20 flex items-center justify-center gap-2"
@@ -206,7 +206,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
                                     </button>
                                     <div className="mt-4 flex items-center justify-center gap-2 text-zinc-500 dark:text-zinc-400 text-xs font-bold">
                                         <Shield size={14} className="text-emerald-500" />
-                                        7 dias grátis. Cancele quando quiser.
+                                        7 dias grÃ¡tis. Cancele quando quiser.
                                     </div>
                                 </div>
                             </div>
@@ -222,7 +222,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
                     <div className="flex items-center gap-3">
                         <img src="/logo.png" alt="PersonalFlow" className="w-8 h-8 object-contain grayscale opacity-70 dark:hidden" />
                         <img src="/logo-dark.png" alt="PersonalFlow" className="w-8 h-8 object-contain grayscale opacity-70 hidden dark:block" />
-                        <span className="font-bold text-zinc-500 dark:text-zinc-400 tracking-tight">© {new Date().getFullYear()} PersonalFlow.</span>
+                        <span className="font-bold text-zinc-500 dark:text-zinc-400 tracking-tight">Â© {new Date().getFullYear()} PersonalFlow.</span>
                     </div>
 
                     <div className="flex items-center gap-8 text-sm font-bold text-zinc-400 dark:text-zinc-500">

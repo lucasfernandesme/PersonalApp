@@ -54,7 +54,7 @@ const ExerciseManagerScreen: React.FC<ExerciseManagerScreenProps> = ({ exercises
     if (!newExercise.name) return;
 
     if (newExercise.videoUrl && !getYouTubeId(newExercise.videoUrl)) {
-      alert("Link de vídeo inválido. Por favor, use um link do YouTube.");
+      alert("Link de vÃ­deo invÃ¡lido. Por favor, use um link do YouTube.");
       return;
     }
 
@@ -104,7 +104,7 @@ const ExerciseManagerScreen: React.FC<ExerciseManagerScreenProps> = ({ exercises
         <div className="p-6 pb-2">
           <div className="flex flex-col gap-2 mb-6">
             <h2 className="text-3xl font-black text-zinc-900 dark:text-white tracking-tight">Biblioteca</h2>
-            <p className="text-zinc-400 dark:text-zinc-500 font-medium">Gerencie e visualize seus exercícios salvos.</p>
+            <p className="text-zinc-400 dark:text-zinc-500 font-medium">Gerencie e visualize seus exercÃ­cios salvos.</p>
           </div>
         </div>
 
@@ -200,7 +200,7 @@ const ExerciseManagerScreen: React.FC<ExerciseManagerScreenProps> = ({ exercises
                       <span className="w-1 h-1 rounded-full bg-red-400"></span>
                     )}
                     {ex.videoUrl && (
-                      <p className="text-[10px] font-black uppercase text-red-400">Vídeo</p>
+                      <p className="text-[10px] font-black uppercase text-red-400">VÃ­deo</p>
                     )}
                   </div>
                 </div>
@@ -209,7 +209,7 @@ const ExerciseManagerScreen: React.FC<ExerciseManagerScreenProps> = ({ exercises
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    if (window.confirm('Tem certeza que deseja excluir este exercício?')) {
+                    if (window.confirm('Tem certeza que deseja excluir este exercÃ­cio?')) {
                       if (ex.id) onDelete(ex.id);
                     }
                   }}
@@ -227,7 +227,7 @@ const ExerciseManagerScreen: React.FC<ExerciseManagerScreenProps> = ({ exercises
             <div className="bg-white dark:bg-zinc-900 w-full max-w-md rounded-[32px] p-6 space-y-6 animate-in slide-in-from-bottom duration-300 border border-zinc-100 dark:border-zinc-800">
               <div className="flex justify-between items-center">
                 <h3 className="text-xl font-black text-zinc-900 dark:text-white">
-                  {newExercise.isStandard ? 'Detalhes do Exercício' : (newExercise.id ? 'Editar Exercício' : 'Novo Exercício')}
+                  {newExercise.isStandard ? 'Detalhes do ExercÃ­cio' : (newExercise.id ? 'Editar ExercÃ­cio' : 'Novo ExercÃ­cio')}
                 </h3>
                 <button
                   onClick={() => {
@@ -270,7 +270,7 @@ const ExerciseManagerScreen: React.FC<ExerciseManagerScreenProps> = ({ exercises
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 ml-1">Link do Vídeo (YouTube)</label>
+                  <label className="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 ml-1">Link do VÃ­deo (YouTube)</label>
 
                   {newExercise.videoUrl && getYouTubeId(newExercise.videoUrl) && (
                     <div className="relative aspect-video rounded-3xl overflow-hidden bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 mb-4 group animate-in zoom-in-95 duration-300">
@@ -329,12 +329,12 @@ const ExerciseManagerScreen: React.FC<ExerciseManagerScreenProps> = ({ exercises
                   disabled={isSaving}
                   className="w-full bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 font-black uppercase text-xs tracking-[0.2em] py-5 rounded-2xl shadow-xl shadow-zinc-900/30 dark:shadow-zinc-100/10 hover:bg-zinc-800 dark:hover:bg-white active:scale-[0.98] transition-all disabled:opacity-70 disabled:cursor-not-allowed"
                 >
-                  {isSaving ? 'Salvando...' : (newExercise.id ? 'Salvar Alterações' : 'Adicionar à Biblioteca')}
+                  {isSaving ? 'Salvando...' : (newExercise.id ? 'Salvar AlteraÃ§Ãµes' : 'Adicionar Ã  Biblioteca')}
                 </button>
               )}
               {newExercise.isStandard && (
                 <div className="bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 font-bold text-center py-5 rounded-[24px] text-xs uppercase tracking-widest border border-zinc-200 dark:border-zinc-700">
-                  Exercício Oficial - Somente Leitura
+                  ExercÃ­cio Oficial - Somente Leitura
                 </div>
               )}
             </div>
