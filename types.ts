@@ -16,8 +16,8 @@ export interface AuthUser {
   cref?: string;
   // Subscription info
   subscriptionEndDate?: string;
-  subscriptionSource?: 'stripe' | 'google_play' | 'ios';
   fcm_token?: string;
+  subscriptionStatus?: 'active' | 'trial' | 'expired' | 'inactive' | null;
 }
 
 export interface Exercise {

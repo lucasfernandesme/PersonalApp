@@ -50,11 +50,7 @@ const App: React.FC = () => {
     return saved ? JSON.parse(saved) : null;
   });
 
-  const [showLanding, setShowLanding] = useState(() => {
-    const saved = localStorage.getItem(STORAGE_KEY_AUTH);
-    const isLoginForce = window.location.search.includes('login=true');
-    return !saved && !isLoginForce;
-  });
+  const [showLanding, setShowLanding] = useState(false);
 
   const [isLoading, setIsLoading] = useState(() => {
     // Se temos um usuário salvo, começamos carregando. Caso contrário, não.

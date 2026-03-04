@@ -164,17 +164,11 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin, isDarkMode
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 flex flex-col items-center justify-center p-6 transition-colors relative">
       {/* Header synchronized with BjjFlow */}
-      <header className="absolute top-0 left-0 w-full flex items-center justify-between px-6 z-50 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md border-b border-zinc-200/50 dark:border-zinc-800/50 pt-[calc(1rem+env(safe-area-inset-top))] pb-4">
-        <button
-          onClick={() => setIsDarkMode && setIsDarkMode(!isDarkMode)}
-          className="p-2 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors text-zinc-900 dark:text-white"
-        >
-          {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
-        </button>
+      <header className="absolute top-0 left-0 w-full flex items-center justify-center px-6 z-50 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md border-b border-zinc-200/50 dark:border-zinc-800/50 pt-[calc(1rem+env(safe-area-inset-top))] pb-4">
 
-        <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2">
-          <img src={isDarkMode ? "/logo10.png" : "/logo9.png"} alt="PersonalFlow" className="h-10 w-auto object-contain" />
-          <span className="font-outfit font-black italic tracking-tighter text-xl text-zinc-900 dark:text-white">PersonalFlow</span>
+        <div className="flex items-center gap-2">
+          <img src={isDarkMode ? "/logo10.png" : "/logo9.png"} alt="PERSONALFLOW" className="h-10 w-auto object-contain" />
+          <span className="font-outfit font-black italic tracking-tighter text-xl text-zinc-900 dark:text-white uppercase">PERSONALFLOW</span>
         </div>
       </header>
 
