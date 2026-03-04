@@ -136,10 +136,7 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ students, onClose, on
           <ArrowLeft size={24} />
         </button>
 
-        <div className="flex items-center gap-2">
-          <img src="/logo.png" alt="PersonalFlow" className="w-8 h-8 rounded-full shadow-sm" />
-          <span className="font-extrabold text-zinc-900 dark:text-white tracking-tight">PersonalFlow</span>
-        </div>
+        <div className="flex-1"></div>
 
         <button onClick={onClose} className="p-2 text-zinc-400 dark:text-zinc-500 hover:text-red-500 transition-colors z-10 w-10 flex justify-end">
           <X size={24} />

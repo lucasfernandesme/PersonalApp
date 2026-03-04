@@ -195,10 +195,7 @@ const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
           <ArrowLeft size={24} />
         </button>
 
-        <div className="flex items-center gap-2">
-          <img src="/logo.png" alt="PersonalFlow" className="w-8 h-8 rounded-full shadow-sm" />
-          <span className="font-extrabold text-zinc-900 dark:text-white tracking-tight">PersonalFlow</span>
-        </div>
+        <div className="flex-1"></div>
 
         <button
           onClick={handleSave}

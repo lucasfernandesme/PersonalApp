@@ -32,19 +32,11 @@ const AgendaScreen: React.FC<AgendaScreenProps> = ({ events, students, onAddEven
     const renderHeader = () => {
         return (
             <div className="flex flex-col mb-8">
-                {/* Standardized Brand Header */}
-                <header className="bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between px-4 transition-all duration-300 pt-[calc(1rem+env(safe-area-inset-top))] pb-4 relative flex-shrink-0 mb-6">
-                    <div className="w-10"></div> {/* Placeholder for symmetry */}
-
-                    <div className="flex items-center gap-2">
-                        <img src="/logo.png" alt="PersonalFlow" className="w-8 h-8 rounded-full shadow-sm" />
-                        <span className="font-extrabold text-zinc-900 dark:text-white tracking-tight">PersonalFlow</span>
-                    </div>
-
-                    <button onClick={onClose} className="p-2 text-zinc-400 dark:text-zinc-500 hover:text-red-500 transition-colors z-10 w-10 flex justify-end">
-                        <X size={20} />
+                <div className="flex justify-end px-4 pt-[calc(1rem+env(safe-area-inset-top))]">
+                    <button onClick={onClose} className="p-2 text-zinc-400 dark:text-zinc-500 hover:text-red-500 transition-colors z-10">
+                        <X size={28} />
                     </button>
-                </header>
+                </div>
 
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">

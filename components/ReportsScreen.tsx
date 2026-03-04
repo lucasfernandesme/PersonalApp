@@ -1,6 +1,6 @@
 ﻿import React, { useState } from 'react';
 import { ScheduleEvent, Student } from '../types';
-import { Activity, BarChart3, ChevronRight, FileText } from 'lucide-react';
+import { Activity, BarChart3, ChevronRight, FileText, X } from 'lucide-react';
 import ClassReportsScreen from './ClassReportsScreen';
 import FinancialReportsScreen from './FinancialReportsScreen';
 
@@ -24,18 +24,11 @@ const ReportsScreen: React.FC<ReportsScreenProps> = ({ events, students, onClose
     return (
         <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
             <div className="flex flex-col min-h-full">
-                {/* Standardized Brand Header */}
-                <header className="bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between px-4 pt-[calc(1rem+env(safe-area-inset-top))] pb-4 transition-all duration-300 relative flex-shrink-0 mb-4">
-                    <div className="w-10"></div> {/* Placeholder for symmetry */}
-
-                    <div className="flex items-center gap-2">
-                        <img src="/logo.png" alt="PersonalFlow" className="w-8 h-8 object-contain dark:hidden" />
-                        <img src="/logo-dark.png" alt="PersonalFlow" className="w-8 h-8 object-contain hidden dark:block" />
-                        <span className="font-extrabold text-zinc-900 dark:text-white tracking-tight">PersonalFlow</span>
-                    </div>
-
-                    <div className="w-10"></div> {/* Placeholder for symmetry */}
-                </header>
+                <div className="flex justify-end px-4 pt-[calc(1rem+env(safe-area-inset-top))] mb-4">
+                    <button onClick={onClose} className="p-2 text-zinc-400 dark:text-zinc-500 hover:text-red-500 transition-colors z-10">
+                        <X size={28} />
+                    </button>
+                </div>
 
                 <div className="px-1 mb-8">
                     <h2 className="text-2xl font-black text-zinc-900 dark:text-white">Central de Relatórios</h2>

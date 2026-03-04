@@ -51,7 +51,8 @@ const ExerciseLibraryModal: React.FC<ExerciseLibraryModalProps> = ({ onSelect, o
         <div className="w-10"></div> {/* Placeholder for symmetry */}
 
         <div className="flex items-center gap-2">
-          <img src="/logo.png" alt="PersonalFlow" className="w-8 h-8 rounded-full shadow-sm" />
+          <img src="/logo9.png" alt="PersonalFlow" className="w-8 h-8 object-contain dark:hidden" />
+          <img src="/logo10.png" alt="PersonalFlow" className="w-8 h-8 object-contain hidden dark:block" />
           <span className="font-extrabold text-zinc-900 dark:text-white tracking-tight">PersonalFlow</span>
         </div>
 
