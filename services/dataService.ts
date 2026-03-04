@@ -1,6 +1,6 @@
 
 import { createClient } from '@supabase/supabase-js';
-import { Student, WorkoutFolder, WorkoutTemplate, AuthUser, UserRole, StudentPayment } from "../types";
+import { Student, WorkoutFolder, WorkoutTemplate, AuthUser, UserRole, StudentPayment, AppNotification } from "../types";
 import { LibraryExercise, EXERCISES_DB } from "../constants/exercises";
 
 // Estas variáveis serão injetadas pelo Vercel
@@ -98,7 +98,9 @@ export const DataService = {
         instagram: s.instagram,
         whatsapp: s.whatsapp,
         assessments: s.assessments || [],
-        anamnesis: s.anamnesis || []
+        anamnesis: s.anamnesis || [],
+        fcm_token: s.fcm_token,
+        trainerId: s.trainer_id
       }
     });
   },
@@ -136,10 +138,12 @@ export const DataService = {
       trainerWhatsapp: trainer?.whatsapp,
       instagram: data.instagram,
       whatsapp: data.whatsapp,
+      trainerId: data.trainer_id,
       assessments: data.assessments || [],
       anamnesis: data.anamnesis || [],
       billingDay: data.billing_day,
-      monthlyFee: data.monthly_fee
+      monthlyFee: data.monthly_fee,
+      fcm_token: data.fcm_token
     };
   },
 
@@ -179,6 +183,7 @@ export const DataService = {
       anamnesis: student.anamnesis,
       billing_day: student.billingDay,
       monthly_fee: student.monthlyFee,
+      fcm_token: student.fcm_token,
       password: student.password // Ensure password is sent to DB
     };
 
@@ -320,7 +325,8 @@ export const DataService = {
     return {
       ...data,
       subscriptionStatus: data.subscription_status,
-      subscriptionEndDate: data.subscription_end_date
+      subscriptionEndDate: data.subscription_end_date,
+      fcm_token: data.fcm_token
     };
   },
 
@@ -359,6 +365,16 @@ export const DataService = {
       console.error("Erro ao atualizar trainer:", error);
       throw error;
     }
+  },
+
+  async updateFCMToken(userId: string, token: string, role: UserRole): Promise<void> {
+    if (!supabase) return;
+    const table = role === UserRole.TRAINER ? 'trainers' : 'students';
+    const { error } = await supabase
+      .from(table)
+      .update({ fcm_token: token })
+      .eq('id', userId);
+    if (error) throw error;
   },
 
 
@@ -687,5 +703,39 @@ export const DataService = {
       })),
       students: students || []
     };
+  },
+
+  async getNotifications(userId: string): Promise<AppNotification[]> {
+    if (!supabase) return [];
+    try {
+      const { data, error } = await supabase
+        .from('notifications')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error("Error fetching notifications:", error);
+        return [];
+      }
+      return data || [];
+    } catch (e) {
+      console.error("Exception fetching notifications:", e);
+      return [];
+    }
+  },
+
+  async markNotificationAsRead(id: string): Promise<void> {
+    if (!supabase) return;
+    try {
+      const { error } = await supabase
+        .from('notifications')
+        .update({ is_read: true })
+        .eq('id', id);
+
+      if (error) console.error("Error marking notification as read:", error);
+    } catch (e) {
+      console.error("Exception marking notification as read:", e);
+    }
   }
 };

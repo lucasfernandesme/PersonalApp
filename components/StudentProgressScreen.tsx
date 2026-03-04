@@ -16,9 +16,11 @@ import { translateExperience } from '../utils/formatters';
 interface StudentProgressScreenProps {
   student: Student;
   onBack: () => void;
+  role?: string;
 }
 
-const StudentProgressScreen: React.FC<StudentProgressScreenProps> = ({ student, onBack }) => {
+const StudentProgressScreen: React.FC<StudentProgressScreenProps> = ({ student, onBack, role }) => {
+  const isTrainer = role === 'TRAINER';
   const history = student.history || [];
 
   const stats = {
@@ -42,8 +44,12 @@ const StudentProgressScreen: React.FC<StudentProgressScreenProps> = ({ student, 
           <ArrowLeft size={20} />
         </button>
         <div>
-          <h2 className="text-2xl font-black text-zinc-900 dark:text-white tracking-tight">Meu Progresso</h2>
-          <p className="text-sm font-medium text-zinc-400 dark:text-zinc-500">Veja como está sua evolução nos treinos.</p>
+          <h2 className="text-2xl font-black text-zinc-900 dark:text-white tracking-tight">
+            {isTrainer ? `Evolução: ${student.name.split(' ')[0]}` : 'Meu Progresso'}
+          </h2>
+          <p className="text-sm font-medium text-zinc-400 dark:text-zinc-500">
+            {isTrainer ? `Acompanhe o desempenho de ${student.name.split(' ')[0]}.` : 'Veja como está sua evolução nos treinos.'}
+          </p>
         </div>
       </div>
 

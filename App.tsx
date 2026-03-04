@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { UserRole, TrainingProgram, OnboardingData, AuthUser } from './types';
+import { UserRole, TrainingProgram, OnboardingData, AuthUser, AppNotification } from './types';
 import Layout from './components/Layout';
 import TrainerDashboard from './components/TrainerDashboard';
 import StudentApp from './components/StudentApp';
@@ -29,7 +29,7 @@ import ScheduleEventModal from './components/ScheduleEventModal';
 import ClassDetailsModal from './components/ClassDetailsModal';
 import { WorkoutFolder, WorkoutTemplate, Student, StudentFile, ScheduleEvent } from './types';
 import { parseISO, format } from 'date-fns';
-import { ArrowLeft, Settings, Loader2, RefreshCw, CheckCircle2, X, Dumbbell, ArrowRight, Zap, Award, ChevronRight, Plus, Edit2, Trash2, User, Calendar, FileText, MessageCircle } from 'lucide-react';
+import { ArrowLeft, Settings, Loader2, RefreshCw, CheckCircle2, X, Dumbbell, ArrowRight, Zap, Award, ChevronRight, Plus, Edit2, Trash2, User, Calendar, FileText, MessageCircle, TrendingUp, Bell, BellOff } from 'lucide-react';
 import { TrainingFrequencyCard } from './components/TrainingFrequencyCard';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { useAuth } from './contexts/AuthContext';
@@ -37,6 +37,8 @@ import SubscriptionScreen from './components/SubscriptionScreen';
 import ResetPasswordScreen from './components/ResetPasswordScreen';
 import LandingPage from './components/LandingPage';
 import { supabase } from './services/supabase';
+import { PushNotifications } from '@capacitor/push-notifications';
+import { Capacitor } from '@capacitor/core';
 
 const STORAGE_KEY_AUTH = 'fitai_pro_auth_session';
 
@@ -60,7 +62,7 @@ const App: React.FC = () => {
   });
 
   const [isSaving, setIsSaving] = useState(false);
-  const [selectedStudentView, setSelectedStudentView] = useState<'dashboard' | 'builder' | 'workouts' | 'workout-detail' | 'assessments' | 'files'>('dashboard');
+  const [selectedStudentView, setSelectedStudentView] = useState<'dashboard' | 'builder' | 'workouts' | 'workout-detail' | 'assessments' | 'files' | 'evolution'>('dashboard');
   const [workoutToEdit, setWorkoutToEdit] = useState<TrainingProgram | null>(null);
 
   const [activeView, setActiveView] = useState<'dashboard' | 'register' | 'exercises' | 'edit-student' | 'student-stats' | 'library'>('dashboard');
@@ -91,6 +93,10 @@ const App: React.FC = () => {
 
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [selectedEventDetails, setSelectedEventDetails] = useState<ScheduleEvent | null>(null);
+
+  const [toast, setToast] = useState<{ message: string; type: 'info' | 'success' } | null>(null);
+  const [notifications, setNotifications] = useState<AppNotification[]>([]);
+  const [isNotificationCenterOpen, setIsNotificationCenterOpen] = useState(false);
 
   const reloadStudents = useCallback(async () => {
     try {
@@ -130,6 +136,16 @@ const App: React.FC = () => {
       console.error("Erro ao recarregar alunos:", err);
     }
   }, [authUser?.id, authUser?.role]);
+
+  const reloadNotifications = useCallback(async () => {
+    if (!authUser?.id) return;
+    try {
+      const data = await DataService.getNotifications(authUser.id);
+      setNotifications(data);
+    } catch (e) {
+      console.error("Erro ao carregar notificações", e);
+    }
+  }, [authUser?.id]);
 
   const reloadExercises = useCallback(async () => {
     try {
@@ -202,7 +218,105 @@ const App: React.FC = () => {
         console.error("Erro ao atualizar perfil do trainer:", err);
       }
     }
-  }, [authUser?.email, authUser?.name, authUser?.subscriptionStatus]); // Dependências mais granulares
+  }, [authUser?.email, authUser?.name, authUser?.subscriptionStatus]);
+
+  // Push Notifications Setup
+  useEffect(() => {
+    if (authUser?.id && Capacitor.isNativePlatform()) {
+      const registerPush = async () => {
+        try {
+          let permStatus = await PushNotifications.checkPermissions();
+
+          if (permStatus.receive === 'prompt') {
+            permStatus = await PushNotifications.requestPermissions();
+          }
+
+          if (permStatus.receive !== 'granted') {
+            console.warn('Permissão de Push negada');
+            return;
+          }
+
+          await PushNotifications.register();
+        } catch (e) {
+          console.error("Erro ao configurar push:", e);
+        }
+      };
+
+      registerPush();
+
+      const registrationListener = PushNotifications.addListener('registration', (token) => {
+        console.log('Push registration success, token: ' + token.value);
+        DataService.updateFCMToken(authUser.id, token.value, authUser.role)
+          .catch(err => console.error("Erro ao salvar token FCM:", err));
+      });
+
+      const registrationErrorListener = PushNotifications.addListener('registrationError', (error: any) => {
+        console.error('Push registration error: ' + JSON.stringify(error));
+      });
+
+      return () => {
+        registrationListener.then(h => h.remove());
+        registrationErrorListener.then(h => h.remove());
+      };
+    }
+  }, [authUser?.id, authUser?.role]);
+
+  // In-App Realtime Notifications
+  useEffect(() => {
+    if (authUser?.id && supabase) {
+      const isStudent = authUser.role === UserRole.STUDENT;
+
+      // Listen for data updates (Student only)
+      let studentChannel: any;
+      if (isStudent) {
+        studentChannel = supabase
+          .channel(`student-updates-${authUser.id}`)
+          .on(
+            'postgres_changes',
+            {
+              event: 'UPDATE',
+              schema: 'public',
+              table: 'students',
+              filter: `id=eq.${authUser.id}`,
+            },
+            (payload: any) => {
+              console.log("Realtime update received:", payload);
+              setToast({ message: 'Seu professor atualizou seu plano de treino! 💪', type: 'success' });
+              reloadStudents();
+            }
+          )
+          .subscribe();
+      }
+
+      // Listen for NEW notifications (Everyone)
+      const notificationChannel = supabase
+        .channel(`notification-updates-${authUser.id}`)
+        .on(
+          'postgres_changes',
+          {
+            event: 'INSERT',
+            schema: 'public',
+            table: 'notifications',
+            filter: `user_id=eq.${authUser.id}`,
+          },
+          (payload: any) => {
+            console.log("New notification received:", payload.new);
+            setNotifications(prev => [payload.new as AppNotification, ...prev]);
+            if (!isNotificationCenterOpen) {
+              setToast({ message: (payload.new as AppNotification).title, type: 'info' });
+            }
+          }
+        )
+        .subscribe();
+
+      reloadNotifications();
+
+      return () => {
+        if (studentChannel) supabase.removeChannel(studentChannel);
+        supabase.removeChannel(notificationChannel);
+      };
+    }
+  }, [authUser?.id, authUser?.role, reloadNotifications, isNotificationCenterOpen]);
   const [loadingTakingTooLong, setLoadingTakingTooLong] = useState(false);
 
   useEffect(() => {
@@ -389,6 +503,19 @@ const App: React.FC = () => {
           history: []
         };
         await DataService.saveStudent(newStudent, authUser?.id);
+
+        // Trigger Push for new student with workout
+        if (supabase && authUser?.id) {
+          supabase.functions.invoke('send-push', {
+            body: {
+              targetId: newStudent.id,
+              targetRole: 'STUDENT',
+              title: 'Bem-vindo ao PersonalFlow!',
+              body: `Seu professor ${authUser.name} criou sua conta e já preparou seu primeiro treino!`
+            }
+          }).catch(err => console.error("Erro ao disparar push Boas-vindas:", err));
+        }
+
         setPendingStudentData(null);
       } else if (targetStudent || selectedStudent) {
         const studentToUpdate = targetStudent || selectedStudent;
@@ -407,6 +534,18 @@ const App: React.FC = () => {
           programs: updatedPrograms
         };
         await DataService.saveStudent(updated, authUser?.id);
+
+        // Trigger Push for updated workout
+        if (supabase && authUser?.id) {
+          supabase.functions.invoke('send-push', {
+            body: {
+              targetId: studentToUpdate.id,
+              targetRole: 'STUDENT',
+              title: '🏃 Novo Treino Disponível!',
+              body: `${authUser.name} atualizou sua ficha: ${enrichedProgram.name}`
+            }
+          }).catch(err => console.error("Erro ao disparar push:", err));
+        }
       }
       await reloadStudents();
     } catch (e) {
@@ -499,6 +638,19 @@ const App: React.FC = () => {
 
     try {
       await DataService.saveStudent(updatedStudent);
+
+      // Trigger Push to Trainer
+      if (supabase && currentStudent.trainerId) {
+        supabase.functions.invoke('send-push', {
+          body: {
+            targetId: currentStudent.trainerId,
+            targetRole: 'TRAINER',
+            title: '✅ Treino Finalizado!',
+            body: `Seu aluno ${currentStudent.name} acabou de completar o treino: ${updatedProgram?.name || 'Sessão'}`
+          }
+        }).catch(err => console.error("Erro ao notificar treinador:", err));
+      }
+
       await reloadStudents();
     } finally {
       setIsSaving(false);
@@ -859,7 +1011,7 @@ const App: React.FC = () => {
           students={students}
           onSelectStudent={(s) => {
             setSelectedStudent(s);
-            setSelectedStudentView('dashboard');
+            setSelectedStudentView('evolution');
             setActiveTab('students');
           }}
         />
@@ -1018,6 +1170,24 @@ const App: React.FC = () => {
                   </div>
                 </div>
                 <div className="w-10 h-10 bg-zinc-50 dark:bg-zinc-800 rounded-xl flex items-center justify-center text-zinc-300 dark:text-zinc-600 group-hover:bg-purple-600 group-hover:text-white transition-all flex-shrink-0">
+                  <ArrowRight size={20} />
+                </div>
+              </button>
+
+              <button
+                onClick={() => setSelectedStudentView('evolution')}
+                className="group bg-white dark:bg-zinc-900 p-5 rounded-[28px] transition-all active:scale-[0.98] shadow-sm hover:shadow-md border border-zinc-200 dark:border-zinc-800 flex items-center justify-between w-full"
+              >
+                <div className="flex items-center gap-4 flex-1">
+                  <div className="w-12 h-12 bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 rounded-2xl flex items-center justify-center shadow-lg shadow-zinc-900/10 dark:shadow-zinc-100/5 group-hover:scale-105 transition-transform flex-shrink-0">
+                    <TrendingUp size={24} />
+                  </div>
+                  <div className="text-left">
+                    <h3 className="text-lg font-black text-zinc-900 dark:text-white leading-tight">Evolução</h3>
+                    <p className="text-zinc-500 dark:text-zinc-400 text-[10px] font-bold uppercase tracking-wider">Gráficos e Histórico</p>
+                  </div>
+                </div>
+                <div className="w-10 h-10 bg-zinc-50 dark:bg-zinc-800 rounded-xl flex items-center justify-center text-zinc-300 dark:text-zinc-600 group-hover:bg-zinc-900 dark:group-hover:bg-zinc-100 group-hover:text-white dark:group-hover:text-zinc-900 transition-all flex-shrink-0">
                   <ArrowRight size={20} />
                 </div>
               </button>
@@ -1386,6 +1556,12 @@ const App: React.FC = () => {
                 )}
               </div>
             </div >
+          ) : selectedStudentView === 'evolution' ? (
+            <StudentProgressScreen
+              student={selectedStudent}
+              onBack={() => setSelectedStudentView('dashboard')}
+              role={UserRole.TRAINER}
+            />
           ) : null
           }
         </div >
@@ -1401,6 +1577,11 @@ const App: React.FC = () => {
         onOpenExerciseManager={() => setActiveView('exercises')}
         onOpenStudentRegistration={() => setActiveView('register')}
         onOpenWorkoutLibrary={() => setActiveView('library')}
+        onOpenNotifications={() => {
+          setIsNotificationCenterOpen(true);
+          // Mark all as read when opening (optional, or do it per item)
+        }}
+        unreadNotificationsCount={notifications.filter(n => !n.is_read).length}
         onlyList={activeTab === 'students'}
       />
     );
@@ -1735,6 +1916,29 @@ const App: React.FC = () => {
         )}
       </Layout>
 
+      {/* In-App Notification Toast */}
+      {toast && (
+        <div className="fixed bottom-24 left-4 right-4 z-[200] animate-in slide-in-from-bottom-10 duration-500">
+          <div className="bg-zinc-900/90 dark:bg-zinc-100/90 backdrop-blur-md text-white dark:text-zinc-900 px-6 py-4 rounded-[24px] shadow-2xl flex items-center justify-between gap-4 border border-white/10 dark:border-black/5">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white">
+                <CheckCircle2 size={18} />
+              </div>
+              <p className="font-bold text-sm tracking-tight">{toast.message}</p>
+            </div>
+            <button
+              onClick={() => setToast(null)}
+              className="p-1 hover:bg-white/10 dark:hover:bg-black/5 rounded-full transition-colors"
+            >
+              <X size={18} />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Auto-hide toast after 5s */}
+      {toast && setTimeout(() => setToast(null), 5000) && null}
+
 
 
 
@@ -1770,6 +1974,92 @@ const App: React.FC = () => {
         </div>
       )}
 
+      {/* Auto-hide toast after 5s */}
+      {toast && setTimeout(() => setToast(null), 5000) && null}
+
+      {/* Notification Center Modal */}
+      {isNotificationCenterOpen && (
+        <div className="fixed inset-0 z-[300] flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-black/40 backdrop-blur-sm animate-in fade-in duration-300"
+            onClick={() => setIsNotificationCenterOpen(false)}
+          />
+          <div className="relative w-full max-w-md bg-white dark:bg-zinc-900 rounded-[32px] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col max-h-[80vh]">
+            <div className="p-6 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between bg-zinc-50/50 dark:bg-zinc-800/50">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-zinc-900 dark:bg-white rounded-2xl flex items-center justify-center text-white dark:text-zinc-900">
+                  <Bell size={20} />
+                </div>
+                <div>
+                  <h3 className="font-black text-zinc-900 dark:text-white text-lg tracking-tight">Notificações</h3>
+                  <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Atividade Recente</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setIsNotificationCenterOpen(false)}
+                className="p-2 hover:bg-zinc-200 dark:hover:bg-zinc-800 rounded-xl transition-colors"
+              >
+                <X size={20} className="text-zinc-500" />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-4 space-y-3">
+              {notifications.length === 0 ? (
+                <div className="h-40 flex flex-col items-center justify-center text-zinc-400 dark:text-zinc-600">
+                  <BellOff size={32} className="mb-2 opacity-20" />
+                  <p className="text-sm font-medium">Nenhuma notificação por enquanto.</p>
+                </div>
+              ) : (
+                notifications.map((n) => (
+                  <div
+                    key={n.id}
+                    onClick={() => {
+                      if (!n.is_read) {
+                        DataService.markNotificationAsRead(n.id);
+                        setNotifications(prev => prev.map(notif => notif.id === n.id ? { ...notif, is_read: true } : notif));
+                      }
+                    }}
+                    className={`p-4 rounded-2xl border transition-all cursor-pointer ${n.is_read
+                      ? 'bg-zinc-50/50 dark:bg-zinc-800/30 border-transparent opacity-60'
+                      : 'bg-white dark:bg-zinc-800 border-zinc-100 dark:border-zinc-700 shadow-sm hover:border-zinc-200'
+                      }`}
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex-1">
+                        <h4 className="font-bold text-zinc-900 dark:text-white text-sm">{n.title}</h4>
+                        <p className="text-zinc-500 dark:text-zinc-400 text-xs mt-1 leading-relaxed">{n.body}</p>
+                        <p className="text-[10px] text-zinc-400 mt-2 font-medium">
+                          {new Date(n.created_at).toLocaleString('pt-BR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                        </p>
+                      </div>
+                      {!n.is_read && (
+                        <div className="w-2 h-2 bg-red-500 rounded-full mt-1.5 flex-shrink-0" />
+                      )}
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+
+            {notifications.length > 0 && notifications.some(n => !n.is_read) && (
+              <div className="p-4 border-t border-zinc-100 dark:border-zinc-800 bg-zinc-50/30 dark:bg-zinc-800/20">
+                <button
+                  onClick={async () => {
+                    const unread = notifications.filter(n => !n.is_read);
+                    for (const n of unread) {
+                      await DataService.markNotificationAsRead(n.id);
+                    }
+                    setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
+                  }}
+                  className="w-full py-3 text-xs font-black uppercase tracking-widest text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors"
+                >
+                  Marcar todas como lidas
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </ThemeProvider >
   );
 };

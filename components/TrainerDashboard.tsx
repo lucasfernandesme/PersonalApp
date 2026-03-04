@@ -6,7 +6,8 @@ import {
   BookOpen,
   ChevronRight,
   PlusCircle,
-  MessageCircle
+  MessageCircle,
+  Bell
 } from 'lucide-react';
 import { Student } from '../types';
 
@@ -18,6 +19,8 @@ interface TrainerDashboardProps {
   onOpenExerciseManager: () => void;
   onOpenStudentRegistration: () => void;
   onOpenWorkoutLibrary: () => void;
+  onOpenNotifications: () => void;
+  unreadNotificationsCount: number;
   onlyList?: boolean;
 }
 
@@ -29,6 +32,8 @@ const TrainerDashboard: React.FC<TrainerDashboardProps> = ({
   onOpenExerciseManager,
   onOpenStudentRegistration,
   onOpenWorkoutLibrary,
+  onOpenNotifications,
+  unreadNotificationsCount,
   onlyList = false
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -62,6 +67,22 @@ const TrainerDashboard: React.FC<TrainerDashboardProps> = ({
               return 'Boa noite';
             })()}, {trainerName || 'Professor'}
           </h2>
+        </div>
+      )}
+
+      {!onlyList && (
+        <div className="absolute top-6 right-6">
+          <button
+            onClick={onOpenNotifications}
+            className="relative p-3 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all active:scale-95 shadow-sm"
+          >
+            <Bell size={24} />
+            {unreadNotificationsCount > 0 && (
+              <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-[10px] font-black rounded-full flex items-center justify-center border-2 border-zinc-50 dark:border-zinc-950">
+                {unreadNotificationsCount > 9 ? '9+' : unreadNotificationsCount}
+              </span>
+            )}
+          </button>
         </div>
       )}
 

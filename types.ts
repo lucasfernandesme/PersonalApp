@@ -15,9 +15,9 @@ export interface AuthUser {
   whatsapp?: string;
   cref?: string;
   // Subscription info
-  subscriptionStatus?: string;
   subscriptionEndDate?: string;
   subscriptionSource?: 'stripe' | 'google_play' | 'ios';
+  fcm_token?: string;
 }
 
 export interface Exercise {
@@ -111,6 +111,7 @@ export interface Student {
   }[];
   billingDay?: number;
   monthlyFee?: number;
+  fcm_token?: string;
 }
 
 export interface OnboardingData {
@@ -239,3 +240,15 @@ export interface StudentPayment {
   proofUrl?: string; // URL or Base64 of the payment proof
   proofDate?: string; // Date when the proof was uploaded
 }
+
+export interface AppNotification {
+  id: string;
+  created_at: string;
+  user_id: string;
+  user_role: string;
+  title: string;
+  body: string;
+  is_read: boolean;
+  data: any;
+}
+
