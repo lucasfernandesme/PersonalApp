@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { User, Phone, Instagram, Edit2, X, Camera, MessageSquare } from 'lucide-react';
 import { Student } from '../types';
 import { formatPhone } from '../utils/formatters';
@@ -16,6 +16,30 @@ const StudentProfile: React.FC<StudentProfileProps> = ({ student, onUpdateProfil
     const [instagram, setInstagram] = useState(student.instagram || '');
     const [whatsapp, setWhatsapp] = useState(student.whatsapp || '');
     const [activeModal, setActiveModal] = useState<'edit' | null>(initialModal);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const handlePhotoClick = () => {
+        fileInputRef.current?.click();
+    };
+
+    const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            const file = e.target.files[0];
+
+            if (file.size > 2 * 1024 * 1024) {
+                alert('A imagem é muito grande. Escolha uma imagem de até 2MB.');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                const base64String = reader.result as string;
+                onUpdateProfile({ avatar: base64String });
+                alert('Foto de perfil atualizada!');
+            };
+            reader.readAsDataURL(file);
+        }
+    };
 
     const handleSaveProfile = () => {
         onUpdateProfile({
@@ -45,7 +69,7 @@ const StudentProfile: React.FC<StudentProfileProps> = ({ student, onUpdateProfil
         <div className="space-y-6 pb-24 animate-in fade-in duration-300">
             {/* Header Profile */}
             <div className="bg-white dark:bg-zinc-900 rounded-[32px] p-8 border border-zinc-100 dark:border-zinc-800 shadow-sm flex flex-col items-center transition-colors">
-                <div className="relative group cursor-pointer" onClick={() => document.getElementById('avatar-upload')?.click()}>
+                <div className="relative group cursor-pointer" onClick={handlePhotoClick}>
                     <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-emerald-500 shadow-xl mb-4 relative">
                         <img
                             src={student.avatar || `https://ui-avatars.com/api/?name=${student.name}&background=10b981&color=fff`}
@@ -124,6 +148,22 @@ const StudentProfile: React.FC<StudentProfileProps> = ({ student, onUpdateProfil
                             </button>
                         </div>
                         <div className="p-8 space-y-6">
+                            {/* Foto Upload */}
+                            <div className="flex flex-col items-center justify-center mb-6">
+                                <div className="relative group cursor-pointer" onClick={handlePhotoClick}>
+                                    <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-zinc-100 dark:border-zinc-800 group-hover:border-emerald-500 transition-all">
+                                        <img
+                                            src={student.avatar || `https://ui-avatars.com/api/?name=${student.name}&background=10b981&color=fff`}
+                                            className="w-full h-full object-cover"
+                                        />
+                                    </div>
+                                    <div className="absolute inset-0 bg-black/40 dark:bg-black/60 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <Camera className="text-white" size={24} />
+                                    </div>
+                                </div>
+                                <p className="text-emerald-600 dark:text-emerald-400 mt-2 cursor-pointer transition-colors font-bold text-xs uppercase underline" onClick={handlePhotoClick}>Alterar Foto</p>
+                            </div>
+
                             <div className="space-y-2">
                                 <label className="text-xs font-black uppercase tracking-widest text-zinc-400 ml-1">Nome Completo</label>
                                 <div className="relative">
@@ -180,6 +220,14 @@ const StudentProfile: React.FC<StudentProfileProps> = ({ student, onUpdateProfil
                     </div>
                 </div>
             )}
+
+            <input
+                type="file"
+                ref={fileInputRef}
+                className="hidden"
+                accept="image/*"
+                onChange={handlePhotoChange}
+            />
         </div>
     );
 };
