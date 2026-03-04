@@ -8,6 +8,7 @@ import LoginScreen from './components/LoginScreen';
 import OnboardingModal from './components/OnboardingModal';
 import ManualWorkoutBuilder from './components/ManualWorkoutBuilder';
 import WorkoutLibraryScreen from './components/WorkoutLibraryScreen';
+import SendNotificationModal from './components/SendNotificationModal';
 
 import { DataService } from './services/dataService';
 import { formatPhone, translateExperience } from './utils/formatters';
@@ -29,7 +30,7 @@ import ScheduleEventModal from './components/ScheduleEventModal';
 import ClassDetailsModal from './components/ClassDetailsModal';
 import { WorkoutFolder, WorkoutTemplate, Student, StudentFile, ScheduleEvent } from './types';
 import { parseISO, format } from 'date-fns';
-import { ArrowLeft, Settings, Loader2, RefreshCw, CheckCircle2, X, Dumbbell, ArrowRight, Zap, Award, ChevronRight, Plus, Edit2, Trash2, User, Calendar, FileText, MessageCircle, TrendingUp, Bell, BellOff } from 'lucide-react';
+import { ArrowLeft, Settings, Loader2, RefreshCw, CheckCircle2, X, Dumbbell, ArrowRight, Zap, Award, ChevronRight, Plus, Edit2, Trash2, User, Calendar, FileText, MessageCircle, TrendingUp, Bell, BellOff, Send, Search } from 'lucide-react';
 import { TrainingFrequencyCard } from './components/TrainingFrequencyCard';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { useAuth } from './contexts/AuthContext';
@@ -67,7 +68,7 @@ const App: React.FC = () => {
 
   const [activeView, setActiveView] = useState<'dashboard' | 'register' | 'exercises' | 'edit-student' | 'student-stats' | 'library'>('dashboard');
   const [profileInitialModal, setProfileInitialModal] = useState<'edit' | null>(null);
-  const [activeTab, setActiveTab] = useState<'home' | 'students' | 'evolution' | 'chat' | 'workout' | 'profile' | 'agenda' | 'reports' | 'finance' | 'subscription'>('home');
+  const [activeTab, setActiveTab] = useState<'home' | 'students' | 'evolution' | 'chat' | 'workout' | 'profile' | 'agenda' | 'reports' | 'finance' | 'subscription' | 'notifications'>('home');
   const [students, setStudents] = useState<Student[]>([]);
   const [workoutTemplates, setWorkoutTemplates] = useState<WorkoutTemplate[]>([]);
   const [workoutFolders, setWorkoutFolders] = useState<WorkoutFolder[]>([]);
@@ -97,6 +98,15 @@ const App: React.FC = () => {
   const [toast, setToast] = useState<{ message: string; type: 'info' | 'success' } | null>(null);
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
   const [isNotificationCenterOpen, setIsNotificationCenterOpen] = useState(false);
+  const [isSendNotificationModalOpen, setIsSendNotificationModalOpen] = useState(false);
+
+  // Auto-hide toast after 5s
+  useEffect(() => {
+    if (toast) {
+      const timer = setTimeout(() => setToast(null), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [toast]);
 
   const reloadStudents = useCallback(async () => {
     try {
@@ -463,7 +473,15 @@ const App: React.FC = () => {
     };
   }, [customExercises]);
 
-  const handleNavigate = (tab: 'home' | 'students' | 'evolution' | 'chat' | 'workout' | 'profile' | 'agenda' | 'reports' | 'finance' | 'subscription') => {
+  const handleNavigate = (tab: any) => {
+    if (tab === 'notifications') {
+      setIsNotificationCenterOpen(true);
+      return;
+    }
+    if (tab === 'send-notification') {
+      setIsSendNotificationModalOpen(true);
+      return;
+    }
     setActiveTab(tab);
     if (tab === 'profile') {
       setProfileInitialModal('edit');
@@ -1113,6 +1131,14 @@ const App: React.FC = () => {
                 </div>
               </div>
             </div>
+
+            <button
+              onClick={() => setIsSendNotificationModalOpen(true)}
+              className="w-full md:w-auto px-6 py-3 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-2xl font-black text-xs uppercase tracking-widest flex items-center justify-center gap-3 hover:opacity-90 transition-all active:scale-95 shadow-lg shadow-zinc-900/10 dark:shadow-none"
+            >
+              <Bell size={18} />
+              Enviar Notificação
+            </button>
           </div>
 
           {selectedStudentView === 'dashboard' ? (
@@ -1807,6 +1833,7 @@ const App: React.FC = () => {
         onSwitchRole={handleLogout}
         onNavigate={handleNavigate}
         activeTab={activeTab}
+        unreadNotificationsCount={notifications.filter(n => !n.is_read).length}
         userName={authUser.name}
         userAvatar={authUser.avatar}
         trainerSocials={loggedInStudent ? {
@@ -1868,8 +1895,13 @@ const App: React.FC = () => {
                 // 4. Update selection and navigate
                 if (freshStudent) {
                   setSelectedStudent(freshStudent);
-                  setSelectedStudentView('dashboard');
-                  setActiveTab('students');
+                  // If we were coming from a "send notification" intent (selector open without pending template)
+                  if (!pendingTemplate) {
+                    setIsSendNotificationModalOpen(true);
+                  } else {
+                    setSelectedStudentView('dashboard');
+                    setActiveTab('students');
+                  }
                 }
                 setIsStudentSelectorOpen(false);
                 setPendingTemplate(null);
@@ -1937,7 +1969,7 @@ const App: React.FC = () => {
       )}
 
       {/* Auto-hide toast after 5s */}
-      {toast && setTimeout(() => setToast(null), 5000) && null}
+      {/* Toast auto-hide handled in useEffect */}
 
 
 
@@ -1975,7 +2007,7 @@ const App: React.FC = () => {
       )}
 
       {/* Auto-hide toast after 5s */}
-      {toast && setTimeout(() => setToast(null), 5000) && null}
+      {/* Toast auto-hide handled in useEffect */}
 
       {/* Notification Center Modal */}
       {isNotificationCenterOpen && (
@@ -2060,6 +2092,14 @@ const App: React.FC = () => {
           </div>
         </div>
       )}
+
+      <SendNotificationModal
+        isOpen={isSendNotificationModalOpen}
+        onClose={() => setIsSendNotificationModalOpen(false)}
+        students={students}
+        selectedStudent={selectedStudent}
+        onSuccess={(msg) => setToast({ message: msg, type: 'success' })}
+      />
     </ThemeProvider >
   );
 };

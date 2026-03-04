@@ -17,7 +17,9 @@ import {
     Calendar,
     FileText,
     CreditCard,
-    DollarSign
+    DollarSign,
+    Bell,
+    Send
 } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 
@@ -25,14 +27,15 @@ interface LayoutProps {
     children: React.ReactNode;
     role: UserRole;
     onSwitchRole: () => void;
-    onNavigate: (tab: 'home' | 'students' | 'evolution' | 'chat' | 'workout' | 'profile' | 'agenda' | 'reports' | 'finance' | 'subscription') => void;
+    onNavigate: (tab: 'home' | 'students' | 'evolution' | 'chat' | 'workout' | 'profile' | 'agenda' | 'notifications' | 'reports' | 'finance' | 'subscription' | 'send-notification') => void;
     activeTab: string;
     userName?: string;
     userAvatar?: string;
     trainerSocials?: { instagram?: string; whatsapp?: string };
+    unreadNotificationsCount?: number;
 }
 
-const Layout: React.FC<LayoutProps> = ({ children, role, onSwitchRole, onNavigate, activeTab, userName, userAvatar, trainerSocials }) => {
+const Layout: React.FC<LayoutProps> = ({ children, role, onSwitchRole, onNavigate, activeTab, userName, userAvatar, trainerSocials, unreadNotificationsCount = 0 }) => {
     const { theme, toggleTheme } = useTheme();
     const [showProfileMenu, setShowProfileMenu] = useState(false);
 
@@ -71,6 +74,7 @@ const Layout: React.FC<LayoutProps> = ({ children, role, onSwitchRole, onNavigat
                         <>
                             <NavItem icon={<LayoutDashboard size={20} />} label="Início" active={activeTab === 'home'} onClick={() => onNavigate('home')} />
                             <NavItem icon={<Users size={20} />} label="Meus Alunos" active={activeTab === 'students'} onClick={() => onNavigate('students')} />
+                            <NavItem icon={<Send size={20} />} label="Enviar" active={activeTab === 'send-notification'} onClick={() => onNavigate('send-notification')} />
                             <NavItem icon={<Calendar size={20} />} label="Agenda" active={activeTab === 'agenda'} onClick={() => onNavigate('agenda')} />
                             <NavItem icon={<TrendingUp size={20} />} label="Evolução" active={activeTab === 'evolution'} onClick={() => onNavigate('evolution')} />
                             <NavItem icon={<User size={20} />} label="Perfil" active={activeTab === 'profile'} onClick={() => onNavigate('profile')} />
@@ -89,12 +93,17 @@ const Layout: React.FC<LayoutProps> = ({ children, role, onSwitchRole, onNavigat
 
                 <div className="p-4 border-t border-zinc-200 dark:border-zinc-800 transition-colors space-y-4">
                     <div className="flex items-center justify-between px-2 mb-2">
-                        <span className="text-[10px] uppercase font-bold text-zinc-400 dark:text-zinc-600">Tema</span>
+                        <span className="text-[10px] uppercase font-bold text-zinc-400 dark:text-zinc-600">Atividade</span>
                         <button
-                            onClick={toggleTheme}
-                            className="p-1.5 rounded-lg bg-zinc-100 dark:bg-zinc-800/50 text-zinc-600 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
+                            onClick={() => onNavigate('notifications')}
+                            className="relative p-1.5 rounded-lg bg-zinc-100 dark:bg-zinc-800/50 text-zinc-600 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
                         >
-                            {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+                            <Bell size={16} />
+                            {unreadNotificationsCount > 0 && (
+                                <span className="absolute -top-1 -right-1 w-4 h-4 bg-emerald-500 text-white text-[8px] font-black rounded-full flex items-center justify-center border border-zinc-50 dark:border-white">
+                                    {unreadNotificationsCount}
+                                </span>
+                            )}
                         </button>
                     </div>
 
@@ -111,8 +120,16 @@ const Layout: React.FC<LayoutProps> = ({ children, role, onSwitchRole, onNavigat
             {/* Top Header */}
             <header className="flex-none w-full z-50 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md border-b border-zinc-200/50 dark:border-zinc-800/50 px-4 flex items-center justify-between sticky top-0 pb-4 pt-[calc(1rem+env(safe-area-inset-top))]">
                 <div className="flex items-center gap-2">
-                    <button onClick={toggleTheme} className="text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full p-2 w-10">
-                        {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+                    <button
+                        onClick={() => onNavigate('notifications')}
+                        className="relative text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full p-2 w-10 h-10 flex items-center justify-center transition-colors"
+                    >
+                        <Bell size={20} />
+                        {unreadNotificationsCount > 0 && (
+                            <span className="absolute top-1.5 right-1.5 w-4 h-4 bg-emerald-500 text-white text-[8px] font-black rounded-full flex items-center justify-center border-2 border-white dark:border-zinc-950">
+                                {unreadNotificationsCount}
+                            </span>
+                        )}
                     </button>
                 </div>
 
@@ -203,6 +220,11 @@ const Layout: React.FC<LayoutProps> = ({ children, role, onSwitchRole, onNavigat
                                                 icon={<TrendingUp size={16} strokeWidth={2.5} />}
                                                 label="Evolução"
                                             />
+                                            <MenuButton
+                                                onClick={toggleTheme}
+                                                icon={theme === 'dark' ? <Sun size={16} strokeWidth={2.5} /> : <Moon size={16} strokeWidth={2.5} />}
+                                                label={theme === 'dark' ? 'Mudar para Claro' : 'Mudar para Escuro'}
+                                            />
                                         </>
                                     )}
 
@@ -238,6 +260,7 @@ const Layout: React.FC<LayoutProps> = ({ children, role, onSwitchRole, onNavigat
                     role === UserRole.TRAINER ? (
                         <>
                             <BottomNavItem icon={<Users size={24} />} active={activeTab === 'students'} onClick={() => onNavigate('students')} />
+                            <BottomNavItem icon={<Send size={24} />} active={activeTab === 'send-notification'} onClick={() => onNavigate('send-notification')} />
                             <BottomNavItem icon={<Calendar size={24} />} active={activeTab === 'agenda'} onClick={() => onNavigate('agenda')} />
                         </>
                     ) : (
@@ -266,22 +289,34 @@ const MenuButton = ({ onClick, icon, label, variant = 'default' }: { onClick: ()
     </button>
 );
 
-const NavItem = ({ icon, label, active = false, onClick }: { icon: React.ReactNode, label: string, active?: boolean, onClick?: () => void }) => (
-    <button onClick={onClick} className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all ${active
+const NavItem = ({ icon, label, active = false, onClick, badge = 0 }: { icon: React.ReactNode, label: string, active?: boolean, onClick?: () => void, badge?: number }) => (
+    <button onClick={onClick} className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl transition-all ${active
         ? 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 shadow-xl shadow-black/10'
         : 'text-zinc-400 dark:text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800/50 hover:text-zinc-900 dark:hover:text-zinc-200'
         }`}>
-        {icon}
-        <span className="font-black text-xs tracking-tight">{label}</span>
+        <div className="flex items-center gap-3">
+            {icon}
+            <span className="font-black text-xs tracking-tight">{label}</span>
+        </div>
+        {badge > 0 && (
+            <span className="bg-emerald-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow-lg shadow-emerald-500/20">
+                {badge}
+            </span>
+        )}
     </button>
 );
 
-const BottomNavItem = ({ icon, active = false, onClick }: { icon: React.ReactNode, active?: boolean, onClick?: () => void }) => (
-    <button onClick={onClick} className={`flex flex-col items-center justify-center p-2 transition-colors ${active
+const BottomNavItem = ({ icon, active = false, onClick, badge = 0 }: { icon: React.ReactNode, active?: boolean, onClick?: () => void, badge?: number }) => (
+    <button onClick={onClick} className={`flex flex-col items-center justify-center p-2 transition-colors relative ${active
         ? 'text-zinc-900 dark:text-white'
         : 'text-zinc-400 dark:text-zinc-600 hover:text-zinc-600 dark:hover:text-zinc-400'
         }`}>
         {icon}
+        {badge > 0 && (
+            <span className="absolute top-1.5 right-1.5 bg-emerald-500 text-white text-[8px] font-black min-w-[14px] h-[14px] flex items-center justify-center rounded-full border-2 border-white dark:border-zinc-950">
+                {badge}
+            </span>
+        )}
         <div className={`w-1 h-1 mt-1 rounded-full transition-all ${active
             ? 'bg-zinc-900 dark:bg-white opacity-100 scale-100'
             : 'bg-transparent opacity-0 scale-0'

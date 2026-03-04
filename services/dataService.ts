@@ -737,5 +737,25 @@ export const DataService = {
     } catch (e) {
       console.error("Exception marking notification as read:", e);
     }
+  },
+
+  async sendCustomNotification(targetId: string, targetRole: 'STUDENT' | 'TRAINER', title: string, body: string): Promise<any> {
+    if (!supabase) return { error: 'Supabase not initialized' };
+    try {
+      const { data, error } = await supabase.functions.invoke('send-push', {
+        body: {
+          targetId,
+          targetRole,
+          title,
+          body,
+          data: { type: 'manual' }
+        }
+      });
+      if (error) throw error;
+      return data;
+    } catch (e) {
+      console.error("Failed to send manual notification:", e);
+      throw e;
+    }
   }
 };
