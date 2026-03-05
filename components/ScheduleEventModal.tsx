@@ -160,18 +160,15 @@ const ScheduleEventModal: React.FC<ScheduleEventModalProps> = ({ initialDate, ex
                     </div>
 
                     {/* Date & Time */}
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-[1.1fr_1.8fr] gap-2">
                         <div>
                             <label className="block text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase mb-1.5 ml-1">Data</label>
-                            <div className="relative">
-                                <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400" size={18} />
-                                <input
-                                    type="date"
-                                    value={date}
-                                    onChange={(e) => setDate(e.target.value)}
-                                    className="w-full pl-11 pr-4 py-3 bg-zinc-50 dark:bg-zinc-800 border-none rounded-2xl font-bold text-zinc-800 dark:text-white focus:ring-2 focus:ring-zinc-900 dark:focus:ring-white"
-                                />
-                            </div>
+                            <input
+                                type="date"
+                                value={date}
+                                onChange={(e) => setDate(e.target.value)}
+                                className="w-full px-2 py-3 bg-zinc-50 dark:bg-zinc-800 border-none rounded-2xl font-bold text-sm text-zinc-800 dark:text-white focus:ring-2 focus:ring-zinc-900 dark:focus:ring-white"
+                            />
                         </div>
 
                         <div className="flex gap-2">
@@ -181,7 +178,7 @@ const ScheduleEventModal: React.FC<ScheduleEventModalProps> = ({ initialDate, ex
                                     type="time"
                                     value={startTime}
                                     onChange={(e) => setStartTime(e.target.value)}
-                                    className="w-full px-2 py-3 bg-zinc-50 dark:bg-zinc-800 border-none rounded-2xl font-bold text-zinc-800 dark:text-white text-center focus:ring-2 focus:ring-zinc-900 dark:focus:ring-white"
+                                    className="w-full pl-2 pr-1 py-3 bg-zinc-50 dark:bg-zinc-800 border-none rounded-2xl font-bold text-sm text-zinc-800 dark:text-white text-center focus:ring-2 focus:ring-zinc-900 dark:focus:ring-white"
                                 />
                             </div>
                             <div className="flex-1">
@@ -190,7 +187,7 @@ const ScheduleEventModal: React.FC<ScheduleEventModalProps> = ({ initialDate, ex
                                     type="time"
                                     value={endTime}
                                     onChange={(e) => setEndTime(e.target.value)}
-                                    className="w-full px-2 py-3 bg-zinc-50 dark:bg-zinc-800 border-none rounded-2xl font-bold text-zinc-800 dark:text-white text-center focus:ring-2 focus:ring-zinc-900 dark:focus:ring-white"
+                                    className="w-full pl-2 pr-1 py-3 bg-zinc-50 dark:bg-zinc-800 border-none rounded-2xl font-bold text-sm text-zinc-800 dark:text-white text-center focus:ring-2 focus:ring-zinc-900 dark:focus:ring-white"
                                 />
                             </div>
                         </div>

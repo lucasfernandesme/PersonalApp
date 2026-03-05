@@ -19,7 +19,24 @@ import {
 import { TrainingProgram, WorkoutDay, Exercise } from '../types';
 import ExerciseLibraryModal from './ExerciseLibraryModal';
 import { LibraryExercise } from '../constants/exercises';
-import { PlayCircle, X } from 'lucide-react';
+import { PlayCircle, X, GripVertical } from 'lucide-react';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+  useSortable,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 const getEmbedUrl = (url: string) => {
   if (!url) return '';
@@ -53,6 +70,118 @@ interface ManualWorkoutBuilderProps {
   initialProgram?: TrainingProgram;
 }
 
+interface SortableExerciseItemProps {
+  ex: Exercise;
+  eIdx: number;
+  dIdx: number;
+  removeExercise: (dIdx: number, eIdx: number) => void;
+  openLibraryForEdit: (dIdx: number, eIdx: number) => void;
+  setPreviewExercise: (ex: Exercise) => void;
+  updateExercise: (dIdx: number, eIdx: number, field: keyof Exercise, value: any) => void;
+}
+
+const SortableExerciseItem: React.FC<SortableExerciseItemProps> = ({
+  ex,
+  eIdx,
+  dIdx,
+  removeExercise,
+  openLibraryForEdit,
+  setPreviewExercise,
+  updateExercise
+}) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: ex.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    zIndex: isDragging ? 10 : 1,
+    opacity: isDragging ? 0.9 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border ${isDragging ? 'border-emerald-500 shadow-xl' : 'border-zinc-100 dark:border-zinc-800'} space-y-4 relative transition-colors`}
+    >
+      <div className="absolute left-2 top-2 p-1 text-zinc-300 dark:text-zinc-600 cursor-grab active:cursor-grabbing hover:text-zinc-500 transition-colors" {...attributes} {...listeners}>
+        <GripVertical size={16} />
+      </div>
+
+      <button
+        onClick={() => removeExercise(dIdx, eIdx)}
+        className="absolute top-2 right-2 p-1 text-zinc-300 dark:text-zinc-600 hover:text-red-500 dark:hover:text-red-400 transition-colors"
+      >
+        <XIcon size={14} />
+      </button>
+
+      <div className="relative pl-6">
+        <input
+          type="text"
+          readOnly
+          placeholder="Nome do exercício"
+          value={ex.name}
+          onClick={() => openLibraryForEdit(dIdx, eIdx)}
+          className="w-full bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-xl pl-4 pr-10 py-2.5 text-sm font-bold text-zinc-900 dark:text-white focus:ring-2 focus:ring-zinc-900 dark:focus:ring-white shadow-sm placeholder:text-zinc-400 dark:placeholder:text-zinc-600 transition-colors cursor-pointer select-none"
+        />
+        <button
+          onClick={() => openLibraryForEdit(dIdx, eIdx)}
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+        >
+          <Search size={16} />
+        </button>
+
+        {ex.videoUrl && (
+          <button
+            onClick={() => setPreviewExercise(ex)}
+            className="absolute right-10 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-zinc-500 hover:text-emerald-500 transition-colors p-1"
+            title="Ver vídeo"
+          >
+            <Eye size={18} />
+          </button>
+        )}
+      </div>
+
+      <div className="grid grid-cols-3 gap-2">
+        <div className="space-y-1">
+          <label className="text-[9px] font-black uppercase text-zinc-400 dark:text-zinc-500 block ml-1">Séries</label>
+          <input type="number" value={ex.sets} onChange={(e) => updateExercise(dIdx, eIdx, 'sets', parseInt(e.target.value) || 0)} className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl px-3 py-2 text-sm font-bold text-zinc-900 dark:text-white transition-colors" />
+        </div>
+        <div className="space-y-1">
+          <label className="text-[9px] font-black uppercase text-zinc-400 dark:text-zinc-500 block ml-1">Reps</label>
+          <input type="text" value={ex.reps} onChange={(e) => updateExercise(dIdx, eIdx, 'reps', e.target.value)} className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl px-3 py-2 text-sm font-bold text-zinc-900 dark:text-white transition-colors" />
+        </div>
+        <div className="space-y-1">
+          <label className="text-[9px] font-black uppercase text-zinc-400 dark:text-zinc-500 block ml-1">Desc.</label>
+          <input type="text" value={ex.rest} onChange={(e) => updateExercise(dIdx, eIdx, 'rest', e.target.value)} className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl px-3 py-2 text-sm font-bold text-zinc-900 dark:text-white transition-colors" />
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <div className="flex items-center justify-between px-1">
+          <label className="text-[9px] font-black uppercase text-zinc-400 dark:text-zinc-500 flex items-center gap-1">
+            <MessageSquareQuote size={10} />
+            Observações
+          </label>
+        </div>
+        <textarea
+          placeholder="Dicas de execução, biomecânica ou segurança..."
+          value={ex.notes || ''}
+          onChange={(e) => updateExercise(dIdx, eIdx, 'notes', e.target.value)}
+          className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs font-medium text-zinc-700 dark:text-white min-h-[60px] focus:ring-2 focus:ring-zinc-900 dark:focus:ring-white shadow-sm transition-colors placeholder:text-zinc-400 dark:placeholder:text-zinc-600"
+        />
+      </div>
+    </div>
+  );
+};
+
 const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
   studentName = '',
   studentGoal = 'Hipertrofia',
@@ -79,6 +208,17 @@ const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
   const [activeDayIdx, setActiveDayIdx] = useState<number | null>(null);
   const [activeExIdx, setActiveExIdx] = useState<number | null>(null);
   const [previewExercise, setPreviewExercise] = useState<Exercise | null>(null);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 5, // minimum drag distance before taking effect, preventing accidental drag on click
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   const addDay = () => {
     const nextLetter = String.fromCharCode(65 + days.length);
@@ -145,6 +285,19 @@ const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
     const newDays = [...days];
     newDays[dayIndex].exercises = newDays[dayIndex].exercises.filter((_, i) => i !== exIndex);
     setDays(newDays);
+  };
+
+  const handleDragEnd = (event: DragEndEvent, dayIndex: number) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      const newDays = [...days];
+      const oldIndex = newDays[dayIndex].exercises.findIndex(ex => ex.id === active.id);
+      const newIndex = newDays[dayIndex].exercises.findIndex(ex => ex.id === over.id);
+
+      newDays[dayIndex].exercises = arrayMove(newDays[dayIndex].exercises, oldIndex, newIndex);
+      setDays(newDays);
+    }
   };
 
   const handleSave = async () => {
@@ -344,74 +497,29 @@ const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
                 </div>
 
                 <div className="p-4 space-y-4">
-                  {day.exercises.map((ex, eIdx) => (
-                    <div key={ex.id} className="p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border border-zinc-100 dark:border-zinc-800 space-y-4 relative transition-colors">
-                      <button
-                        onClick={() => removeExercise(dIdx, eIdx)}
-                        className="absolute top-2 right-2 p-1 text-zinc-300 dark:text-zinc-600 hover:text-red-500 dark:hover:text-red-400 transition-colors"
-                      >
-                        <XIcon size={14} />
-                      </button>
-
-                      <div className="relative">
-                        <input
-                          type="text"
-                          readOnly
-                          placeholder="Nome do exercício"
-                          value={ex.name}
-                          onClick={() => openLibraryForEdit(dIdx, eIdx)}
-                          className="w-full bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-xl pl-4 pr-10 py-2.5 text-sm font-bold text-zinc-900 dark:text-white focus:ring-2 focus:ring-zinc-900 dark:focus:ring-white shadow-sm placeholder:text-zinc-400 dark:placeholder:text-zinc-600 transition-colors cursor-pointer select-none"
+                  <DndContext
+                    sensors={sensors}
+                    collisionDetection={closestCenter}
+                    onDragEnd={(event) => handleDragEnd(event, dIdx)}
+                  >
+                    <SortableContext
+                      items={day.exercises.map(ex => ex.id)}
+                      strategy={verticalListSortingStrategy}
+                    >
+                      {day.exercises.map((ex, eIdx) => (
+                        <SortableExerciseItem
+                          key={ex.id}
+                          ex={ex}
+                          eIdx={eIdx}
+                          dIdx={dIdx}
+                          removeExercise={removeExercise}
+                          openLibraryForEdit={openLibraryForEdit}
+                          setPreviewExercise={setPreviewExercise}
+                          updateExercise={updateExercise}
                         />
-                        <button
-                          onClick={() => openLibraryForEdit(dIdx, eIdx)}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
-                        >
-                          <Search size={16} />
-                        </button>
-
-                        {ex.videoUrl && (
-                          <button
-                            onClick={() => setPreviewExercise(ex)}
-                            className="absolute right-10 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-zinc-500 hover:text-emerald-500 transition-colors p-1"
-                            title="Ver vídeo"
-                          >
-                            <Eye size={18} />
-                          </button>
-                        )}
-                      </div>
-
-                      <div className="grid grid-cols-3 gap-2">
-                        <div className="space-y-1">
-                          <label className="text-[9px] font-black uppercase text-zinc-400 dark:text-zinc-500 block ml-1">Séries</label>
-                          <input type="number" value={ex.sets} onChange={(e) => updateExercise(dIdx, eIdx, 'sets', parseInt(e.target.value) || 0)} className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl px-3 py-2 text-sm font-bold text-zinc-900 dark:text-white transition-colors" />
-                        </div>
-                        <div className="space-y-1">
-                          <label className="text-[9px] font-black uppercase text-zinc-400 dark:text-zinc-500 block ml-1">Reps</label>
-                          <input type="text" value={ex.reps} onChange={(e) => updateExercise(dIdx, eIdx, 'reps', e.target.value)} className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl px-3 py-2 text-sm font-bold text-zinc-900 dark:text-white transition-colors" />
-                        </div>
-                        <div className="space-y-1">
-                          <label className="text-[9px] font-black uppercase text-zinc-400 dark:text-zinc-500 block ml-1">Desc.</label>
-                          <input type="text" value={ex.rest} onChange={(e) => updateExercise(dIdx, eIdx, 'rest', e.target.value)} className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl px-3 py-2 text-sm font-bold text-zinc-900 dark:text-white transition-colors" />
-                        </div>
-                      </div>
-
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between px-1">
-                          <label className="text-[9px] font-black uppercase text-zinc-400 dark:text-zinc-500 flex items-center gap-1">
-                            <MessageSquareQuote size={10} />
-                            Observações
-                          </label>
-
-                        </div>
-                        <textarea
-                          placeholder="Dicas de execução, biomecânica ou segurança..."
-                          value={ex.notes || ''}
-                          onChange={(e) => updateExercise(dIdx, eIdx, 'notes', e.target.value)}
-                          className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs font-medium text-zinc-700 dark:text-white min-h-[60px] focus:ring-2 focus:ring-zinc-900 dark:focus:ring-white shadow-sm transition-colors placeholder:text-zinc-400 dark:placeholder:text-zinc-600"
-                        />
-                      </div>
-                    </div>
-                  ))}
+                      ))}
+                    </SortableContext>
+                  </DndContext>
 
                   <button
                     onClick={() => openLibraryForAdd(dIdx)}

@@ -4,6 +4,7 @@ import { Mail, Lock, ChevronRight, Users, Loader2, UserPlus, ArrowLeft, UserCirc
 import { DataService } from '../services/dataService';
 import { supabase } from '../services/supabase';
 import { formatPhone } from '../utils/formatters';
+import { useTheme } from '../contexts/ThemeContext';
 
 interface LoginScreenProps {
   students: Student[];
@@ -13,6 +14,7 @@ interface LoginScreenProps {
 }
 
 const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin, isDarkMode = false, setIsDarkMode }) => {
+  const { theme } = useTheme();
   const [role, setRole] = useState<UserRole>(UserRole.TRAINER);
   const [view, setView] = useState<'login' | 'register' | 'forgot_password'>('login');
 
@@ -167,8 +169,8 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin, isDarkMode
       <header className="absolute top-0 left-0 w-full flex items-center justify-center px-6 z-50 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md border-b border-zinc-200/50 dark:border-zinc-800/50 pt-[calc(1rem+env(safe-area-inset-top))] pb-4">
 
         <div className="flex items-center gap-2">
-          <img src={isDarkMode ? "/logo10.png" : "/logo9.png"} alt="PERSONALFLOW" className="h-10 w-auto object-contain" />
-          <span className="font-outfit font-black italic tracking-tighter text-xl text-zinc-900 dark:text-white uppercase">PERSONALFLOW</span>
+          <img src={theme === 'dark' ? "/logo10.png" : "/logo9.png"} alt="PERSONALFLOW" className="h-10 w-auto object-contain" />
+          <span className="font-outfit font-black italic tracking-tighter text-xl bg-clip-text text-transparent bg-gradient-to-r from-zinc-900 to-zinc-600 dark:from-white dark:to-zinc-400 uppercase">PERSONALFLOW</span>
         </div>
       </header>
 

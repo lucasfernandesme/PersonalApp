@@ -626,7 +626,7 @@ const App: React.FC = () => {
     if (!authUser || authUser.role !== UserRole.STUDENT) return;
 
     setIsSaving(true);
-    const date = new Date().toISOString().split('T')[0];
+    const date = format(new Date(), 'yyyy-MM-dd');
     const currentStudent = students.find(s => s.id === authUser.id);
     if (!currentStudent) return;
 

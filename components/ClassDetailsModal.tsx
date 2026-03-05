@@ -17,8 +17,8 @@ const ClassDetailsModal: React.FC<ClassDetailsModalProps> = ({ event, onUpdate, 
     const [observation, setObservation] = useState(event.description || '');
     const [executionDate, setExecutionDate] = useState(
         event.status === 'completed' && event.start
-            ? new Date(event.start).toISOString().split('T')[0]
-            : new Date().toISOString().split('T')[0]
+            ? format(new Date(event.start), 'yyyy-MM-dd')
+            : format(new Date(), 'yyyy-MM-dd')
     );
     const [loading, setLoading] = useState(false);
 
