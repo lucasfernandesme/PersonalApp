@@ -615,6 +615,12 @@ export const DataService = {
     if (error) throw error;
   },
 
+  async deleteStudentPayment(id: string): Promise<void> {
+    if (!supabase) return;
+    const { error } = await supabase.from('student_payments').delete().eq('id', id);
+    if (error) throw error;
+  },
+
   async getTrainerPaymentsByDateRange(trainerId: string, startDate: string, endDate: string) {
     if (!supabase) return [];
 

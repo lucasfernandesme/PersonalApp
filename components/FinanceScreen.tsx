@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Search, CheckCircle2, XCircle, Clock, DollarSign, Calendar, ChevronLeft, ChevronRight, Loader2, Filter, Plus, X, User, Home, Minus } from 'lucide-react';
+import { ArrowLeft, Search, CheckCircle2, XCircle, Clock, DollarSign, Calendar, ChevronLeft, ChevronRight, Loader2, Filter, Plus, X, User, Home, Minus, Trash2 } from 'lucide-react';
 import { DataService } from '../services/dataService';
 import { Student, StudentPayment, AuthUser } from '../types';
 
@@ -288,6 +288,23 @@ const FinanceScreen: React.FC<FinanceScreenProps> = ({ user, onBack }) => {
         }
     };
 
+    const handleDeletePayment = async (paymentId: string) => {
+        if (!window.confirm("Tem certeza que deseja excluir este lançamento? Esta ação não pode ser desfeita.")) {
+            return;
+        }
+
+        setSaving(paymentId);
+        try {
+            await DataService.deleteStudentPayment(paymentId);
+            await loadData();
+        } catch (error: any) {
+            console.error("Erro ao excluir lançamento:", error);
+            alert(`Erro ao excluir lançamento: ${error.message || 'Erro desconhecido'}`);
+        } finally {
+            setSaving(null);
+        }
+    };
+
     const handleManualPayment = async (payment: Partial<StudentPayment>) => {
         await DataService.recordPayment({
             ...payment,
@@ -517,6 +534,17 @@ const FinanceScreen: React.FC<FinanceScreenProps> = ({ user, onBack }) => {
                                                                 <p className={`font-black text-sm ${item.type === 'expense' ? 'text-red-600' : 'text-zinc-800 dark:text-zinc-200'}`}>
                                                                     {item.type === 'expense' ? '-' : ''} R$ {item.amount?.toFixed(2)}
                                                                 </p>
+                                                                <button
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        if (item.id) handleDeletePayment(item.id);
+                                                                    }}
+                                                                    disabled={saving === item.id}
+                                                                    className="mt-1 p-1.5 text-zinc-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-colors inline-flex justify-end w-full"
+                                                                    title="Excluir lançamento"
+                                                                >
+                                                                    {saving === item.id ? <Loader2 size={16} className="animate-spin" /> : <Trash2 size={16} />}
+                                                                </button>
                                                             </div>
                                                         </div>
 
@@ -543,6 +571,20 @@ const FinanceScreen: React.FC<FinanceScreenProps> = ({ user, onBack }) => {
                                                                     Ver Comprovante
                                                                 </button>
                                                             )}
+                                                            <div className="mt-1 flex">
+                                                                <button
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        if (item.id) handleDeletePayment(item.id);
+                                                                    }}
+                                                                    disabled={saving === item.id}
+                                                                    className="p-1.5 text-zinc-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-colors flex items-center gap-1.5"
+                                                                    title="Excluir lançamento"
+                                                                >
+                                                                    {saving === item.id ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
+                                                                    <span className="text-[10px] font-bold uppercase tracking-wider">Excluir</span>
+                                                                </button>
+                                                            </div>
                                                         </div>
                                                     )}
 
