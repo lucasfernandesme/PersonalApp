@@ -25,6 +25,7 @@ import {
   closestCenter,
   KeyboardSensor,
   PointerSensor,
+  TouchSensor,
   useSensor,
   useSensors,
   DragEndEvent,
@@ -111,7 +112,12 @@ const SortableExerciseItem: React.FC<SortableExerciseItemProps> = ({
       style={style}
       className={`p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border ${isDragging ? 'border-emerald-500 shadow-xl' : 'border-zinc-100 dark:border-zinc-800'} space-y-4 relative transition-colors`}
     >
-      <div className="absolute left-2 top-2 p-1 text-zinc-300 dark:text-zinc-600 cursor-grab active:cursor-grabbing hover:text-zinc-500 transition-colors" {...attributes} {...listeners}>
+      <div
+        className="absolute left-2 top-2 p-1 text-zinc-300 dark:text-zinc-600 cursor-grab active:cursor-grabbing hover:text-zinc-500 transition-colors"
+        style={{ touchAction: 'none' }}
+        {...attributes}
+        {...listeners}
+      >
         <GripVertical size={16} />
       </div>
 
@@ -213,6 +219,12 @@ const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
     useSensor(PointerSensor, {
       activationConstraint: {
         distance: 5, // minimum drag distance before taking effect, preventing accidental drag on click
+      },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 200, // wait 200ms before starting drag, allowing normal vertical scroll
+        tolerance: 5,
       },
     }),
     useSensor(KeyboardSensor, {
