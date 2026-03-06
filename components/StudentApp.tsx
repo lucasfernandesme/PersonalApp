@@ -69,6 +69,10 @@ const StudentApp: React.FC<StudentAppProps> = ({
   const [showExecutionGuide, setShowExecutionGuide] = useState<{ url: string, type: 'iframe' | 'image' | 'youtube', notes?: string } | null>(null);
   const [isImageLoading, setIsImageLoading] = useState(true);
   const [isFinished, setIsFinished] = useState(false);
+  const [showFeedbackForm, setShowFeedbackForm] = useState(false);
+  const [feedbackDifficulty, setFeedbackDifficulty] = useState<string>('');
+  const [feedbackMessage, setFeedbackMessage] = useState<string>('');
+  const [pendingStats, setPendingStats] = useState<{ rpe_avg: number; completion: number; weights: Record<string, string>; duration: number } | null>(null);
 
   const [isWorkoutActive, setIsWorkoutActive] = useState(false);
   const [seconds, setSeconds] = useState(0);
@@ -310,7 +314,15 @@ const StudentApp: React.FC<StudentAppProps> = ({
       ? Math.round(rpeValues.reduce((a, b) => a + b, 0) / rpeValues.length)
       : 7;
 
+    setPendingStats({ rpe_avg, completion, weights, duration: seconds });
+    setShowFeedbackForm(true);
+  };
+
+  const submitFeedbackAndFinish = () => {
+    if (!pendingStats) return;
+
     setIsWorkoutActive(false);
+    setShowFeedbackForm(false);
     setIsFinished(true);
     stopTimer();
 
@@ -318,7 +330,11 @@ const StudentApp: React.FC<StudentAppProps> = ({
     localStorage.removeItem(STORAGE_KEY);
 
     setTimeout(() => {
-      onFinishWorkout({ rpe_avg, completion, weights, duration: seconds });
+      onFinishWorkout({
+        ...pendingStats,
+        feedbackDifficulty,
+        feedbackMessage
+      });
     }, 2000);
   };
 
@@ -327,6 +343,61 @@ const StudentApp: React.FC<StudentAppProps> = ({
     const lastSession = student.history[student.history.length - 1];
     return lastSession.weights?.[exerciseName] || null;
   };
+
+  const renderFeedbackForm = () => {
+    return (
+      <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 p-6 flex flex-col justify-center animate-in zoom-in-95 duration-300">
+        <div className="max-w-md w-full mx-auto space-y-8">
+          <div className="text-center space-y-2">
+            <h2 className="text-3xl font-black text-zinc-900 dark:text-white">Bom Trabalho!</h2>
+            <p className="text-zinc-500 dark:text-zinc-400 font-medium">Como foi o treino de hoje?</p>
+          </div>
+
+          <div className="bg-white dark:bg-zinc-900 p-6 rounded-[32px] border border-zinc-200 dark:border-zinc-800 shadow-sm space-y-6">
+            <div className="space-y-4">
+              <label className="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 ml-1 tracking-widest">Nível de Esforço</label>
+              <div className="flex flex-col gap-2">
+                {['Muito Fácil', 'Fácil', 'Moderado', 'Difícil', 'Muito Difícil'].map((level) => (
+                  <button
+                    key={level}
+                    onClick={() => setFeedbackDifficulty(level)}
+                    className={`py-3 px-4 rounded-2xl text-sm font-bold transition-all text-left ${feedbackDifficulty === level
+                      ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20'
+                      : 'bg-zinc-50 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700'
+                      }`}
+                  >
+                    {level}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <label className="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 ml-1 tracking-widest">Mensagem para o Professor / Notas (Opcional)</label>
+              <textarea
+                value={feedbackMessage}
+                onChange={(e) => setFeedbackMessage(e.target.value)}
+                placeholder="Sentiu alguma dor? Algum exercício estava pesado demais?"
+                className="w-full bg-zinc-50 dark:bg-zinc-800 border-none rounded-2xl px-5 py-4 font-medium text-zinc-700 dark:text-zinc-300 focus:ring-2 focus:ring-emerald-500 transition-all min-h-[100px] resize-none placeholder:text-zinc-400 dark:placeholder:text-zinc-600"
+              />
+            </div>
+          </div>
+
+          <button
+            onClick={submitFeedbackAndFinish}
+            disabled={!feedbackDifficulty}
+            className="w-full py-5 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 font-black text-xs uppercase tracking-widest rounded-3xl shadow-lg shadow-zinc-900/20 dark:shadow-white/10 active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+          >
+            Finalizar e Enviar
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+  if (showFeedbackForm) {
+    return renderFeedbackForm();
+  }
 
   if (isFinished) {
     return (

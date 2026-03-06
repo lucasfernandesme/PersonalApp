@@ -108,6 +108,8 @@ export interface Student {
     rpe_avg: number;
     completion: number;
     weights?: Record<string, string>;
+    feedbackDifficulty?: string;
+    feedbackMessage?: string;
   }[];
   billingDay?: number;
   monthlyFee?: number;

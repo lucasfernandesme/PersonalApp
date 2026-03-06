@@ -622,7 +622,7 @@ const App: React.FC = () => {
     }
   };
 
-  const handleFinishWorkout = async (stats: { rpe_avg: number; completion: number; weights: Record<string, string>; duration: number }) => {
+  const handleFinishWorkout = async (stats: { rpe_avg: number; completion: number; weights: Record<string, string>; duration: number; feedbackDifficulty?: string; feedbackMessage?: string }) => {
     if (!authUser || authUser.role !== UserRole.STUDENT) return;
 
     setIsSaving(true);
@@ -655,12 +655,19 @@ const App: React.FC = () => {
 
       // Trigger Push to Trainer
       if (supabase && currentStudent.trainerId) {
+        let pushBody = `Seu aluno ${currentStudent.name} acabou de completar o treino: ${updatedProgram?.name || 'Sessão'}`;
+        if (stats.feedbackMessage) {
+          pushBody += `\n💬 Mensagem: "${stats.feedbackMessage}"`;
+        } else if (stats.feedbackDifficulty) {
+          pushBody += `\n🥵 Dificuldade relatada: ${stats.feedbackDifficulty}`;
+        }
+
         supabase.functions.invoke('send-push', {
           body: {
             targetId: currentStudent.trainerId,
             targetRole: 'TRAINER',
             title: '✅ Treino Finalizado!',
-            body: `Seu aluno ${currentStudent.name} acabou de completar o treino: ${updatedProgram?.name || 'Sessão'}`
+            body: pushBody
           }
         }).catch(err => console.error("Erro ao notificar treinador:", err));
       }
