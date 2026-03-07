@@ -182,35 +182,37 @@ const SortableExerciseItem: React.FC<SortableExerciseItemProps> = ({
             </div>
           )}
 
-          <div className={`flex flex-wrap items-end gap-2 ${ex.videoUrl ? 'mt-2' : 'mt-4'}`}>
-            <div className="w-[68px] shrink-0 space-y-1">
-              <label className="text-[9px] font-black uppercase text-zinc-400 dark:text-zinc-500 block ml-1 tracking-widest">Séries</label>
-              <input
-                type="number"
-                value={ex.sets}
-                onChange={(e) => updateExercise(dIdx, eIdx, 'sets', parseInt(e.target.value) || 0)}
-                className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl px-2 py-2 text-sm font-bold text-zinc-900 dark:text-white transition-colors focus:ring-2 focus:ring-emerald-500/20"
-              />
-            </div>
+          <div className="space-y-3 mt-4">
+            <div className="grid grid-cols-3 gap-2">
+              <div className="space-y-1">
+                <label className="text-[9px] font-black uppercase text-zinc-400 dark:text-zinc-500 block ml-1 tracking-widest">Séries</label>
+                <input
+                  type="number"
+                  value={ex.sets}
+                  onChange={(e) => updateExercise(dIdx, eIdx, 'sets', parseInt(e.target.value) || 0)}
+                  className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl px-3 py-2 text-sm font-bold text-zinc-900 dark:text-white transition-colors focus:ring-2 focus:ring-emerald-500/20"
+                />
+              </div>
 
-            <div className="w-[68px] shrink-0 space-y-1">
-              <label className="text-[9px] font-black uppercase text-zinc-400 dark:text-zinc-500 block ml-1 tracking-widest">Reps</label>
-              <input
-                type="text"
-                value={ex.reps}
-                onChange={(e) => updateExercise(dIdx, eIdx, 'reps', e.target.value)}
-                className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl px-2 py-2 text-sm font-bold text-zinc-900 dark:text-white transition-colors focus:ring-2 focus:ring-emerald-500/20"
-              />
-            </div>
+              <div className="space-y-1">
+                <label className="text-[9px] font-black uppercase text-zinc-400 dark:text-zinc-500 block ml-1 tracking-widest">Reps</label>
+                <input
+                  type="text"
+                  value={ex.reps}
+                  onChange={(e) => updateExercise(dIdx, eIdx, 'reps', e.target.value)}
+                  className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl px-3 py-2 text-sm font-bold text-zinc-900 dark:text-white transition-colors focus:ring-2 focus:ring-emerald-500/20"
+                />
+              </div>
 
-            <div className="w-[68px] shrink-0 space-y-1">
-              <label className="text-[9px] font-black uppercase text-zinc-400 dark:text-zinc-500 block ml-1 tracking-widest">Desc.</label>
-              <input
-                type="text"
-                value={ex.rest}
-                onChange={(e) => updateExercise(dIdx, eIdx, 'rest', e.target.value)}
-                className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl px-2 py-2 text-sm font-bold text-zinc-900 dark:text-white transition-colors focus:ring-2 focus:ring-emerald-500/20"
-              />
+              <div className="space-y-1">
+                <label className="text-[9px] font-black uppercase text-zinc-400 dark:text-zinc-500 block ml-1 tracking-widest">Desc.</label>
+                <input
+                  type="text"
+                  value={ex.rest}
+                  onChange={(e) => updateExercise(dIdx, eIdx, 'rest', e.target.value)}
+                  className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl px-3 py-2 text-sm font-bold text-zinc-900 dark:text-white transition-colors focus:ring-2 focus:ring-emerald-500/20"
+                />
+              </div>
             </div>
 
             <button
@@ -218,11 +220,11 @@ const SortableExerciseItem: React.FC<SortableExerciseItemProps> = ({
                 e.stopPropagation();
                 replicateSets(dIdx, eIdx);
               }}
-              className="flex-1 min-w-[100px] h-[38px] flex items-center justify-center gap-1.5 px-3 py-2 text-emerald-500 hover:text-white hover:bg-emerald-500 transition-all border border-emerald-500/20 hover:border-emerald-500 bg-emerald-500/5 dark:bg-emerald-500/10 rounded-xl shadow-sm active:scale-95 whitespace-nowrap"
+              className="w-full flex items-center justify-center gap-2 py-2.5 text-emerald-500 hover:text-white hover:bg-emerald-500 transition-all border border-emerald-500/20 hover:border-emerald-500 bg-emerald-500/5 dark:bg-emerald-500/10 rounded-xl shadow-sm active:scale-[0.98] group"
               title="Replicar volume para o dia"
             >
-              <Copy size={13} />
-              <span className="text-[10px] font-black uppercase tracking-tight">Replicar Séries</span>
+              <Copy size={14} className="group-hover:scale-110 transition-transform" />
+              <span className="text-[11px] font-black uppercase tracking-widest">Replicar Séries para o Dia</span>
             </button>
           </div>
 
