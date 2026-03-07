@@ -224,7 +224,7 @@ const SortableExerciseItem: React.FC<SortableExerciseItemProps> = ({
               title="Replicar volume para o dia"
             >
               <Copy size={14} className="group-hover:scale-110 transition-transform" />
-              <span className="text-[11px] font-black uppercase tracking-widest">Replicar Séries para o Dia</span>
+              <span className="text-[11px] font-black uppercase tracking-widest">Replicar Séries</span>
             </button>
           </div>
 
