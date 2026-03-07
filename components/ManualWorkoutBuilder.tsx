@@ -14,7 +14,8 @@ import {
   Calendar,
   Eye,
   MessageSquareQuote,
-  Loader2
+  Loader2,
+  Copy
 } from 'lucide-react';
 import { TrainingProgram, WorkoutDay, Exercise } from '../types';
 import ExerciseLibraryModal from './ExerciseLibraryModal';
@@ -79,6 +80,7 @@ interface SortableExerciseItemProps {
   openLibraryForEdit: (dIdx: number, eIdx: number) => void;
   setPreviewExercise: (ex: Exercise) => void;
   updateExercise: (dIdx: number, eIdx: number, field: keyof Exercise, value: any) => void;
+  replicateSets: (dIdx: number, eIdx: number) => void;
 }
 
 const SortableExerciseItem: React.FC<SortableExerciseItemProps> = ({
@@ -88,8 +90,10 @@ const SortableExerciseItem: React.FC<SortableExerciseItemProps> = ({
   removeExercise,
   openLibraryForEdit,
   setPreviewExercise,
-  updateExercise
+  updateExercise,
+  replicateSets
 }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
   const {
     attributes,
     listeners,
@@ -102,7 +106,7 @@ const SortableExerciseItem: React.FC<SortableExerciseItemProps> = ({
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    zIndex: isDragging ? 10 : 1,
+    zIndex: isDragging ? 20 : 1,
     opacity: isDragging ? 0.9 : 1,
   };
 
@@ -110,80 +114,134 @@ const SortableExerciseItem: React.FC<SortableExerciseItemProps> = ({
     <div
       ref={setNodeRef}
       style={style}
-      className={`p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border ${isDragging ? 'border-emerald-500 shadow-xl' : 'border-zinc-100 dark:border-zinc-800'} space-y-4 relative transition-colors`}
+      className={`bg-white dark:bg-zinc-900 rounded-2xl border ${isDragging ? 'border-emerald-500 shadow-xl' : 'border-zinc-100 dark:border-zinc-800'} transition-all duration-300 overflow-hidden group`}
     >
+      {/* Header Area - Clickable to toggle expansion */}
       <div
-        className="absolute left-2 top-2 p-1 text-zinc-300 dark:text-zinc-600 cursor-grab active:cursor-grabbing hover:text-zinc-500 transition-colors"
-        style={{ touchAction: 'none' }}
-        {...attributes}
-        {...listeners}
+        className={`p-4 flex items-center gap-3 cursor-pointer select-none transition-colors ${isExpanded ? 'bg-zinc-50 dark:bg-zinc-800/50' : 'hover:bg-zinc-50 dark:hover:bg-zinc-800/30'}`}
+        onClick={() => setIsExpanded(!isExpanded)}
       >
-        <GripVertical size={16} />
-      </div>
-
-      <button
-        onClick={() => removeExercise(dIdx, eIdx)}
-        className="absolute top-2 right-2 p-1 text-zinc-300 dark:text-zinc-600 hover:text-red-500 dark:hover:text-red-400 transition-colors"
-      >
-        <XIcon size={14} />
-      </button>
-
-      <div className="relative pl-6">
-        <input
-          type="text"
-          readOnly
-          placeholder="Nome do exercício"
-          value={ex.name}
-          onClick={() => openLibraryForEdit(dIdx, eIdx)}
-          className="w-full bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-xl pl-4 pr-10 py-2.5 text-sm font-bold text-zinc-900 dark:text-white focus:ring-2 focus:ring-zinc-900 dark:focus:ring-white shadow-sm placeholder:text-zinc-400 dark:placeholder:text-zinc-600 transition-colors cursor-pointer select-none"
-        />
-        <button
-          onClick={() => openLibraryForEdit(dIdx, eIdx)}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+        <div
+          className="p-1.5 text-zinc-300 dark:text-zinc-600 cursor-grab active:cursor-grabbing hover:text-zinc-500 transition-colors"
+          style={{ touchAction: 'none' }}
+          {...attributes}
+          {...listeners}
+          onClick={(e) => e.stopPropagation()} // Prevent expansion when grabbing
         >
-          <Search size={16} />
-        </button>
+          <GripVertical size={16} />
+        </div>
 
-        {ex.videoUrl && (
+        <div className="flex-1 flex items-center gap-2 overflow-hidden">
+          <span className="text-sm font-black text-zinc-800 dark:text-white truncate">
+            {ex.name || 'Sem nome'}
+          </span>
+        </div>
+
+        <div className="flex items-center gap-1.5">
           <button
-            onClick={() => setPreviewExercise(ex)}
-            className="absolute right-10 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-zinc-500 hover:text-emerald-500 transition-colors p-1"
-            title="Ver vídeo"
+            onClick={(e) => {
+              e.stopPropagation();
+              removeExercise(dIdx, eIdx);
+            }}
+            className="w-8 h-8 flex items-center justify-center text-zinc-300 hover:text-red-500 dark:hover:text-red-400 transition-colors bg-zinc-100/50 dark:bg-zinc-800/50 rounded-xl"
+            title="Remover"
           >
-            <Eye size={18} />
+            <XIcon size={14} />
           </button>
-        )}
-      </div>
 
-      <div className="grid grid-cols-3 gap-2">
-        <div className="space-y-1">
-          <label className="text-[9px] font-black uppercase text-zinc-400 dark:text-zinc-500 block ml-1">Séries</label>
-          <input type="number" value={ex.sets} onChange={(e) => updateExercise(dIdx, eIdx, 'sets', parseInt(e.target.value) || 0)} className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl px-3 py-2 text-sm font-bold text-zinc-900 dark:text-white transition-colors" />
-        </div>
-        <div className="space-y-1">
-          <label className="text-[9px] font-black uppercase text-zinc-400 dark:text-zinc-500 block ml-1">Reps</label>
-          <input type="text" value={ex.reps} onChange={(e) => updateExercise(dIdx, eIdx, 'reps', e.target.value)} className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl px-3 py-2 text-sm font-bold text-zinc-900 dark:text-white transition-colors" />
-        </div>
-        <div className="space-y-1">
-          <label className="text-[9px] font-black uppercase text-zinc-400 dark:text-zinc-500 block ml-1">Desc.</label>
-          <input type="text" value={ex.rest} onChange={(e) => updateExercise(dIdx, eIdx, 'rest', e.target.value)} className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl px-3 py-2 text-sm font-bold text-zinc-900 dark:text-white transition-colors" />
+          <div
+            className={`w-8 h-8 flex items-center justify-center text-zinc-300 dark:text-zinc-600 transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}
+          >
+            <ChevronDown size={16} />
+          </div>
         </div>
       </div>
 
-      <div className="space-y-2">
-        <div className="flex items-center justify-between px-1">
-          <label className="text-[9px] font-black uppercase text-zinc-400 dark:text-zinc-500 flex items-center gap-1">
-            <MessageSquareQuote size={10} />
-            Observações
-          </label>
+      {/* Expanded Details */}
+      {isExpanded && (
+        <div className="p-4 pt-0 border-t border-zinc-100 dark:border-zinc-800/50 bg-zinc-50/50 dark:bg-zinc-800/20 space-y-4 animate-in slide-in-from-top-2 duration-200">
+
+          {/* Inline Video Player */}
+          {ex.videoUrl && (
+            <div className="mt-4 aspect-video w-full bg-black rounded-2xl overflow-hidden shadow-sm border border-zinc-200 dark:border-zinc-700">
+              {ex.videoUrl.includes('youtube.com') || ex.videoUrl.includes('youtu.be') ? (
+                <iframe
+                  src={getEmbedUrl(ex.videoUrl)}
+                  title={ex.name}
+                  className="w-full h-full"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              ) : (
+                <video
+                  src={ex.videoUrl}
+                  controls
+                  className="w-full h-full object-contain"
+                />
+              )}
+            </div>
+          )}
+
+          <div className={`flex flex-wrap items-end gap-2 ${ex.videoUrl ? 'mt-2' : 'mt-4'}`}>
+            <div className="w-[68px] shrink-0 space-y-1">
+              <label className="text-[9px] font-black uppercase text-zinc-400 dark:text-zinc-500 block ml-1 tracking-widest">Séries</label>
+              <input
+                type="number"
+                value={ex.sets}
+                onChange={(e) => updateExercise(dIdx, eIdx, 'sets', parseInt(e.target.value) || 0)}
+                className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl px-2 py-2 text-sm font-bold text-zinc-900 dark:text-white transition-colors focus:ring-2 focus:ring-emerald-500/20"
+              />
+            </div>
+
+            <div className="w-[68px] shrink-0 space-y-1">
+              <label className="text-[9px] font-black uppercase text-zinc-400 dark:text-zinc-500 block ml-1 tracking-widest">Reps</label>
+              <input
+                type="text"
+                value={ex.reps}
+                onChange={(e) => updateExercise(dIdx, eIdx, 'reps', e.target.value)}
+                className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl px-2 py-2 text-sm font-bold text-zinc-900 dark:text-white transition-colors focus:ring-2 focus:ring-emerald-500/20"
+              />
+            </div>
+
+            <div className="w-[68px] shrink-0 space-y-1">
+              <label className="text-[9px] font-black uppercase text-zinc-400 dark:text-zinc-500 block ml-1 tracking-widest">Desc.</label>
+              <input
+                type="text"
+                value={ex.rest}
+                onChange={(e) => updateExercise(dIdx, eIdx, 'rest', e.target.value)}
+                className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl px-2 py-2 text-sm font-bold text-zinc-900 dark:text-white transition-colors focus:ring-2 focus:ring-emerald-500/20"
+              />
+            </div>
+
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                replicateSets(dIdx, eIdx);
+              }}
+              className="flex-1 min-w-[100px] h-[38px] flex items-center justify-center gap-1.5 px-3 py-2 text-emerald-500 hover:text-white hover:bg-emerald-500 transition-all border border-emerald-500/20 hover:border-emerald-500 bg-emerald-500/5 dark:bg-emerald-500/10 rounded-xl shadow-sm active:scale-95 whitespace-nowrap"
+              title="Replicar volume para o dia"
+            >
+              <Copy size={13} />
+              <span className="text-[10px] font-black uppercase tracking-tight">Replicar Séries</span>
+            </button>
+          </div>
+
+          <div className="space-y-2">
+            <div className="flex items-center justify-between px-1">
+              <label className="text-[9px] font-black uppercase text-zinc-400 dark:text-zinc-500 flex items-center gap-1 tracking-widest">
+                <MessageSquareQuote size={10} />
+                Observações
+              </label>
+            </div>
+            <textarea
+              placeholder="Dicas de execução, biomecânica ou segurança..."
+              value={ex.notes || ''}
+              onChange={(e) => updateExercise(dIdx, eIdx, 'notes', e.target.value)}
+              className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs font-medium text-zinc-700 dark:text-white min-h-[80px] focus:ring-2 focus:ring-emerald-500/20 shadow-sm transition-colors placeholder:text-zinc-400 dark:placeholder:text-zinc-600"
+            />
+          </div>
         </div>
-        <textarea
-          placeholder="Dicas de execução, biomecânica ou segurança..."
-          value={ex.notes || ''}
-          onChange={(e) => updateExercise(dIdx, eIdx, 'notes', e.target.value)}
-          className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs font-medium text-zinc-700 dark:text-white min-h-[60px] focus:ring-2 focus:ring-zinc-900 dark:focus:ring-white shadow-sm transition-colors placeholder:text-zinc-400 dark:placeholder:text-zinc-600"
-        />
-      </div>
+      )}
     </div>
   );
 };
@@ -290,6 +348,21 @@ const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
       ...newDays[dayIndex].exercises[exIndex],
       [field]: value
     };
+    setDays(newDays);
+  };
+
+  const replicateSets = (dayIndex: number, exIndex: number, field?: 'sets' | 'reps' | 'rest') => {
+    const sourceEx = days[dayIndex].exercises[exIndex];
+    const newDays = [...days];
+    newDays[dayIndex].exercises = newDays[dayIndex].exercises.map((ex, i) => {
+      if (i === exIndex) return ex;
+      return {
+        ...ex,
+        sets: field === 'reps' || field === 'rest' ? ex.sets : sourceEx.sets,
+        reps: field === 'sets' || field === 'rest' ? ex.reps : sourceEx.reps,
+        rest: field === 'sets' || field === 'reps' ? ex.rest : sourceEx.rest,
+      };
+    });
     setDays(newDays);
   };
 
@@ -528,6 +601,7 @@ const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
                           openLibraryForEdit={openLibraryForEdit}
                           setPreviewExercise={setPreviewExercise}
                           updateExercise={updateExercise}
+                          replicateSets={replicateSets}
                         />
                       ))}
                     </SortableContext>

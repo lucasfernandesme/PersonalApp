@@ -1954,7 +1954,7 @@ const App: React.FC = () => {
       {/* In-App Notification Toast */}
       {toast && (
         <div className="fixed bottom-24 left-4 right-4 z-[200] animate-in slide-in-from-bottom-10 duration-500">
-          <div className="bg-zinc-900/90 dark:bg-zinc-100/90 backdrop-blur-md text-white dark:text-zinc-900 px-6 py-4 rounded-[24px] shadow-2xl flex items-center justify-between gap-4 border border-white/10 dark:border-black/5">
+          <div className="bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 px-6 py-4 rounded-[24px] shadow-2xl flex items-center justify-between gap-4 border border-white/20 dark:border-black/10">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white">
                 <CheckCircle2 size={18} />
