@@ -1,7 +1,7 @@
 {
-  "name": "fitai-pro---gestão-de-treinos-inteligente",
+  "name": "personalflow-app",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -28,6 +28,7 @@
     "react-dom": "^19.2.3"
   },
   "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@types/node": "^22.14.0",
