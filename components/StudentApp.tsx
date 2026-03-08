@@ -146,6 +146,10 @@ const StudentApp: React.FC<StudentAppProps> = ({
   useEffect(() => {
     if (!program?.id || !currentStudentId) return;
 
+    // Do NOT save if workout is finished or in feedback form
+    // This prevents re-saving the state after it has been cleared in submitFeedbackAndFinish
+    if (isFinished || showFeedbackForm) return;
+
     // Only save if workout has started or we have some progress
     if (isWorkoutActive || seconds > 0 || completedExercises.size > 0) {
       const stateToSave = {
@@ -169,7 +173,7 @@ const StudentApp: React.FC<StudentAppProps> = ({
       // localStorage.removeItem(STORAGE_KEY); 
       // Better to keep it until explicit finish or manual reset
     }
-  }, [isWorkoutActive, seconds, currentDayIndex, completedExercises, completedSets, exerciseDetails, restSeconds, program?.id, currentStudentId]);
+  }, [isWorkoutActive, seconds, currentDayIndex, completedExercises, completedSets, exerciseDetails, restSeconds, program?.id, currentStudentId, isFinished, showFeedbackForm]);
 
   useEffect(() => {
     if (isWorkoutActive) {

@@ -2019,8 +2019,8 @@ const App: React.FC = () => {
             className="absolute inset-0 bg-black/40 backdrop-blur-sm animate-in fade-in duration-300"
             onClick={() => setIsNotificationCenterOpen(false)}
           />
-          <div className="relative w-full max-w-md bg-white dark:bg-zinc-900 rounded-[32px] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col max-h-[80vh]">
-            <div className="p-6 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between bg-zinc-50/50 dark:bg-zinc-800/50">
+          <div className="relative w-full max-w-md bg-white dark:bg-zinc-900 rounded-[32px] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col max-h-[90vh]">
+            <div className="p-6 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between bg-zinc-50/50 dark:bg-zinc-800/50 flex-shrink-0">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-zinc-900 dark:bg-white rounded-2xl flex items-center justify-center text-white dark:text-zinc-900">
                   <Bell size={20} />
@@ -2033,12 +2033,13 @@ const App: React.FC = () => {
               <button
                 onClick={() => setIsNotificationCenterOpen(false)}
                 className="p-2 hover:bg-zinc-200 dark:hover:bg-zinc-800 rounded-xl transition-colors"
+                aria-label="Fechar"
               >
                 <X size={20} className="text-zinc-500" />
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-4 space-y-3">
+            <div className="flex-1 overflow-y-auto p-4 space-y-3 min-h-0">
               {notifications.length === 0 ? (
                 <div className="h-40 flex flex-col items-center justify-center text-zinc-400 dark:text-zinc-600">
                   <BellOff size={32} className="mb-2 opacity-20" />
@@ -2077,7 +2078,7 @@ const App: React.FC = () => {
             </div>
 
             {notifications.length > 0 && notifications.some(n => !n.is_read) && (
-              <div className="p-4 border-t border-zinc-100 dark:border-zinc-800 bg-zinc-50/30 dark:bg-zinc-800/20">
+              <div className="p-4 border-t border-zinc-100 dark:border-zinc-800 bg-zinc-50/30 dark:bg-zinc-800/20 flex-shrink-0">
                 <button
                   onClick={async () => {
                     const unread = notifications.filter(n => !n.is_read);
