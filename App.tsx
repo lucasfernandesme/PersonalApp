@@ -323,7 +323,6 @@ const App: React.FC = () => {
       };
     }
   }, [authUser?.id, authUser?.role, reloadNotifications, isNotificationCenterOpen]);
-  const [loadingTakingTooLong, setLoadingTakingTooLong] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -350,15 +349,6 @@ const App: React.FC = () => {
       setIsLoading(true);
     }
 
-    setLoadingTakingTooLong(false);
-
-    // Safety check: if loading takes > 10s, show a retry button
-    const timeoutId = setTimeout(() => {
-      if (mounted && isLoading) {
-        setLoadingTakingTooLong(true);
-      }
-    }, 10000);
-
     const loadData = async () => {
       try {
         await Promise.allSettled([
@@ -373,15 +363,13 @@ const App: React.FC = () => {
         console.error("Erro ao carregar dados:", err);
       } finally {
         if (mounted) {
-          clearTimeout(timeoutId);
           setIsLoading(false);
-          setLoadingTakingTooLong(false);
         }
       }
     };
 
     loadData();
-    return () => { mounted = false; clearTimeout(timeoutId); };
+    return () => { mounted = false; };
   }, [authUser?.id]); // CRÍTICO: Depender apenas do ID para evitar loops infinitos
 
   useEffect(() => {
@@ -1644,21 +1632,6 @@ const App: React.FC = () => {
           <img src="/logo9.png" alt="PersonalFlow" className="w-56 h-56 object-contain mx-auto animate-pulse dark:hidden" />
           <img src="/logo10.png" alt="PersonalFlow" className="w-56 h-56 object-contain mx-auto animate-pulse hidden dark:block" />
         </div>
-
-        {loadingTakingTooLong && (
-          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <p className="text-zinc-500 dark:text-zinc-400 text-sm font-medium mb-4 max-w-xs">
-              O carregamento está demorando mais que o esperado.
-            </p>
-            <button
-              onClick={() => window.location.reload()}
-              className="px-6 py-3 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl text-xs font-black uppercase tracking-widest text-zinc-900 dark:text-white shadow-sm hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all active:scale-95 flex items-center gap-2 mx-auto"
-            >
-              <RefreshCw size={14} />
-              Recarregar
-            </button>
-          </div>
-        )}
       </div>
     );
   }
