@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 import { TrainingProgram, WorkoutDay, Exercise } from '../types';
 import ExerciseLibraryModal from './ExerciseLibraryModal';
-import { LibraryExercise } from '../constants/exercises';
+import { EXERCISES_DB, LibraryExercise } from '../constants/exercises';
 import { PlayCircle, X, GripVertical } from 'lucide-react';
 import {
   DndContext,
@@ -67,6 +67,7 @@ interface ManualWorkoutBuilderProps {
   studentName: string;
   studentGoal?: string;
   studentInjuries?: string;
+  customExercises?: LibraryExercise[];
   onSave: (program: TrainingProgram) => void;
   onCancel: () => void;
   initialProgram?: TrainingProgram;
@@ -252,10 +253,12 @@ const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
   studentName = '',
   studentGoal = 'Hipertrofia',
   studentInjuries = '',
+  customExercises = [],
   onSave,
   onCancel,
   initialProgram
 }) => {
+  const allExercises = [...EXERCISES_DB, ...customExercises];
   const isTemplateMode = !studentName;
   const [programName, setProgramName] = useState(initialProgram?.name || (isTemplateMode ? '' : `Treino de ${studentName}`));
   const [goal, setGoal] = useState(initialProgram?.goal || studentGoal || 'Hipertrofia');
@@ -631,7 +634,11 @@ const ManualWorkoutBuilder: React.FC<ManualWorkoutBuilderProps> = ({
         </div>
 
         {isLibraryOpen && (
-          <ExerciseLibraryModal onSelect={handleLibrarySelect} onClose={() => setIsLibraryOpen(false)} />
+          <ExerciseLibraryModal 
+            exercises={allExercises} 
+            onSelect={handleLibrarySelect} 
+            onClose={() => setIsLibraryOpen(false)} 
+          />
         )}
 
         {/* Video Preview Modal */}

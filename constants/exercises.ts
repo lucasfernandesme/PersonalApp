@@ -218,4 +218,4 @@ export const EXERCISES_DB: LibraryExercise[] = [
   { name: 'Mergulho nas Paralelas', category: 'Braços', videoUrl: 'https://www.youtube.com/watch?v=OPyI6B68tHw', isStandard: true },
 ];
 
-export const CATEGORIES = ['Todos', 'Peito', 'Costas', 'Pernas', 'Glúteo', 'Ombros', 'Braços', 'Core', 'Alongamento'];
+export const CATEGORIES = ['Todos', 'Personalizado', 'Peito', 'Costas', 'Pernas', 'Glúteo', 'Ombros', 'Braços', 'Core', 'Alongamento'];

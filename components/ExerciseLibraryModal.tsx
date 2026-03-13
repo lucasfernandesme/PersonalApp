@@ -4,6 +4,7 @@ import { Search, X, ChevronRight, Dumbbell, Eye, ChevronDown, Filter, PlayCircle
 import { EXERCISES_DB, CATEGORIES, LibraryExercise } from '../constants/exercises';
 
 interface ExerciseLibraryModalProps {
+  exercises: LibraryExercise[];
   onSelect: (exercise: LibraryExercise) => void;
   onClose: () => void;
 }
@@ -31,19 +32,19 @@ const getEmbedUrl = (url: string) => {
   return url;
 };
 
-const ExerciseLibraryModal: React.FC<ExerciseLibraryModalProps> = ({ onSelect, onClose }) => {
+const ExerciseLibraryModal: React.FC<ExerciseLibraryModalProps> = ({ exercises, onSelect, onClose }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Todos');
   const [isComboOpen, setIsComboOpen] = useState(false);
   const [previewExercise, setPreviewExercise] = useState<LibraryExercise | null>(null);
 
   const filteredExercises = useMemo(() => {
-    return EXERCISES_DB.filter(ex => {
+    return exercises.filter(ex => {
       const matchesSearch = ex.name.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesCategory = selectedCategory === 'Todos' || ex.category === selectedCategory;
       return matchesSearch && matchesCategory;
     });
-  }, [searchTerm, selectedCategory]);
+  }, [exercises, searchTerm, selectedCategory]);
 
   return (
     <div className="fixed inset-0 z-[80] bg-white dark:bg-zinc-900 flex flex-col animate-in slide-in-from-bottom duration-300 transition-colors">

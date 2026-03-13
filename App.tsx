@@ -1842,6 +1842,7 @@ const App: React.FC = () => {
               frequency: pendingStudentData.frequency,
               goal: pendingStudentData.goal
             } : undefined)}
+            customExercises={customExercises}
             onSave={handleSaveWorkout}
             onCancel={() => setIsManualBuilderOpen(false)}
           />

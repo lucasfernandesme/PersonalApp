@@ -16,7 +16,7 @@ const ExerciseManagerScreen: React.FC<ExerciseManagerScreenProps> = ({ exercises
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Todos');
   const [isComboOpen, setIsComboOpen] = useState(false);
-  const [newExercise, setNewExercise] = useState<LibraryExercise>({ name: '', category: 'Peito', videoUrl: '' });
+  const [newExercise, setNewExercise] = useState<LibraryExercise>({ name: '', category: 'Personalizado', videoUrl: '' });
   const [isPlayingPreview, setIsPlayingPreview] = useState(false);
 
   const getYouTubeEmbedUrl = (url: string) => {
@@ -66,7 +66,7 @@ const ExerciseManagerScreen: React.FC<ExerciseManagerScreenProps> = ({ exercises
       };
 
       await onAdd(formattedExercise);
-      setNewExercise({ name: '', category: 'Peito', videoUrl: '' });
+      setNewExercise({ name: '', category: 'Personalizado', videoUrl: '' });
       setIsAdding(false);
     } catch (error) {
       console.error("Erro ao salvar:", error);
@@ -91,7 +91,7 @@ const ExerciseManagerScreen: React.FC<ExerciseManagerScreenProps> = ({ exercises
 
         <button
           onClick={() => {
-            setNewExercise({ name: '', category: 'Peito', videoUrl: '' });
+            setNewExercise({ name: '', category: 'Personalizado', videoUrl: '' });
             setIsPlayingPreview(false);
             setIsAdding(true);
           }}
@@ -234,7 +234,7 @@ const ExerciseManagerScreen: React.FC<ExerciseManagerScreenProps> = ({ exercises
                   onClick={() => {
                     setIsAdding(false);
                     setIsPlayingPreview(false);
-                    setNewExercise({ name: '', category: 'Peito', videoUrl: '' });
+                    setNewExercise({ name: '', category: 'Personalizado', videoUrl: '' });
                   }}
                   className="text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
                 >
