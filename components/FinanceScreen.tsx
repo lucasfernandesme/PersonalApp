@@ -422,19 +422,21 @@ const FinanceScreen: React.FC<FinanceScreenProps> = ({ user, onBack }) => {
     return (
         <div className="h-full w-full flex flex-col bg-zinc-50 dark:bg-zinc-950 animate-in fade-in duration-300 relative overflow-hidden">
             {/* Header */}
-            <header className="bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 p-6 pt-12 flex items-center justify-between z-20 shrink-0">
-                <button onClick={onBack} className="p-2 text-zinc-400 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-all bg-zinc-50 dark:bg-zinc-800 rounded-xl">
-                    <ArrowLeft size={20} />
-                </button>
-                <div className="flex flex-col items-center">
-                    <h2 className="text-xl font-black text-zinc-900 dark:text-white tracking-tight">Financeiro</h2>
-                    <div className="flex items-center gap-2 mt-1">
-                        <button onClick={() => changeMonth(-1)} className="p-1 hover:text-emerald-500 transition-colors"><ChevronLeft size={16} /></button>
-                        <span className="text-xs font-black text-zinc-400 uppercase tracking-widest">{monthNames[currentMonth - 1]} {currentYear}</span>
-                        <button onClick={() => changeMonth(1)} className="p-1 hover:text-emerald-500 transition-colors"><ChevronRight size={16} /></button>
+            <header className="bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 p-6 flex flex-col z-20 shrink-0">
+                <div className="flex items-center justify-between">
+                    <button onClick={onBack} className="p-2 text-zinc-400 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-all bg-zinc-50 dark:bg-zinc-800 rounded-xl">
+                        <ArrowLeft size={20} />
+                    </button>
+                    <div className="flex flex-col items-center">
+                        <h2 className="text-xl font-black text-zinc-900 dark:text-white tracking-tight">Financeiro</h2>
                     </div>
+                    <div className="w-10"></div>
                 </div>
-                <div className="w-10"></div>
+                <div className="flex items-center justify-center gap-2 mt-4">
+                        <button onClick={() => changeMonth(-1)} className="p-2 bg-zinc-50 dark:bg-zinc-800 rounded-lg hover:text-emerald-500 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors"><ChevronLeft size={16} /></button>
+                        <span className="text-xs font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-widest">{monthNames[currentMonth - 1]} {currentYear}</span>
+                        <button onClick={() => changeMonth(1)} className="p-2 bg-zinc-50 dark:bg-zinc-800 rounded-lg hover:text-emerald-500 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors"><ChevronRight size={16} /></button>
+                </div>
             </header>
 
             <div className="flex-1 overflow-y-auto p-6 space-y-6 pb-20 min-h-0 overscroll-contain">

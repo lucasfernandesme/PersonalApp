@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import {
     format,
     startOfWeek,
@@ -32,7 +32,7 @@ const AgendaScreen: React.FC<AgendaScreenProps> = ({ events, students, onAddEven
     const renderHeader = () => {
         return (
             <div className="flex flex-col mb-8">
-                <div className="flex justify-end px-4 pt-[calc(1rem+env(safe-area-inset-top))]">
+                <div className="flex justify-end px-4 pt-4">
                     <button onClick={onClose} className="p-2 text-zinc-400 dark:text-zinc-500 hover:text-red-500 transition-colors z-10">
                         <X size={28} />
                     </button>

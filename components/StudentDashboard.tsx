@@ -281,8 +281,8 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
             {activeModal === 'payments' && (
                 <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
                     <div className="bg-white dark:bg-zinc-900 rounded-2xl w-full max-w-md shadow-2xl p-6 relative h-[60vh] flex flex-col border dark:border-zinc-800">
-                        <button onClick={() => setActiveModal(null)} className="absolute top-4 right-4 p-2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 pt-[calc(1rem+env(safe-area-inset-top))]"><X size={24} /></button>
-                        <div className="mb-6 pt-[env(safe-area-inset-top)]">
+                        <button onClick={() => setActiveModal(null)} className="absolute top-4 right-4 p-2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"><X size={24} /></button>
+                        <div className="mb-6">
                             <h3 className="text-xl font-black text-zinc-900 dark:text-white">Meus Pagamentos</h3>
                             <p className="text-xs font-bold text-zinc-400 mt-1 uppercase tracking-widest">Histórico de Mensalidades</p>
                         </div>

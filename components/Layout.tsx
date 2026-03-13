@@ -207,14 +207,6 @@ const Layout: React.FC<LayoutProps> = ({ children, role, onSwitchRole, onNavigat
                                             <MenuButton
                                                 onClick={() => {
                                                     setShowProfileMenu(false);
-                                                    onNavigate('subscription');
-                                                }}
-                                                icon={<CreditCard size={16} strokeWidth={2.5} />}
-                                                label="Assinatura"
-                                            />
-                                            <MenuButton
-                                                onClick={() => {
-                                                    setShowProfileMenu(false);
                                                     onNavigate('evolution');
                                                 }}
                                                 icon={<TrendingUp size={16} strokeWidth={2.5} />}
@@ -247,7 +239,7 @@ const Layout: React.FC<LayoutProps> = ({ children, role, onSwitchRole, onNavigat
             </header>
 
             {/* Main Content */}
-            <main className="flex-1 overflow-y-auto p-4 lg:p-8 pt-[calc(1rem+env(safe-area-inset-top))]">
+            <main className="flex-1 overflow-y-auto p-4 lg:p-8 pt-4">
                 <div className="max-w-4xl mx-auto">
                     {children}
                 </div>

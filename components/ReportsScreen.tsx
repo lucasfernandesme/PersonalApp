@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { ScheduleEvent, Student } from '../types';
 import { Activity, BarChart3, ChevronRight, FileText, X } from 'lucide-react';
 import ClassReportsScreen from './ClassReportsScreen';
@@ -24,7 +24,7 @@ const ReportsScreen: React.FC<ReportsScreenProps> = ({ events, students, onClose
     return (
         <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
             <div className="flex flex-col min-h-full">
-                <div className="flex justify-end px-4 pt-[calc(1rem+env(safe-area-inset-top))] mb-4">
+                <div className="flex justify-end px-4 pt-4 mb-4">
                     <button onClick={onClose} className="p-2 text-zinc-400 dark:text-zinc-500 hover:text-red-500 transition-colors z-10">
                         <X size={28} />
                     </button>
