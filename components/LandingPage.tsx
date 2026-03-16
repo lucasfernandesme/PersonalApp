@@ -3,9 +3,10 @@ import { ArrowRight, ChevronRight, CheckCircle2, Zap, Dumbbell, Calendar, Messag
 
 interface LandingPageProps {
     onEnterApp: () => void;
+    onShowPrivacy?: () => void;
 }
 
-const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
+const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onShowPrivacy }) => {
     return (
         <div className="min-h-screen bg-zinc-50 dark:bg-black font-sans selection:bg-emerald-500/30">
             {/* Header */}
@@ -227,7 +228,15 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
 
                     <div className="flex items-center gap-8 text-sm font-bold text-zinc-400 dark:text-zinc-500">
                         <a href="#" className="hover:text-zinc-900 dark:hover:text-white transition-colors">Termos</a>
-                        <a href="#" className="hover:text-zinc-900 dark:hover:text-white transition-colors">Privacidade</a>
+                        <button
+                            onClick={(e) => {
+                                e.preventDefault();
+                                onShowPrivacy?.();
+                            }}
+                            className="hover:text-zinc-900 dark:hover:text-white transition-colors"
+                        >
+                            Privacidade
+                        </button>
                         <a href="#" className="hover:text-zinc-900 dark:hover:text-white transition-colors">Contato</a>
                     </div>
                 </div>

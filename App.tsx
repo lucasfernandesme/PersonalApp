@@ -37,6 +37,7 @@ import { useAuth } from './contexts/AuthContext';
 import SubscriptionScreen from './components/SubscriptionScreen';
 import ResetPasswordScreen from './components/ResetPasswordScreen';
 import LandingPage from './components/LandingPage';
+import PrivacyPolicy from './components/PrivacyPolicy';
 import { supabase } from './services/supabase';
 import { PushNotifications } from '@capacitor/push-notifications';
 import { Capacitor } from '@capacitor/core';
@@ -50,7 +51,8 @@ const App: React.FC = () => {
     return saved ? JSON.parse(saved) : null;
   });
 
-  const [showLanding, setShowLanding] = useState(false);
+  const [showLanding, setShowLanding] = useState(true);
+  const [showPrivacy, setShowPrivacy] = useState(false);
 
   const [isLoading, setIsLoading] = useState(() => {
     // Se temos um usuário salvo, começamos carregando. Caso contrário, não.
@@ -1656,10 +1658,24 @@ const App: React.FC = () => {
   }
 
   if (!authUser) {
+    if (showPrivacy) {
+      return (
+        <ThemeProvider>
+          <PrivacyPolicy
+            onBack={() => setShowPrivacy(false)}
+            isDarkMode={false} // Adjust based on ThemeContext if needed, but ThemeProvider wraps it
+          />
+        </ThemeProvider>
+      );
+    }
+
     if (showLanding) {
       return (
         <ThemeProvider>
-          <LandingPage onEnterApp={() => setShowLanding(false)} />
+          <LandingPage
+            onEnterApp={() => setShowLanding(false)}
+            onShowPrivacy={() => setShowPrivacy(true)}
+          />
         </ThemeProvider>
       );
     }
