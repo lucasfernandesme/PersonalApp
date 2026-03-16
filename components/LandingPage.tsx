@@ -228,15 +228,14 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onShowPrivacy }) 
 
                     <div className="flex items-center gap-8 text-sm font-bold text-zinc-400 dark:text-zinc-500">
                         <a href="#" className="hover:text-zinc-900 dark:hover:text-white transition-colors">Termos</a>
-                        <button
-                            onClick={(e) => {
-                                e.preventDefault();
-                                onShowPrivacy?.();
-                            }}
+                        <a 
+                            href="/privacy.html" 
+                            target="_blank" 
+                            rel="noopener noreferrer"
                             className="hover:text-zinc-900 dark:hover:text-white transition-colors"
                         >
                             Privacidade
-                        </button>
+                        </a>
                         <a href="#" className="hover:text-zinc-900 dark:hover:text-white transition-colors">Contato</a>
                     </div>
                 </div>
