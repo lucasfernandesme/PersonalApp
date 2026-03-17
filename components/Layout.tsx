@@ -61,7 +61,7 @@ const Layout: React.FC<LayoutProps> = ({ children, role, onSwitchRole, onNavigat
             <aside className="hidden lg:flex w-64 bg-zinc-950 dark:bg-white flex-col fixed inset-y-0 left-0 z-50 shadow-2xl">
                 <div className="p-8 flex flex-col items-center justify-center text-center gap-3">
                     <img src={theme === 'dark' ? "/logo9.png" : "/logo10.png"} alt="PersonalFlow" className="w-16 h-16 object-contain" />
-                    <span className="font-outfit font-black italic tracking-tighter text-2xl bg-clip-text text-transparent bg-gradient-to-r from-zinc-100 to-zinc-400 dark:from-zinc-950 dark:to-zinc-500 uppercase">PersonalFlow</span>
+                    <span className="font-montserrat font-black tracking-tight text-2xl bg-clip-text text-transparent bg-gradient-to-r from-zinc-100 to-zinc-400 dark:from-zinc-950 dark:to-zinc-500 uppercase">PersonalFlow</span>
                 </div>
 
                 <div className="px-6 pb-2 -mt-4 mb-2 text-center">
@@ -135,7 +135,7 @@ const Layout: React.FC<LayoutProps> = ({ children, role, onSwitchRole, onNavigat
 
                 <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2">
                     <img src={theme === 'dark' ? "/logo10.png" : "/logo9.png"} alt="PersonalFlow" className="h-8 w-auto object-contain" />
-                    <span className="font-outfit font-black italic tracking-tighter text-xl bg-clip-text text-transparent bg-gradient-to-r from-zinc-900 to-zinc-600 dark:from-white dark:to-zinc-400 uppercase">PersonalFlow</span>
+                    <span className="font-montserrat font-black text-xl bg-clip-text text-transparent bg-gradient-to-r from-zinc-900 to-zinc-600 dark:from-white dark:to-zinc-400 uppercase">PersonalFlow</span>
                 </div>
 
                 <div className="relative">
@@ -212,13 +212,14 @@ const Layout: React.FC<LayoutProps> = ({ children, role, onSwitchRole, onNavigat
                                                 icon={<TrendingUp size={16} strokeWidth={2.5} />}
                                                 label="Evolução"
                                             />
-                                            <MenuButton
-                                                onClick={toggleTheme}
-                                                icon={theme === 'dark' ? <Sun size={16} strokeWidth={2.5} /> : <Moon size={16} strokeWidth={2.5} />}
-                                                label={theme === 'dark' ? 'Mudar para Claro' : 'Mudar para Escuro'}
-                                            />
                                         </>
                                     )}
+
+                                    <MenuButton
+                                        onClick={toggleTheme}
+                                        icon={theme === 'dark' ? <Sun size={16} strokeWidth={2.5} /> : <Moon size={16} strokeWidth={2.5} />}
+                                        label={theme === 'dark' ? 'Mudar para Claro' : 'Mudar para Escuro'}
+                                    />
 
                                     <div className="my-1 border-t border-zinc-100 dark:border-zinc-800" />
 

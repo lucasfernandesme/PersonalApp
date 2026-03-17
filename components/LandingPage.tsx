@@ -15,7 +15,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onShowPrivacy }) 
                     <div className="flex items-center gap-3">
                         <img src="/logo9.png" alt="PersonalFlow" className="w-10 h-10 object-contain dark:hidden" />
                         <img src="/logo10.png" alt="PersonalFlow" className="w-10 h-10 object-contain hidden dark:block" />
-                        <span className="font-extrabold text-xl text-zinc-900 dark:text-white tracking-tight">PersonalFlow</span>
+                        <span className="font-montserrat font-black text-xl bg-clip-text text-transparent bg-gradient-to-r from-zinc-900 to-zinc-600 dark:from-white dark:to-zinc-400 uppercase">PersonalFlow</span>
                     </div>
                     <div className="flex items-center gap-4">
                         <a href="#features" className="hidden md:block text-sm font-bold text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors">Recursos</a>
@@ -223,7 +223,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onShowPrivacy }) 
                     <div className="flex items-center gap-3">
                         <img src="/logo9.png" alt="PersonalFlow" className="w-8 h-8 object-contain grayscale opacity-70 dark:hidden" />
                         <img src="/logo10.png" alt="PersonalFlow" className="w-8 h-8 object-contain grayscale opacity-70 hidden dark:block" />
-                        <span className="font-bold text-zinc-500 dark:text-zinc-400 tracking-tight">© {new Date().getFullYear()} PersonalFlow.</span>
+                        <span className="font-montserrat font-black text-sm text-zinc-500 dark:text-zinc-400 uppercase tracking-tight">© {new Date().getFullYear()} PersonalFlow.</span>
                     </div>
 
                     <div className="flex items-center gap-8 text-sm font-bold text-zinc-400 dark:text-zinc-500">

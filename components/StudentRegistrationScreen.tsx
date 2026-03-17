@@ -101,7 +101,7 @@ const StudentRegistrationScreen: React.FC<StudentRegistrationScreenProps> = ({ o
         <div className="flex items-center gap-2">
           <img src="/logo9.png" alt="PersonalFlow" className="w-8 h-8 object-contain dark:hidden" />
           <img src="/logo10.png" alt="PersonalFlow" className="w-8 h-8 object-contain hidden dark:block" />
-          <span className="font-outfit font-black italic tracking-tighter text-xl bg-clip-text text-transparent bg-gradient-to-r from-zinc-900 to-zinc-600 dark:from-white dark:to-zinc-400 uppercase">PersonalFlow</span>
+          <span className="font-montserrat font-black text-xl bg-clip-text text-transparent bg-gradient-to-r from-zinc-900 to-zinc-600 dark:from-white dark:to-zinc-400 uppercase">PersonalFlow</span>
         </div>
 
         <div className="w-10"></div> {/* Placeholder for symmetry */}

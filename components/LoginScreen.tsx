@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { UserRole, AuthUser, Student } from '../types';
 import { Mail, Lock, ChevronRight, Users, Loader2, UserPlus, ArrowLeft, UserCircle, Sun, Moon } from 'lucide-react';
 import { DataService } from '../services/dataService';
@@ -170,7 +170,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin, isDarkMode
 
         <div className="flex items-center gap-2">
           <img src={theme === 'dark' ? "/logo10.png" : "/logo9.png"} alt="PERSONALFLOW" className="h-10 w-auto object-contain" />
-          <span className="font-outfit font-black italic tracking-tighter text-xl bg-clip-text text-transparent bg-gradient-to-r from-zinc-900 to-zinc-600 dark:from-white dark:to-zinc-400 uppercase">PERSONALFLOW</span>
+          <span className="font-montserrat font-black text-xl bg-clip-text text-transparent bg-gradient-to-r from-zinc-900 to-zinc-600 dark:from-white dark:to-zinc-400 uppercase">PERSONALFLOW</span>
         </div>
       </header>
 
