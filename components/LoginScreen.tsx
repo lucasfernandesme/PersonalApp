@@ -175,8 +175,15 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin, isDarkMode
       </header>
 
       <div className="w-full max-w-md space-y-8 mt-12">
-        <div className="text-center space-y-2">
-          <p className="text-center text-xs font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mt-2 animate-in slide-in-from-top-2">
+        <div className="text-center">
+          <div className="flex justify-center">
+            <img 
+              src={theme === 'dark' ? "/logo10.png" : "/logo9.png"} 
+              alt="Logo" 
+              className="h-48 w-auto object-contain animate-in fade-in zoom-in duration-700" 
+            />
+          </div>
+          <p className="text-center text-xs font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-500 -mt-12 animate-in slide-in-from-top-2">
             Gestão Inteligente de Treinos
           </p>
         </div>
