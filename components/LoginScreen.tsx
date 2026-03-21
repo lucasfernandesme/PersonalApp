@@ -165,14 +165,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ students, onLogin, isDarkMode
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 flex flex-col items-center justify-center p-6 transition-colors relative">
-      {/* Header synchronized with BjjFlow */}
-      <header className="absolute top-0 left-0 w-full flex items-center justify-center px-6 z-50 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md border-b border-zinc-200/50 dark:border-zinc-800/50 pt-[calc(1rem+env(safe-area-inset-top))] pb-4">
-
-        <div className="flex items-center gap-2">
-          <img src={theme === 'dark' ? "/logo10.png" : "/logo9.png"} alt="PERSONALFLOW" className="h-10 w-auto object-contain" />
-          <span className="font-montserrat font-black text-xl bg-clip-text text-transparent bg-gradient-to-r from-zinc-900 to-zinc-600 dark:from-white dark:to-zinc-400 uppercase">PERSONALFLOW</span>
-        </div>
-      </header>
+      {/* Header removed as requested */}
 
       <div className="w-full max-w-md space-y-8 mt-12">
         <div className="text-center">
