@@ -51,7 +51,7 @@ const App: React.FC = () => {
     return saved ? JSON.parse(saved) : null;
   });
 
-  const [showLanding, setShowLanding] = useState(true);
+  const [showLanding, setShowLanding] = useState(false);
   const [showPrivacy, setShowPrivacy] = useState(false);
 
   const [isLoading, setIsLoading] = useState(() => {
